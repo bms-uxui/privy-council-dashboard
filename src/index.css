@@ -1,0 +1,179 @@
+@import "tailwindcss";
+
+@plugin './hero.ts';
+@source '../node_modules/@heroui/theme/dist/**/*.{js,mjs}';
+
+/* ============================================
+   Thai Luxury Purple & Gold — Design Tokens
+   ============================================ */
+@theme {
+  --font-sans: "Google Sans", "Google Sans Text", "Noto Sans Thai", system-ui, sans-serif;
+
+  /* Teal Gradient Palette */
+  --color-royal-blue: #1C85AD;
+  --color-royal-blue-light: #3DA0C4;
+  --color-royal-blue-dark: #156A8A;
+  --color-gold: #6EC3C3;
+  --color-gold-light: #8FD5D5;
+  --color-gold-dark: #4FAAAA;
+
+  /* Semantic */
+  --color-primary: #1C85AD;
+  --color-secondary: #6EC3C3;
+  --color-accent: #6EC3C3;
+  --color-success: #16A34A;
+  --color-warning: #F59E0B;
+  --color-danger: #DC2626;
+  --color-info: #1C85AD;
+
+  /* Surfaces */
+  --color-surface: #FFFFFF;
+  --color-background: #F4FAFB;
+  --color-sidebar: #134B62;
+  --color-card: #FFFFFF;
+
+  /* Text */
+  --color-text: #1A2E3B;
+  --color-text-muted: #3D5A68;
+  --color-text-light: #5A7A8A;
+}
+
+/* ============================================
+   Base Styles
+   ============================================ */
+body {
+  font-family: "Google Sans", "Google Sans Text", "Noto Sans Thai", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--color-background);
+  color: var(--color-text);
+  margin: 0;
+  font-size: 16px;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+*, .radix-themes {
+  font-family: "Google Sans", "Google Sans Text", "Noto Sans Thai", system-ui, sans-serif !important;
+}
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* AI card expand/collapse */
+.ai-card-text {
+  display: grid;
+  transition: grid-template-rows 0.4s ease;
+}
+.ai-card-text[data-open="false"] {
+  grid-template-rows: 0fr;
+}
+.ai-card-text[data-open="true"] {
+  grid-template-rows: 1fr;
+}
+.ai-card-text > div {
+  overflow: hidden;
+}
+
+/* Slide-up fade-in animation */
+@keyframes slideUpFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-slide-up {
+  animation: slideUpFadeIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* Shadow scroll indicators — dynamic classes set by JS */
+.scroll-shadow-bottom {
+  mask-image: linear-gradient(to bottom, black calc(100% - 32px), transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 32px), transparent 100%);
+}
+.scroll-shadow-top {
+  mask-image: linear-gradient(to bottom, transparent 0px, black 32px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0px, black 32px);
+}
+.scroll-shadow-both {
+  mask-image: linear-gradient(to bottom, transparent 0px, black 32px, black calc(100% - 32px), transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0px, black 32px, black calc(100% - 32px), transparent 100%);
+}
+
+/* ============================================
+   Scrollbar Styling
+   ============================================ */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #A8D4D4;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #6EC3C3;
+}
+
+/* ============================================
+   Skeleton Loader Animation
+   ============================================ */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #EAF5F5 25%, #D5EDED 50%, #EAF5F5 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+/* ============================================
+   Leaflet Override
+   ============================================ */
+.leaflet-container {
+  font-family: "Google Sans", "Noto Sans Thai", system-ui, sans-serif !important;
+  border-radius: 16px;
+}
+
+.leaflet-tooltip-custom {
+  background: #fff !important;
+  border: 1px solid #D5EDED !important;
+  border-radius: 12px !important;
+  padding: 10px 14px !important;
+  box-shadow: 0 8px 24px rgba(28, 133, 173, 0.12) !important;
+}
+.leaflet-tooltip-custom::before {
+  border-top-color: #fff !important;
+}
+
+/* ============================================
+   MapLibre Nan Map Popup
+   ============================================ */
+.nan-map-popup .maplibregl-popup-content {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 12px 14px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.10);
+  border: 1px solid #e5e7eb;
+}
+.nan-map-popup .maplibregl-popup-tip {
+  border-top-color: #ffffff;
+}
+.nan-map-popup .maplibregl-popup-close-button {
+  display: none;
+}
+.maplibregl-canvas {
+  border-radius: 16px;
+}

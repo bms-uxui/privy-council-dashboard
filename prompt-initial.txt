@@ -1,0 +1,80 @@
+Role: Senior UX/UI Designer & Frontend Engineer
+
+Task: Build a High-Fidelity React Prototype for "Executive Village Health Dashboard"
+
+Project Context:
+
+You are creating a "Command Center" dashboard for health executives in Nan province. The data is integrated via Hospital APIs. The UI must reflect a "Modern Thai Royal" aesthetic—combining the prestige of Thai government identity with cutting-edge digital clarity.
+
+Visual Identity & Typography:
+
+Theme: "Modern Thai Royal" Palette.
+
+Primary: Deep Royal Blue (#003375) - representing trust and authority.
+
+Accent: Elegant Gold/Yellow (#D4AF37 or #FDB813) - for highlights, active states, and key icons.
+
+Background: Clean White/Light Grey (#F8FAFC) to keep the data breathable.
+
+Typography: Use "Google Sans" (or 'Sarabun' as a high-quality system fallback).
+
+Headers should be bold and elegant.
+
+Body text must be at least 16px for elderly accessibility.
+
+UI Style: Use soft shadows, subtle gradients, and rounded "Bento Box" cards to create a premium feel. Avoid cluttered borders; use whitespace to define sections.
+
+Required Prototype Pages:
+
+Executive Command Center (/dashboard):
+
+KPI Cards: Total Population, Elderly, NCD Patients, and Multi-morbidity. Use elegant iconography with gold accents.
+
+Comparison Section: A Side-by-side bar chart (Moo 11 vs 12) using the Royal Blue/Gold color scheme.
+
+AI Narrative Card: A premium-styled box with a "Sparkles" icon. Content: Thai summary text like "สรุปสถานะ: พบกลุ่มเสี่ยง NCD เพิ่มขึ้นในพื้นที่หมู่ 11".
+
+GIS Health Map (/gis):
+
+Interactive Map with custom markers.
+
+Marker Style: High-contrast dots (Gold/Red) to identify high-risk households.
+
+Side Panel: When a house is clicked, slide out a Drawer with member details instead of using a small popup.
+
+Household & Person Drill-down:
+
+Household List: A clean, professional table with "Risk Badges" (Low/Medium/High).
+
+Person Profile: Detailed view including a Health Timeline (Vertical) and masked sensitive data (CID) for PDPA compliance.
+
+Admin API Monitor (/admin):
+
+Dashboard showing "System Health"—connectivity logs from "รพ.สต.น้ำรีพัฒนา" and "รพ.น่าน".
+
+Status indicators using the "Royal" color palette (e.g., Gold for 'Waiting', Blue for 'Success').
+
+Prototype Logic & Deliverables:
+
+Generate a mockData.ts with JSON objects for all domains (Provider, Village, House, Family, Person, Submission Log).
+
+Ensure the UI is Responsive (Desktop-first but looks premium on tablets).
+
+All labels, buttons, and system summaries must be in Thai.
+
+Instructions:
+
+Create a layout with a professional Sidebar.
+
+Implement the 4 core pages with interactive elements (Tabs, Drawers, Filters).
+
+Use Lucide-React for icons, ensuring they are styled with the theme's accent colors.
+
+สิ่งที่ Claude Code จะทำให้คุณหลังจากได้ Prompt นี้:
+Folder Structure: แยกส่วน Components, Hooks, และ Types อย่างชัดเจน
+
+Modern Layout: แดชบอร์ดแบบ Bento Box ที่จัดวาง KPI ไว้มุมซ้ายบนตามหลัก Visual Hierarchy 
+
+Data Storytelling: ส่วน AI Summary จะไม่ได้โชว์แค่ตัวเลข แต่จะโชว์ประโยควิเคราะห์ภาษาไทยที่อ่านง่าย 
+
+Elderly-Friendly: ปุ่มกดและ Navigation จะมีขนาดใหญ่ (อย่างน้อย 44x44px) และความต่างสี (Contrast) สูงตามมาตรฐาน WCAG
