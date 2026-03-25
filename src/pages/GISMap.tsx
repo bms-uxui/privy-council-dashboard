@@ -1200,7 +1200,7 @@ export default function GISMap() {
             <h4 className="text-sm font-semibold text-text mb-2">สมาชิก ({houseMembers.length})</h4>
             <div className="space-y-1.5">
               {houseMembers.length > 0 ? houseMembers.map((p) => (
-                <a key={p.id} href={`/household?person=${p.id}`}
+                <a key={p.id} href={`#/household?person=${p.id}`}
                   className="flex items-center gap-2 p-2.5 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors group">
                   <div className="w-8 h-8 rounded-full bg-royal-blue/10 flex items-center justify-center text-sm font-bold text-royal-blue flex-shrink-0">
                     {p.firstName[0]}

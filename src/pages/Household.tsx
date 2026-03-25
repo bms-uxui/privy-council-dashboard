@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router";
 import {
   Search,
   Filter,
@@ -45,11 +46,21 @@ const EVENT_ICONS = {
 };
 
 export default function Household() {
+  const [searchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
   const [filterRisk, setFilterRisk] = useState<"all" | "high" | "medium" | "low">("all");
   const [filterMoo, setFilterMoo] = useState<"all" | "11" | "12">("all");
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [showCID, setShowCID] = useState(false);
+
+  // Auto-select person from query param (e.g. from GIS map link)
+  useEffect(() => {
+    const personId = searchParams.get("person");
+    if (personId) {
+      const found = persons.find((p) => p.id === personId);
+      if (found) setSelectedPerson(found);
+    }
+  }, [searchParams]);
 
   const filteredHouses = houses.filter((h) => {
     if (filterMoo !== "all" && h.moo !== Number(filterMoo)) return false;
