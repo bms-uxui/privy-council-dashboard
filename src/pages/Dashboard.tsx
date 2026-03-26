@@ -11,6 +11,7 @@ import {
   ChevronDown,
   Bug,
   ShieldAlert,
+  Syringe,
 } from "lucide-react";
 import {
   BarChart,
@@ -36,7 +37,10 @@ import {
   generateAISummary,
   outbreakCases,
   outbreakHouseIds,
+  VACCINE_GROUP_LABELS,
+  VACCINE_DEFS,
 } from "../data/mockData";
+import type { VaccineGroup } from "../types";
 import type { House } from "../types";
 
 const ROYAL_BLUE = "#1C85AD";
@@ -335,6 +339,71 @@ export default function Dashboard() {
                 <ShieldAlert size={11} />
                 {outbreakHouseIds.size} ครัวเรือน
               </span>
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* ── Vaccine Coverage Summary ── */}
+      {(() => {
+        const personsWithVax = persons.filter((p) => p.vaccinations.length > 0).length;
+        const coveragePct = persons.length > 0 ? ((personsWithVax / persons.length) * 100).toFixed(1) : "0";
+        const groups = Object.entries(VACCINE_GROUP_LABELS) as [VaccineGroup, { name: string; color: string }][];
+
+        return (
+          <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <div className="w-10 h-10 rounded-xl bg-sky-50 flex items-center justify-center">
+                  <Syringe size={20} className="text-sky-500" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-text">ความครอบคลุมวัคซีน</h3>
+                  <p className="text-xs text-text-muted">5 กลุ่มวัคซีน · {VACCINE_DEFS.length} ชนิด</p>
+                </div>
+              </div>
+              <a href="#/gis" className="text-xs text-sky-600 hover:underline font-medium">
+                ดูแผนที่ →
+              </a>
+            </div>
+
+            {/* KPI row */}
+            <div className="grid grid-cols-3 gap-3 mb-4">
+              <div className="bg-sky-50 rounded-xl p-3 text-center">
+                <p className="text-xl font-bold text-sky-600">{personsWithVax.toLocaleString()}</p>
+                <p className="text-xs text-sky-400">ได้รับวัคซีน</p>
+              </div>
+              <div className="bg-gray-50 rounded-xl p-3 text-center">
+                <p className="text-xl font-bold text-text">{persons.length.toLocaleString()}</p>
+                <p className="text-xs text-text-muted">ประชากร</p>
+              </div>
+              <div className="bg-green-50 rounded-xl p-3 text-center">
+                <p className="text-xl font-bold text-green-600">{coveragePct}%</p>
+                <p className="text-xs text-green-400">ครอบคลุม</p>
+              </div>
+            </div>
+
+            {/* Group bars */}
+            <div className="space-y-2.5">
+              {groups.map(([key, { name, color }]) => {
+                const groupDefs = VACCINE_DEFS.filter((d) => d.group === key);
+                const withGroup = persons.filter((p) => p.vaccinations.some((v) => v.group === key)).length;
+                const pct = persons.length > 0 ? ((withGroup / persons.length) * 100).toFixed(0) : "0";
+                return (
+                  <div key={key}>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs text-text flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
+                        {name} ({groupDefs.length} ชนิด)
+                      </span>
+                      <span className="text-xs font-bold text-text">{withGroup} คน ({pct}%)</span>
+                    </div>
+                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                      <div className="h-full rounded-full transition-all duration-500" style={{ width: `${pct}%`, backgroundColor: color, opacity: 0.75 }} />
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         );
