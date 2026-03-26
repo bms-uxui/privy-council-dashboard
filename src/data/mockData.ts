@@ -508,8 +508,8 @@ function generateOutbreakCases(): OutbreakCase[] {
   const rng = seededRandom(999);
   const cases: OutbreakCase[] = [];
 
-  // ~12% of houses affected — realistic multi-disease outbreak
-  const outbreakHouses = houses.filter(() => rng() < 0.12);
+  // ~4% of houses affected
+  const outbreakHouses = houses.filter(() => rng() < 0.04);
 
   for (const house of outbreakHouses) {
     const housePersons = persons.filter((p) => p.houseId === house.id);
