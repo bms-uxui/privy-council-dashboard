@@ -487,11 +487,11 @@ export function generateAISummary(): string {
 // 5 disease types reflecting Nan province epidemiology
 // ============================================
 const OUTBREAK_DISEASES = [
-  { name: "ไข้หวัดใหญ่ (Influenza)", weight: 0.30 },        // highest volume, seasonal
-  { name: "ปอดอักเสบ (Pneumonia)", weight: 0.15 },           // high mortality in elderly
+  { name: "ไข้หวัดใหญ่ (Influenza)", weight: 0.30 },              // highest volume, seasonal
   { name: "อุจจาระร่วง/อาหารเป็นพิษ (Diarrhea)", weight: 0.20 }, // community clusters
-  { name: "ไข้เลือดออก (Dengue)", weight: 0.20 },            // high incidence in Nan
-  { name: "สครับไทฟัส (Scrub Typhus)", weight: 0.15 },       // Nan = 2nd highest in Thailand
+  { name: "ไข้เลือดออก (Dengue)", weight: 0.20 },                 // high incidence in Nan
+  { name: "ปอดอักเสบ (Pneumonia)", weight: 0.15 },                // high mortality in elderly
+  { name: "สครับไทฟัส (Scrub Typhus)", weight: 0.15 },            // Nan = 2nd highest in Thailand
 ];
 
 function pickOutbreakDisease(rng: () => number): string {

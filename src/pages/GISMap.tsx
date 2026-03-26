@@ -1041,7 +1041,7 @@ export default function GISMap() {
               {(() => {
                 const diseaseMap = new Map<string, number>();
                 outbreakCases.forEach((c) => diseaseMap.set(c.disease, (diseaseMap.get(c.disease) || 0) + 1));
-                return Array.from(diseaseMap.entries()).map(([disease, count]) => (
+                return Array.from(diseaseMap.entries()).sort((a, b) => b[1] - a[1]).map(([disease, count]) => (
                   <div key={disease} className="flex items-center justify-between bg-white/10 rounded-lg px-3 py-2">
                     <span className="text-xs">{disease}</span>
                     <span className="text-xs font-bold">{count} ราย</span>
