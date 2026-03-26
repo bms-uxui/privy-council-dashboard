@@ -116,10 +116,14 @@ export interface NCDStats {
   total: number;
 }
 
+export type VaccineGroup = "epi_child" | "school" | "risk" | "pilot" | "optional";
+
 export interface Vaccination {
   id: string;
   vaccineName: string;
   vaccineNameEn: string;
+  vaccineCode: string;
+  group: VaccineGroup;
   dose: string;
   date: string;
   provider: string;

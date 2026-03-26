@@ -183,14 +183,44 @@ const EVENT_TEMPLATES = [
 
 const PROVIDERS_NAMES = ["รพ.สต.น้ำรีพัฒนา", "รพ.น่าน"];
 
-const VACCINE_POOL = [
-  { name: "วัคซีนไข้หวัดใหญ่", nameEn: "Influenza", doses: ["ประจำปี"] },
-  { name: "วัคซีนโควิด-19", nameEn: "COVID-19", doses: ["เข็ม 1", "เข็ม 2", "เข็ม 3 (บูสเตอร์)", "เข็ม 4"] },
-  { name: "วัคซีนบาดทะยัก-คอตีบ", nameEn: "Td", doses: ["เข็มกระตุ้น"] },
-  { name: "วัคซีนไวรัสตับอักเสบ B", nameEn: "Hepatitis B", doses: ["เข็ม 1", "เข็ม 2", "เข็ม 3"] },
-  { name: "วัคซีนปอดอักเสบ", nameEn: "Pneumococcal", doses: ["เข็ม 1"] },
-  { name: "วัคซีนงูสวัด", nameEn: "Shingles", doses: ["เข็ม 1", "เข็ม 2"] },
+import type { VaccineGroup } from "../types";
+
+// ============================================
+// Vaccine definitions — 5 Thai EPI groups
+// ============================================
+export const VACCINE_DEFS: { code: string; name: string; nameEn: string; group: VaccineGroup; ageMin: number; ageMax: number; gender?: "female"; doses: string[]; coverage: number }[] = [
+  // กลุ่ม 1: EPI เด็กก่อนวัยเรียน
+  { code: "BCG", name: "วัณโรค", nameEn: "BCG", group: "epi_child", ageMin: 0, ageMax: 6, doses: ["แรกเกิด"], coverage: 0.90 },
+  { code: "HB", name: "ตับอักเสบ B", nameEn: "Hepatitis B", group: "epi_child", ageMin: 0, ageMax: 6, doses: ["เข็ม 1", "เข็ม 2", "เข็ม 3"], coverage: 0.85 },
+  { code: "DTP-HB-Hib", name: "คอตีบ-บาดทะยัก-ไอกรน-ตับอักเสบบี-ฮิบ", nameEn: "DTP-HB-Hib", group: "epi_child", ageMin: 0, ageMax: 6, doses: ["เข็ม 1", "เข็ม 2", "เข็ม 3"], coverage: 0.82 },
+  { code: "OPV", name: "โปลิโอ (หยอด)", nameEn: "OPV", group: "epi_child", ageMin: 0, ageMax: 6, doses: ["ครั้ง 1", "ครั้ง 2", "ครั้ง 3"], coverage: 0.85 },
+  { code: "IPV", name: "โปลิโอ (ฉีด)", nameEn: "IPV", group: "epi_child", ageMin: 0, ageMax: 6, doses: ["เข็ม 1"], coverage: 0.78 },
+  { code: "MMR", name: "หัด-คางทูม-หัดเยอรมัน", nameEn: "MMR", group: "epi_child", ageMin: 0, ageMax: 6, doses: ["เข็ม 1", "เข็ม 2"], coverage: 0.80 },
+  { code: "JE", name: "ไข้สมองอักเสบเจอี", nameEn: "JE", group: "epi_child", ageMin: 0, ageMax: 6, doses: ["เข็ม 1", "เข็ม 2"], coverage: 0.75 },
+  { code: "ROTA", name: "โรต้าไวรัส", nameEn: "Rotavirus", group: "epi_child", ageMin: 0, ageMax: 2, doses: ["ครั้ง 1", "ครั้ง 2"], coverage: 0.60 },
+  // กลุ่ม 2: เด็กวัยเรียน
+  { code: "dT", name: "คอตีบ-บาดทะยัก (กระตุ้น)", nameEn: "dT Booster", group: "school", ageMin: 7, ageMax: 14, doses: ["ป.1", "ป.6"], coverage: 0.80 },
+  { code: "HPV", name: "ป้องกันมะเร็งปากมดลูก", nameEn: "HPV", group: "school", ageMin: 9, ageMax: 14, gender: "female", doses: ["เข็ม 1", "เข็ม 2"], coverage: 0.50 },
+  // กลุ่ม 3: กลุ่มเสี่ยง / เฉพาะโรค
+  { code: "FLU", name: "ไข้หวัดใหญ่", nameEn: "Influenza", group: "risk", ageMin: 60, ageMax: 120, doses: ["ประจำปี"], coverage: 0.45 },
+  { code: "COVID", name: "โควิด-19", nameEn: "COVID-19", group: "risk", ageMin: 12, ageMax: 120, doses: ["เข็ม 1", "เข็ม 2", "เข็ม 3 (บูสเตอร์)"], coverage: 0.35 },
+  { code: "RAB", name: "พิษสุนัขบ้า", nameEn: "Rabies", group: "risk", ageMin: 0, ageMax: 120, doses: ["PrEP เข็ม 1", "PrEP เข็ม 2"], coverage: 0.05 },
+  // กลุ่ม 4: นำร่อง
+  { code: "PCV", name: "นิวโมคอคคัส", nameEn: "PCV", group: "pilot", ageMin: 0, ageMax: 5, doses: ["เข็ม 1", "เข็ม 2", "เข็ม 3"], coverage: 0.25 },
+  { code: "Tdap", name: "ไอกรนสูตรเด็กโต", nameEn: "Tdap", group: "pilot", ageMin: 10, ageMax: 18, doses: ["เข็ม 1"], coverage: 0.20 },
+  // กลุ่ม 5: ทางเลือก
+  { code: "VAR", name: "อีสุกอีใส", nameEn: "Varicella", group: "optional", ageMin: 1, ageMax: 120, doses: ["เข็ม 1", "เข็ม 2"], coverage: 0.10 },
+  { code: "HA", name: "ตับอักเสบ A", nameEn: "Hepatitis A", group: "optional", ageMin: 1, ageMax: 120, doses: ["เข็ม 1", "เข็ม 2"], coverage: 0.06 },
+  { code: "DEN", name: "ไข้เลือดออก", nameEn: "Dengue", group: "optional", ageMin: 9, ageMax: 45, doses: ["เข็ม 1", "เข็ม 2"], coverage: 0.04 },
 ];
+
+export const VACCINE_GROUP_LABELS: Record<VaccineGroup, { name: string; color: string }> = {
+  epi_child: { name: "EPI เด็กก่อนวัยเรียน", color: "#3B82F6" },
+  school: { name: "เด็กวัยเรียน", color: "#10B981" },
+  risk: { name: "กลุ่มเสี่ยง/เฉพาะโรค", color: "#F59E0B" },
+  pilot: { name: "นำร่อง", color: "#8B5CF6" },
+  optional: { name: "ทางเลือก", color: "#EC4899" },
+};
 
 // ============================================
 // Generate persons for ALL 529 houses
@@ -308,60 +338,37 @@ function generatePersons(): { persons: Person[]; families: Family[] } {
       const lastVisitMonth = String(Math.floor(rng() * 3) + 1).padStart(2, "0");
       const lastVisitDay = String(Math.floor(rng() * 28) + 1).padStart(2, "0");
 
-      // Generate vaccination history
+      // Generate vaccination history from VACCINE_DEFS
       const vaccinations: Vaccination[] = [];
-      // Most adults get COVID + Flu; elderly also get pneumococcal/shingles
-      if (age >= 12) {
-        // COVID-19 — most people got 2-4 doses
-        const covidDoses = Math.floor(rng() * 3) + (rng() < 0.15 ? 0 : 2); // 0-4, 85% got at least 2
-        for (let d = 0; d < Math.min(covidDoses, 4); d++) {
-          const doseYear = 2021 + Math.floor(d / 2);
-          const doseMonth = (d * 4 + Math.floor(rng() * 3) + 1);
-          const adjM = ((doseMonth - 1) % 12) + 1;
+      let vaxIdx = 0;
+      for (const vd of VACCINE_DEFS) {
+        // Check age eligibility
+        if (age < vd.ageMin || age > vd.ageMax) continue;
+        // Check gender eligibility
+        if (vd.gender && gender !== vd.gender) continue;
+        // Roll coverage probability
+        if (rng() > vd.coverage) continue;
+
+        // How many doses did they get? (weighted toward completing)
+        const dosesReceived = rng() < 0.7 ? vd.doses.length : Math.max(1, Math.floor(rng() * vd.doses.length) + 1);
+        for (let d = 0; d < Math.min(dosesReceived, vd.doses.length); d++) {
+          const baseYear = vd.group === "epi_child" ? (2026 - age + Math.floor(d * 0.5))
+            : vd.code === "COVID" ? (2021 + Math.floor(d / 2))
+            : (2024 + Math.floor(rng() * 2));
+          const mo = Math.floor(rng() * 12) + 1;
+          const dy = Math.floor(rng() * 28) + 1;
           vaccinations.push({
-            id: `V-${personIdx}-covid-${d}`,
-            vaccineName: "วัคซีนโควิด-19",
-            vaccineNameEn: "COVID-19",
-            dose: VACCINE_POOL[1].doses[d],
-            date: `${doseYear}-${String(adjM).padStart(2, "0")}-${String(Math.floor(rng() * 28) + 1).padStart(2, "0")}`,
+            id: `V-${personIdx}-${vd.code}-${d}`,
+            vaccineName: vd.name,
+            vaccineNameEn: vd.nameEn,
+            vaccineCode: vd.code,
+            group: vd.group,
+            dose: vd.doses[d],
+            date: `${baseYear}-${String(mo).padStart(2, "0")}-${String(dy).padStart(2, "0")}`,
             provider: pick(PROVIDERS_NAMES),
-            lot: `CV${String(Math.floor(rng() * 9000) + 1000)}`,
+            lot: rng() < 0.5 ? `${vd.code}${String(Math.floor(rng() * 9000) + 1000)}` : undefined,
           });
-        }
-        // Influenza — ~60% got it recently
-        if (rng() < 0.6) {
-          vaccinations.push({
-            id: `V-${personIdx}-flu`,
-            vaccineName: "วัคซีนไข้หวัดใหญ่",
-            vaccineNameEn: "Influenza",
-            dose: "ประจำปี",
-            date: `2025-${String(Math.floor(rng() * 3) + 10).padStart(2, "0")}-${String(Math.floor(rng() * 28) + 1).padStart(2, "0")}`,
-            provider: pick(PROVIDERS_NAMES),
-          });
-        }
-      }
-      if (isElderly) {
-        // Pneumococcal — ~40%
-        if (rng() < 0.4) {
-          vaccinations.push({
-            id: `V-${personIdx}-pneumo`,
-            vaccineName: "วัคซีนปอดอักเสบ",
-            vaccineNameEn: "Pneumococcal",
-            dose: "เข็ม 1",
-            date: `2024-${String(Math.floor(rng() * 12) + 1).padStart(2, "0")}-${String(Math.floor(rng() * 28) + 1).padStart(2, "0")}`,
-            provider: pick(PROVIDERS_NAMES),
-          });
-        }
-        // Shingles — ~20%
-        if (rng() < 0.2) {
-          vaccinations.push({
-            id: `V-${personIdx}-shingles`,
-            vaccineName: "วัคซีนงูสวัด",
-            vaccineNameEn: "Shingles",
-            dose: "เข็ม 1",
-            date: `2025-${String(Math.floor(rng() * 6) + 1).padStart(2, "0")}-${String(Math.floor(rng() * 28) + 1).padStart(2, "0")}`,
-            provider: pick(PROVIDERS_NAMES),
-          });
+          vaxIdx++;
         }
       }
       vaccinations.sort((a, b) => b.date.localeCompare(a.date));

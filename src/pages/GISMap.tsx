@@ -87,9 +87,10 @@ import {
   Search,
   ChevronDown as ChevronDownIcon,
   Bug,
+  Syringe,
 } from "lucide-react";
-import { houses, persons, villages, ncdStats, riskCounts, generateAISummary, populationComparison, healthCoverageData, outbreakCases, outbreakHouseIds } from "../data/mockData";
-import type { House } from "../types";
+import { houses, persons, villages, ncdStats, riskCounts, generateAISummary, populationComparison, healthCoverageData, outbreakCases, outbreakHouseIds, VACCINE_GROUP_LABELS, VACCINE_DEFS } from "../data/mockData";
+import type { House, VaccineGroup } from "../types";
 
 // ============================================
 // Inline SVG icon strings for DOM markers
@@ -164,6 +165,7 @@ const FILTERS = [
   { key: "elderly", label: "ผู้สูงอายุ", Icon: UserRound, color: "#6EC3C3" },
   { key: "ncd", label: "ผู้ป่วย NCD", Icon: Stethoscope, color: "#DC2626" },
   { key: "outbreak", label: "โรคระบาด", Icon: Bug, color: "#9333EA" },
+  { key: "vaccine", label: "วัคซีน", Icon: Syringe, color: "#0EA5E9" },
 ];
 
 const RISK_COLORS: Record<string, string> = { high: "#DC2626", medium: "#F59E0B", low: "#16A34A" };
@@ -188,12 +190,15 @@ export default function GISMap() {
   const [aiExpanded, setAiExpanded] = useState(false);
   const [outbreakMode, setOutbreakMode] = useState(false);
   const [outbreakView, setOutbreakView] = useState<"mini" | "full">("mini");
+  const [vaccineGroup, setVaccineGroup] = useState<VaccineGroup | "all">("all");
+  const [vaccineView, setVaccineView] = useState<"mini" | "full">("mini");
   const leftScroll = useScrollShadow();
   const rightScroll = useScrollShadow();
 
   const filteredHouses = useMemo(() => {
     return houses.filter((h) => {
       if (activeFilter === "outbreak") return outbreakHouseIds.has(h.id);
+      if (activeFilter === "vaccine") return true; // show all houses, persons plotted separately
       if (activeFilter === "all") return true;
       if (activeFilter === "high" || activeFilter === "medium" || activeFilter === "low") return h.riskLevel === activeFilter;
       if (activeFilter === "elderly") return h.elderlyCount > 0;
@@ -404,6 +409,9 @@ export default function GISMap() {
     const UNCLUSTER_LAYER = "house-unclustered";
 
     const setupClusters = () => {
+      // Cleanup vaccine layers from previous render
+      if ((map as any)._vaxCleanup) { (map as any)._vaxCleanup(); (map as any)._vaxCleanup = null; }
+
       // Remove existing layers/source if re-rendering
       [CLUSTER_COUNT_LAYER, CLUSTER_LAYER, CLUSTER_LAYER + "-halo", UNCLUSTER_LAYER].forEach((id) => {
         if (map.getLayer(id)) map.removeLayer(id);
@@ -444,7 +452,7 @@ export default function GISMap() {
       map.addSource(SOURCE_ID, {
         type: "geojson",
         data: geojson,
-        cluster: !isOutbreak,
+        cluster: !isOutbreak && activeFilter !== "vaccine",
         clusterMaxZoom: 14,
         clusterRadius: 40,
       });
@@ -496,9 +504,10 @@ export default function GISMap() {
                 "step", ["get", "point_count"],
                 18, 10, 24, 30, 32,
               ],
-          "circle-stroke-width": isOutbreak ? 2.5 : 3,
+          "circle-stroke-width": activeFilter === "vaccine" ? 0 : isOutbreak ? 2.5 : 3,
           "circle-stroke-color": "#ffffff",
-          "circle-opacity": isOutbreak ? 0.9 : 0.85,
+          "circle-opacity": activeFilter === "vaccine" ? 0 : isOutbreak ? 0.9 : 0.85,
+          "circle-stroke-opacity": activeFilter === "vaccine" ? 0 : 1,
         },
       });
 
@@ -575,6 +584,110 @@ export default function GISMap() {
             .addTo(map);
           markersRef.current.push(marker);
         });
+      }
+
+      // Vaccine household layer (no clustering — one dot per house)
+      if (activeFilter === "vaccine") {
+        const VG_COLORS: Record<string, string> = {
+          epi_child: "#3B82F6", school: "#10B981", risk: "#F59E0B", pilot: "#8B5CF6", optional: "#EC4899",
+        };
+        const VAX_SOURCE = "vaccine-houses";
+        const VAX_POINTS = "vaccine-dots";
+
+        // Aggregate to household level
+        const vaxHouseMap = new Map<string, { house: House; group: string; vaxCount: number; personCount: number; moo: number }>();
+        persons.forEach((p) => {
+          const matchVax = vaccineGroup === "all" ? p.vaccinations : p.vaccinations.filter((v) => v.group === vaccineGroup);
+          if (matchVax.length === 0) return;
+          const house = houses.find((h) => h.id === p.houseId);
+          if (!house) return;
+          const existing = vaxHouseMap.get(house.id);
+          if (existing) {
+            existing.vaxCount += matchVax.length;
+            existing.personCount += 1;
+          } else {
+            // Dominant group for this person
+            const gc = new Map<string, number>();
+            matchVax.forEach((v) => gc.set(v.group, (gc.get(v.group) || 0) + 1));
+            const topGroup = Array.from(gc.entries()).sort((a, b) => b[1] - a[1])[0]?.[0] || "risk";
+            vaxHouseMap.set(house.id, { house, group: topGroup, vaxCount: matchVax.length, personCount: 1, moo: house.moo });
+          }
+        });
+
+        const vaxGeoJSON: GeoJSON.FeatureCollection = {
+          type: "FeatureCollection",
+          features: Array.from(vaxHouseMap.values()).map((h) => ({
+            type: "Feature" as const,
+            properties: { id: h.house.id, group: h.group, moo: h.moo, personCount: h.personCount, vaxCount: h.vaxCount, houseCode: h.house.houseCode },
+            geometry: { type: "Point" as const, coordinates: [h.house.lng, h.house.lat] },
+          })),
+        };
+
+        map.addSource(VAX_SOURCE, { type: "geojson", data: vaxGeoJSON });
+
+        // Individual house dots — color by dominant vaccine group, size by person count
+        map.addLayer({
+          id: VAX_POINTS,
+          type: "circle",
+          source: VAX_SOURCE,
+          paint: {
+            "circle-color": [
+              "match", ["get", "group"],
+              "epi_child", "#3B82F6",
+              "school", "#10B981",
+              "risk", "#F59E0B",
+              "pilot", "#8B5CF6",
+              "optional", "#EC4899",
+              "#0EA5E9",
+            ],
+            "circle-radius": [
+              "interpolate", ["linear"], ["get", "personCount"],
+              1, 5, 3, 7, 6, 10,
+            ],
+            "circle-stroke-width": 2,
+            "circle-stroke-color": "#ffffff",
+            "circle-opacity": 0.85,
+          },
+        });
+
+        // Click → open house drawer
+        map.on("click", VAX_POINTS, (e) => {
+          const feat = e.features?.[0];
+          if (!feat) return;
+          const house = houses.find((h) => h.id === feat.properties?.id);
+          if (house) setSelectedHouse(house);
+        });
+
+        // Hover popup
+        map.on("mouseenter", VAX_POINTS, (e) => {
+          map.getCanvas().style.cursor = "pointer";
+          popupRef.current?.remove();
+          const feat = e.features?.[0];
+          if (!feat) return;
+          const coords = (feat.geometry as GeoJSON.Point).coordinates as [number, number];
+          const groupColor = VG_COLORS[feat.properties?.group] || "#0EA5E9";
+          const groupName = VACCINE_GROUP_LABELS[feat.properties?.group as VaccineGroup]?.name || "";
+          popupRef.current = new maplibregl.Popup({ closeButton: false, closeOnClick: false, offset: 8, className: "nan-map-popup" })
+            .setLngLat(coords)
+            .setHTML(`<div style="font-family:'Google Sans','Noto Sans Thai',sans-serif;font-size:12px;min-width:150px">
+              <div style="font-weight:700">บ้านเลขที่ ${feat.properties?.houseCode}</div>
+              <div style="color:${groupColor};font-size:11px;font-weight:600">${groupName}</div>
+              <div style="color:#6B7280;font-size:11px">หมู่ ${feat.properties?.moo} · ${feat.properties?.personCount} คน · ${feat.properties?.vaxCount} วัคซีน</div>
+            </div>`)
+            .addTo(map);
+        });
+        map.on("mouseleave", VAX_POINTS, () => {
+          map.getCanvas().style.cursor = "";
+          popupRef.current?.remove();
+          popupRef.current = null;
+        });
+
+        // Cleanup
+        const cleanupVax = () => {
+          if (map.getLayer(VAX_POINTS)) map.removeLayer(VAX_POINTS);
+          if (map.getSource(VAX_SOURCE)) map.removeSource(VAX_SOURCE);
+        };
+        (map as any)._vaxCleanup = cleanupVax;
       }
 
       // Click cluster → zoom in
@@ -654,7 +767,7 @@ export default function GISMap() {
     } else {
       map.on("load", setupClusters);
     }
-  }, [filteredHouses]);
+  }, [filteredHouses, vaccineGroup]);
 
   // Computed stats — reactive to filter
   const selectedVillages = useMemo(() => {
@@ -1065,10 +1178,115 @@ export default function GISMap() {
 
       {/* ══════ RIGHT PANEL — Summary insight + list (hidden when house selected) ══════ */}
       {!selectedHouse && (
-      <div ref={rightScroll.ref} className={`absolute top-20 right-3 bottom-14 z-10 w-[340px] flex flex-col gap-3 overflow-y-auto no-scrollbar ${rightScroll.shadowClass}`}>
+      <div ref={rightScroll.ref} className={`absolute top-20 right-3 bottom-14 z-10 w-[400px] flex flex-col gap-3 overflow-y-auto no-scrollbar ${rightScroll.shadowClass}`}>
 
-        {/* ── Outbreak Mode: Right Panel ── */}
-        {activeFilter === "outbreak" ? (
+        {/* ── Vaccine Mode: Right Panel ── */}
+        {activeFilter === "vaccine" ? (
+        <>
+          {/* Vaccine summary card — click to open modal */}
+          {(() => {
+            const relevantDefs = vaccineGroup === "all" ? VACCINE_DEFS : VACCINE_DEFS.filter((d) => d.group === vaccineGroup);
+            const personsWithAnyVax = vaccineGroup === "all"
+              ? persons.filter((p) => p.vaccinations.length > 0).length
+              : persons.filter((p) => p.vaccinations.some((v) => v.group === vaccineGroup)).length;
+            const totalEligible = relevantDefs.reduce((sum, vd) => sum + persons.filter((p) => p.age >= vd.ageMin && p.age <= vd.ageMax && (!vd.gender || p.gender === vd.gender)).length, 0);
+            const totalVaccinated = relevantDefs.reduce((sum, vd) => sum + persons.filter((p) => p.vaccinations.some((v) => v.vaccineCode === vd.code)).length, 0);
+            const coveragePct = totalEligible > 0 ? ((totalVaccinated / totalEligible) * 100).toFixed(1) : "0";
+
+            return (
+          <div
+            className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg p-5 flex-shrink-0 cursor-pointer hover:shadow-xl hover:ring-1 hover:ring-sky-200 active:scale-[0.98] transition-all"
+            onClick={() => setExpandedWidget("vaccine")}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Syringe size={20} className="text-sky-500" />
+                <p className="text-base font-bold text-text">ความครอบคลุมวัคซีน</p>
+              </div>
+              <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center text-text-muted">
+                <Maximize2 size={13} />
+              </div>
+            </div>
+
+            {/* Group pills */}
+            <div className="flex flex-wrap gap-1.5 mb-4" onClick={(e) => e.stopPropagation()}>
+              <button
+                onClick={() => setVaccineGroup("all")}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${vaccineGroup === "all" ? "bg-sky-500 text-white border-sky-500" : "bg-white text-text-muted border-gray-200"}`}
+              >ทั้งหมด</button>
+              {(Object.entries(VACCINE_GROUP_LABELS) as [VaccineGroup, { name: string; color: string }][]).map(([key, { name, color }]) => (
+                <button
+                  key={key}
+                  onClick={() => setVaccineGroup(key)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${vaccineGroup === key ? "text-white border-transparent" : "bg-white text-text-muted border-gray-200"}`}
+                  style={vaccineGroup === key ? { backgroundColor: color, borderColor: color } : {}}
+                >
+                  {name}
+                </button>
+              ))}
+            </div>
+
+            {/* KPIs — always visible */}
+            <div className="grid grid-cols-3 gap-2 mb-4">
+              <div className="bg-sky-50 rounded-xl p-3 text-center">
+                <p className="text-xl font-bold text-sky-600">{personsWithAnyVax}</p>
+                <p className="text-xs text-sky-400">ได้รับวัคซีน</p>
+              </div>
+              <div className="bg-gray-50 rounded-xl p-3 text-center">
+                <p className="text-xl font-bold text-text">{persons.length}</p>
+                <p className="text-xs text-text-muted">ประชากร</p>
+              </div>
+              <div className="bg-green-50 rounded-xl p-3 text-center">
+                <p className="text-xl font-bold text-green-600">{coveragePct}%</p>
+                <p className="text-xs text-green-400">ครอบคลุม</p>
+              </div>
+            </div>
+
+            {/* Moo comparison — always visible */}
+            <p className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-2">แยกตามหมู่</p>
+            <div className="grid grid-cols-2 gap-2 mb-3">
+              {villages.map((v) => {
+                const mooPers = persons.filter((p) => p.moo === v.moo);
+                const mooVax = mooPers.filter((p) => {
+                  if (vaccineGroup === "all") return p.vaccinations.length > 0;
+                  return p.vaccinations.some((vx) => vx.group === vaccineGroup);
+                }).length;
+                const mooPct = mooPers.length > 0 ? ((mooVax / mooPers.length) * 100).toFixed(0) : "0";
+                const mooHouses = houses.filter((h) => h.moo === v.moo).length;
+                return (
+                  <div key={v.id} className="bg-gray-50 rounded-xl p-4">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-sm font-bold text-text">หมู่ {v.moo}</span>
+                      <span className="text-sm font-bold text-sky-600">{mooPct}%</span>
+                    </div>
+                    <p className="text-xs text-text-muted mb-2">{v.name} · {mooHouses} ครัวเรือน</p>
+                    <div className="h-2.5 bg-gray-200 rounded-full overflow-hidden mb-1.5">
+                      <div className="h-full rounded-full bg-sky-500 transition-all duration-500" style={{ width: `${mooPct}%` }} />
+                    </div>
+                    <p className="text-xs text-text-muted">ได้รับวัคซีน {mooVax} จาก {mooPers.length} คน</p>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Group legend — always visible */}
+            <div className="flex flex-wrap gap-1.5">
+              {(Object.entries(VACCINE_GROUP_LABELS) as [VaccineGroup, { name: string; color: string }][]).map(([key, { name, color }]) => {
+                const count = persons.filter((p) => p.vaccinations.some((v) => v.group === key)).length;
+                return (
+                  <span key={key} className="flex items-center gap-1 text-xs text-text-muted">
+                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
+                    {name} {count}
+                  </span>
+                );
+              })}
+            </div>
+          </div>
+            );
+          })()}
+        </>
+        ) : activeFilter === "outbreak" ? (
         <>
           {/* Outbreak Summary Card — individual-focused */}
           {(() => {
@@ -1386,7 +1604,7 @@ export default function GISMap() {
 
       {/* ══════ HOUSE DETAIL DRAWER (on click) ══════ */}
       {selectedHouse && (
-        <div className="absolute top-20 right-3 bottom-16 w-[340px] bg-white rounded-2xl shadow-2xl z-20 overflow-y-auto flex flex-col animate-slide-up">
+        <div className="absolute top-20 right-3 bottom-16 w-[400px] bg-white rounded-2xl shadow-2xl z-20 overflow-y-auto flex flex-col animate-slide-up">
           {/* Header */}
           <div className="bg-gradient-to-r from-[#156A8A] to-[#1C85AD] text-white p-4 rounded-t-2xl flex-shrink-0">
             <div className="flex items-center justify-between mb-2">
@@ -1948,6 +2166,105 @@ export default function GISMap() {
                               <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${stColor}`}>{stLabel}</span>
                             </td>
                             <td className="px-4 py-2.5 text-center text-sm text-text-muted">{c.reportDate}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              );
+            })()}
+
+            {/* VACCINE COVERAGE */}
+            {expandedWidget === "vaccine" && (() => {
+              const vgFilter = vaccineGroup;
+              const relDefs = vgFilter === "all" ? VACCINE_DEFS : VACCINE_DEFS.filter((d) => d.group === vgFilter);
+
+              return (
+              <div>
+                <p className="text-sm text-text-muted uppercase tracking-wider mb-1">รายละเอียด</p>
+                <h2 className="text-2xl font-bold text-text mb-5 flex items-center gap-2">
+                  <Syringe size={24} className="text-sky-500" />
+                  ความครอบคลุมวัคซีน
+                </h2>
+
+                {/* Group filter in modal */}
+                <div className="flex flex-wrap gap-1.5 mb-5">
+                  <button onClick={() => setVaccineGroup("all")}
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${vgFilter === "all" ? "bg-sky-500 text-white border-sky-500" : "bg-white text-text-muted border-gray-200"}`}
+                  >ทั้งหมด</button>
+                  {(Object.entries(VACCINE_GROUP_LABELS) as [VaccineGroup, { name: string; color: string }][]).map(([key, { name, color }]) => (
+                    <button key={key} onClick={() => setVaccineGroup(key)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${vgFilter === key ? "text-white border-transparent" : "bg-white text-text-muted border-gray-200"}`}
+                      style={vgFilter === key ? { backgroundColor: color, borderColor: color } : {}}
+                    >{name}</button>
+                  ))}
+                </div>
+
+                {/* Moo comparison */}
+                <h3 className="text-sm font-semibold text-text mb-3">แยกตามหมู่</h3>
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  {villages.map((v) => {
+                    const mooPers = persons.filter((p) => p.moo === v.moo);
+                    const mooVax = mooPers.filter((p) => vgFilter === "all" ? p.vaccinations.length > 0 : p.vaccinations.some((vx) => vx.group === vgFilter)).length;
+                    const mooPct = mooPers.length > 0 ? ((mooVax / mooPers.length) * 100).toFixed(0) : "0";
+                    const mooHouses = houses.filter((h) => h.moo === v.moo).length;
+                    return (
+                      <div key={v.id} className="bg-gray-50 rounded-xl p-5">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-base font-bold text-text">หมู่ {v.moo}</span>
+                          <span className="text-base font-bold text-sky-600">{mooPct}%</span>
+                        </div>
+                        <p className="text-sm text-text-muted mb-3">{v.name} · {mooHouses} ครัวเรือน</p>
+                        <div className="h-3 bg-gray-200 rounded-full overflow-hidden mb-2">
+                          <div className="h-full rounded-full bg-sky-500 transition-all duration-500" style={{ width: `${mooPct}%` }} />
+                        </div>
+                        <p className="text-sm text-text-muted">ได้รับวัคซีน {mooVax} จาก {mooPers.length} คน</p>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Per-vaccine table */}
+                <h3 className="text-sm font-semibold text-text mb-3">รายวัคซีน</h3>
+                <div className="overflow-hidden rounded-xl border border-gray-100">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="bg-gray-50">
+                        <th className="text-left px-4 py-2.5 text-sm font-semibold text-text-muted">วัคซีน</th>
+                        <th className="text-center px-4 py-2.5 text-sm font-semibold text-text-muted">กลุ่มเป้าหมาย</th>
+                        <th className="text-center px-4 py-2.5 text-sm font-semibold text-text-muted">ได้รับ</th>
+                        <th className="text-center px-4 py-2.5 text-sm font-semibold text-text-muted">ครอบคลุม</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {relDefs.map((vd) => {
+                        const eligible = persons.filter((p) => p.age >= vd.ageMin && p.age <= vd.ageMax && (!vd.gender || p.gender === vd.gender)).length;
+                        const received = persons.filter((p) => p.vaccinations.some((v) => v.vaccineCode === vd.code)).length;
+                        const pct = eligible > 0 ? ((received / eligible) * 100).toFixed(0) : "0";
+                        const groupColor = VACCINE_GROUP_LABELS[vd.group].color;
+                        return (
+                          <tr key={vd.code} className="border-t border-gray-50">
+                            <td className="px-4 py-2.5">
+                              <div className="flex items-center gap-2">
+                                <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: groupColor }} />
+                                <div>
+                                  <p className="font-medium text-text">{vd.code}</p>
+                                  <p className="text-xs text-text-muted">{vd.name}</p>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-4 py-2.5 text-center text-text-muted">{eligible}</td>
+                            <td className="px-4 py-2.5 text-center font-medium text-text">{received}</td>
+                            <td className="px-4 py-2.5 text-center">
+                              <div className="flex items-center gap-2 justify-center">
+                                <div className="w-16 h-2 bg-gray-100 rounded-full overflow-hidden">
+                                  <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: groupColor }} />
+                                </div>
+                                <span className="text-sm font-bold" style={{ color: groupColor }}>{pct}%</span>
+                              </div>
+                            </td>
                           </tr>
                         );
                       })}
