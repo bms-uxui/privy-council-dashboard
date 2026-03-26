@@ -187,6 +187,7 @@ export default function GISMap() {
   const [showSearch, setShowSearch] = useState(false);
   const [aiExpanded, setAiExpanded] = useState(false);
   const [outbreakMode, setOutbreakMode] = useState(false);
+  const [outbreakView, setOutbreakView] = useState<"mini" | "full">("mini");
   const leftScroll = useScrollShadow();
   const rightScroll = useScrollShadow();
 
@@ -1106,12 +1107,24 @@ export default function GISMap() {
 
             return (
           <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg p-5 flex-shrink-0">
-            <div className="flex items-center gap-2 mb-4">
-              <Bug size={20} className="text-purple-500" />
-              <p className="text-base font-bold text-text">เฝ้าระวังโรคระบาด</p>
+            {/* Header with toggle */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Bug size={20} className="text-purple-500" />
+                <p className="text-base font-bold text-text">เฝ้าระวังโรคระบาด</p>
+              </div>
+              <button
+                onClick={(e) => { e.stopPropagation(); setOutbreakView(outbreakView === "mini" ? "full" : "mini"); }}
+                className="relative group w-7 h-7 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-text-muted hover:text-purple-600 transition-colors"
+              >
+                {outbreakView === "mini" ? <Maximize2 size={13} /> : <Minimize2 size={13} />}
+                <span className="absolute bottom-full mb-1.5 px-2 py-0.5 rounded bg-gray-900 text-white text-[10px] whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity">
+                  {outbreakView === "mini" ? "ดูเพิ่มเติม" : "ย่อ"}
+                </span>
+              </button>
             </div>
 
-            {/* KPI row — person focused */}
+            {/* KPI row — always visible */}
             <div className="grid grid-cols-2 gap-2 mb-4">
               <div className="bg-gray-50 rounded-xl p-3 text-center">
                 <p className="text-2xl font-bold text-text">{totalCases}</p>
@@ -1123,92 +1136,97 @@ export default function GISMap() {
               </div>
             </div>
 
-            {/* Status breakdown bar */}
+            {/* Status bar — always visible */}
             <div className="flex h-3 rounded-full overflow-hidden mb-1.5 bg-gray-100">
               <div className="h-full bg-red-500" style={{ width: `${(confirmed / totalCases) * 100}%` }} />
               <div className="h-full bg-amber-400" style={{ width: `${(suspected / totalCases) * 100}%` }} />
               <div className="h-full bg-green-500" style={{ width: `${(recovered / totalCases) * 100}%` }} />
             </div>
-            <div className="flex justify-between text-xs mb-5">
+            <div className="flex justify-between text-xs">
               <span className="text-red-500 font-medium">ยืนยัน {confirmed}</span>
               <span className="text-amber-500 font-medium">สงสัย {suspected}</span>
               <span className="text-green-500 font-medium">หายแล้ว {recovered}</span>
             </div>
 
-            {/* Vulnerability breakdown */}
-            <p className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-2">กลุ่มเปราะบาง</p>
-            <div className="grid grid-cols-2 gap-2 mb-5">
-              <div className="flex items-center gap-2 bg-amber-50 rounded-lg px-3 py-2">
-                <UserRound size={14} className="text-amber-600" />
-                <div>
-                  <p className="text-sm font-bold text-amber-700">{elderlyCount}</p>
-                  <p className="text-[11px] text-amber-500">ผู้สูงอายุ</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2 bg-red-50 rounded-lg px-3 py-2">
-                <HeartPulse size={14} className="text-red-500" />
-                <div>
-                  <p className="text-sm font-bold text-red-600">{ncdCount}</p>
-                  <p className="text-[11px] text-red-400">มีโรคเรื้อรัง</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2 bg-blue-50 rounded-lg px-3 py-2">
-                <Users size={14} className="text-blue-500" />
-                <div>
-                  <p className="text-sm font-bold text-blue-600">{childCount}</p>
-                  <p className="text-[11px] text-blue-400">เด็กเล็ก (&lt;5 ปี)</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2 bg-purple-50 rounded-lg px-3 py-2">
-                <ShieldAlert size={14} className="text-purple-500" />
-                <div>
-                  <p className="text-sm font-bold text-purple-600">{noFluVaccine}</p>
-                  <p className="text-[11px] text-purple-400">ไม่มีวัคซีนไข้หวัดใหญ่</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Disease horizontal bars */}
-            <p className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-2">จำนวนผู้ป่วยตามโรค</p>
-            <div className="space-y-2.5 mb-5">
-              {sorted.map(([disease, count]) => {
-                const color = DISEASE_COLORS[disease] || { bg: "rgba(0,0,0,0.05)", dot: "#6B7280" };
-                return (
-                  <div key={disease}>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs text-text flex items-center gap-1.5">
-                        <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: color.dot }} />
-                        {disease.split("(")[0].trim()}
-                      </span>
-                      <span className="text-xs font-bold text-text">{count} คน</span>
-                    </div>
-                    <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
-                      <div className="h-full rounded-full transition-all duration-500" style={{ width: `${(count / maxDisease) * 100}%`, backgroundColor: color.dot, opacity: 0.8 }} />
-                    </div>
+            {/* ── Full mode: extra details ── */}
+            {outbreakView === "full" && (
+            <>
+              {/* Vulnerability breakdown */}
+              <p className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-2 mt-5">กลุ่มเปราะบาง</p>
+              <div className="grid grid-cols-2 gap-2 mb-5">
+                <div className="flex items-center gap-2 bg-amber-50 rounded-lg px-3 py-2">
+                  <UserRound size={14} className="text-amber-600" />
+                  <div>
+                    <p className="text-sm font-bold text-amber-700">{elderlyCount}</p>
+                    <p className="text-[11px] text-amber-500">ผู้สูงอายุ</p>
                   </div>
-                );
-              })}
-            </div>
-
-            {/* 14-day sparkline */}
-            <p className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-2">ผู้ป่วยรายวัน (14 วัน)</p>
-            <div className="flex items-end gap-[3px] h-12">
-              {dailyData.map(([date, count]) => (
-                <div key={date} className="flex-1 flex flex-col items-center gap-0.5 group relative">
-                  <div
-                    className="w-full rounded-sm transition-all hover:opacity-100"
-                    style={{ height: `${Math.max((count / maxDaily) * 100, 8)}%`, backgroundColor: "#9333EA", opacity: 0.4 }}
-                  />
-                  <span className="absolute bottom-full mb-1 px-1.5 py-0.5 rounded bg-gray-900 text-white text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-10">
-                    {date.slice(5)} — {count} คน
-                  </span>
                 </div>
-              ))}
-            </div>
-            <div className="flex justify-between text-[10px] text-text-muted mt-1">
-              <span>{dailyData[0]?.[0]?.slice(5)}</span>
-              <span>{dailyData[dailyData.length - 1]?.[0]?.slice(5)}</span>
-            </div>
+                <div className="flex items-center gap-2 bg-red-50 rounded-lg px-3 py-2">
+                  <HeartPulse size={14} className="text-red-500" />
+                  <div>
+                    <p className="text-sm font-bold text-red-600">{ncdCount}</p>
+                    <p className="text-[11px] text-red-400">มีโรคเรื้อรัง</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 bg-blue-50 rounded-lg px-3 py-2">
+                  <Users size={14} className="text-blue-500" />
+                  <div>
+                    <p className="text-sm font-bold text-blue-600">{childCount}</p>
+                    <p className="text-[11px] text-blue-400">เด็กเล็ก (&lt;5 ปี)</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 bg-purple-50 rounded-lg px-3 py-2">
+                  <ShieldAlert size={14} className="text-purple-500" />
+                  <div>
+                    <p className="text-sm font-bold text-purple-600">{noFluVaccine}</p>
+                    <p className="text-[11px] text-purple-400">ไม่มีวัคซีนไข้หวัดใหญ่</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Disease horizontal bars */}
+              <p className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-2">จำนวนผู้ป่วยตามโรค</p>
+              <div className="space-y-2.5 mb-5">
+                {sorted.map(([disease, count]) => {
+                  const color = DISEASE_COLORS[disease] || { bg: "rgba(0,0,0,0.05)", dot: "#6B7280" };
+                  return (
+                    <div key={disease}>
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-xs text-text flex items-center gap-1.5">
+                          <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: color.dot }} />
+                          {disease.split("(")[0].trim()}
+                        </span>
+                        <span className="text-xs font-bold text-text">{count} คน</span>
+                      </div>
+                      <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
+                        <div className="h-full rounded-full transition-all duration-500" style={{ width: `${(count / maxDisease) * 100}%`, backgroundColor: color.dot, opacity: 0.8 }} />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* 14-day sparkline */}
+              <p className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-2">ผู้ป่วยรายวัน (14 วัน)</p>
+              <div className="flex items-end gap-[3px] h-12">
+                {dailyData.map(([date, count]) => (
+                  <div key={date} className="flex-1 flex flex-col items-center gap-0.5 group relative">
+                    <div
+                      className="w-full rounded-sm transition-all hover:opacity-100"
+                      style={{ height: `${Math.max((count / maxDaily) * 100, 8)}%`, backgroundColor: "#9333EA", opacity: 0.4 }}
+                    />
+                    <span className="absolute bottom-full mb-1 px-1.5 py-0.5 rounded bg-gray-900 text-white text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-10">
+                      {date.slice(5)} — {count} คน
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <div className="flex justify-between text-[10px] text-text-muted mt-1">
+                <span>{dailyData[0]?.[0]?.slice(5)}</span>
+                <span>{dailyData[dailyData.length - 1]?.[0]?.slice(5)}</span>
+              </div>
+            </>
+            )}
           </div>
             );
           })()}
