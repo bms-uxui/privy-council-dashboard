@@ -484,12 +484,32 @@ export function generateAISummary(): string {
 
 // ============================================
 // Outbreak Cases — last 14 days (simulated)
-// Dengue outbreak in parts of moo 11 & 12
+// 5 disease types reflecting Nan province epidemiology
 // ============================================
+const OUTBREAK_DISEASES = [
+  { name: "ไข้หวัดใหญ่ (Influenza)", weight: 0.30 },        // highest volume, seasonal
+  { name: "ปอดอักเสบ (Pneumonia)", weight: 0.15 },           // high mortality in elderly
+  { name: "อุจจาระร่วง/อาหารเป็นพิษ (Diarrhea)", weight: 0.20 }, // community clusters
+  { name: "ไข้เลือดออก (Dengue)", weight: 0.20 },            // high incidence in Nan
+  { name: "สครับไทฟัส (Scrub Typhus)", weight: 0.15 },       // Nan = 2nd highest in Thailand
+];
+
+function pickOutbreakDisease(rng: () => number): string {
+  const roll = rng();
+  let cumulative = 0;
+  for (const d of OUTBREAK_DISEASES) {
+    cumulative += d.weight;
+    if (roll < cumulative) return d.name;
+  }
+  return OUTBREAK_DISEASES[0].name;
+}
+
 function generateOutbreakCases(): OutbreakCase[] {
   const rng = seededRandom(999);
   const cases: OutbreakCase[] = [];
-  const outbreakHouses = houses.filter(() => rng() < 0.08); // ~8% of houses
+
+  // ~12% of houses affected — realistic multi-disease outbreak
+  const outbreakHouses = houses.filter(() => rng() < 0.12);
 
   for (const house of outbreakHouses) {
     const housePersons = persons.filter((p) => p.houseId === house.id);
@@ -497,14 +517,32 @@ function generateOutbreakCases(): OutbreakCase[] {
     const person = housePersons[Math.floor(rng() * housePersons.length)];
     const daysAgo = Math.floor(rng() * 14);
     const reportDate = new Date(2026, 2, 26 - daysAgo);
-    const status: OutbreakCase["status"] = rng() < 0.6 ? "confirmed" : rng() < 0.8 ? "suspected" : "recovered";
+    const status: OutbreakCase["status"] = rng() < 0.55 ? "confirmed" : rng() < 0.80 ? "suspected" : "recovered";
+
+    const disease = pickOutbreakDisease(rng);
+
+    // Pneumonia skews toward elderly; Diarrhea skews toward clusters (add extra case)
     cases.push({
       houseId: house.id,
       personId: person.id,
-      disease: rng() < 0.75 ? "ไข้เลือดออก (Dengue)" : "ไข้หวัดใหญ่ (Influenza)",
+      disease,
       reportDate: reportDate.toISOString().split("T")[0],
       status,
     });
+
+    // Diarrhea/food poisoning clusters: 40% chance of a second case in same house
+    if (disease.includes("อุจจาระร่วง") && rng() < 0.4 && housePersons.length > 1) {
+      const other = housePersons.find((p) => p.id !== person.id);
+      if (other) {
+        cases.push({
+          houseId: house.id,
+          personId: other.id,
+          disease,
+          reportDate: reportDate.toISOString().split("T")[0],
+          status: "suspected",
+        });
+      }
+    }
   }
   return cases;
 }
