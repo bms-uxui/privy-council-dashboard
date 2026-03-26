@@ -1012,6 +1012,90 @@ export default function GISMap() {
       {/* ══════ RIGHT PANEL — Summary insight + list (hidden when house selected) ══════ */}
       {!selectedHouse && (
       <div ref={rightScroll.ref} className={`absolute top-20 right-3 bottom-14 z-10 w-[340px] flex flex-col gap-3 overflow-y-auto no-scrollbar ${rightScroll.shadowClass}`}>
+
+        {/* ── Outbreak Mode: Right Panel ── */}
+        {activeFilter === "outbreak" ? (
+        <>
+          {/* Outbreak Summary Card */}
+          <div className="bg-gradient-to-br from-purple-600 to-purple-800 rounded-2xl shadow-lg p-5 text-white flex-shrink-0">
+            <div className="flex items-center gap-2 mb-3">
+              <Bug size={18} className="text-purple-200" />
+              <p className="text-sm font-semibold">Disease Outbreak Monitor</p>
+            </div>
+            <div className="grid grid-cols-3 gap-2 mb-3">
+              <div className="bg-white/10 rounded-xl p-3 text-center">
+                <p className="text-2xl font-bold">{outbreakCases.length}</p>
+                <p className="text-[11px] text-white/70">รายทั้งหมด</p>
+              </div>
+              <div className="bg-white/10 rounded-xl p-3 text-center">
+                <p className="text-2xl font-bold">{outbreakCases.filter((c) => c.status === "confirmed").length}</p>
+                <p className="text-[11px] text-white/70">ยืนยัน</p>
+              </div>
+              <div className="bg-white/10 rounded-xl p-3 text-center">
+                <p className="text-2xl font-bold">{outbreakHouseIds.size}</p>
+                <p className="text-[11px] text-white/70">หลังคาเรือน</p>
+              </div>
+            </div>
+            {/* Disease breakdown */}
+            <div className="space-y-1.5">
+              {(() => {
+                const diseaseMap = new Map<string, number>();
+                outbreakCases.forEach((c) => diseaseMap.set(c.disease, (diseaseMap.get(c.disease) || 0) + 1));
+                return Array.from(diseaseMap.entries()).map(([disease, count]) => (
+                  <div key={disease} className="flex items-center justify-between bg-white/10 rounded-lg px-3 py-2">
+                    <span className="text-xs">{disease}</span>
+                    <span className="text-xs font-bold">{count} ราย</span>
+                  </div>
+                ));
+              })()}
+            </div>
+          </div>
+
+          {/* Outbreak Case List */}
+          <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg p-4 flex-1 flex flex-col min-h-0">
+            <p className="text-sm font-semibold text-text mb-3 flex-shrink-0">รายงานผู้ป่วย ({outbreakCases.length} ราย)</p>
+            <div className="space-y-2 overflow-y-auto no-scrollbar flex-1">
+              {outbreakCases
+                .sort((a, b) => b.reportDate.localeCompare(a.reportDate))
+                .map((c, i) => {
+                  const person = persons.find((p) => p.id === c.personId);
+                  const house = houses.find((h) => h.id === c.houseId);
+                  const statusColor = c.status === "confirmed" ? "bg-red-50 text-red-600" : c.status === "suspected" ? "bg-amber-50 text-amber-600" : "bg-green-50 text-green-600";
+                  const statusLabel = c.status === "confirmed" ? "ยืนยัน" : c.status === "suspected" ? "สงสัย" : "หายแล้ว";
+                  return (
+                    <div
+                      key={i}
+                      className="p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer"
+                      onClick={() => { if (house) setSelectedHouse(house); }}
+                    >
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-xs text-text-muted">{c.reportDate}</span>
+                        <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${statusColor}`}>{statusLabel}</span>
+                      </div>
+                      {person && (
+                        <p className="text-sm font-medium text-text">{person.prefix}{person.firstName} {person.lastName}</p>
+                      )}
+                      <p className="text-xs text-purple-600 font-medium mt-0.5">{c.disease}</p>
+                      {house && (
+                        <p className="text-xs text-text-muted mt-0.5">บ้านเลขที่ {house.houseCode} · หมู่ {house.moo}</p>
+                      )}
+                      {person && (
+                        <div className="flex gap-1.5 mt-1.5">
+                          {person.isElderly && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-600">ผู้สูงอายุ</span>}
+                          {person.chronicDiseases.length > 0 && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-red-50 text-red-600">NCD {person.chronicDiseases.length} โรค</span>}
+                          {!person.vaccinations.some((v) => v.vaccineNameEn === "Influenza" && v.date >= "2025-06-01") && (
+                            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-purple-50 text-purple-600">ไม่มีวัคซีนไข้หวัดใหญ่</span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+            </div>
+          </div>
+        </>
+        ) : (
+        <>
         {/* AI Summary — moved from left panel */}
         <div
           className="bg-gradient-to-br from-[#1C85AD] to-[#6EC3C3] rounded-2xl shadow-lg p-4 text-white flex-shrink-0 cursor-pointer select-none active:scale-[0.99] transition-transform"
@@ -1141,6 +1225,8 @@ export default function GISMap() {
             })}
           </div>
         </div>
+        </>
+        )}
       </div>
       )}
 
