@@ -163,7 +163,7 @@ const FILTERS = [
   { key: "low", label: "เสี่ยงต่ำ", Icon: Home, color: "#16A34A" },
   { key: "elderly", label: "ผู้สูงอายุ", Icon: UserRound, color: "#6EC3C3" },
   { key: "ncd", label: "ผู้ป่วย NCD", Icon: Stethoscope, color: "#DC2626" },
-  { key: "outbreak", label: "Disease Outbreak", Icon: Bug, color: "#9333EA" },
+  { key: "outbreak", label: "โรคระบาด", Icon: Bug, color: "#9333EA" },
 ];
 
 const RISK_COLORS: Record<string, string> = { high: "#DC2626", medium: "#F59E0B", low: "#16A34A" };
@@ -1020,7 +1020,7 @@ export default function GISMap() {
           <div className="bg-gradient-to-br from-purple-600 to-purple-800 rounded-2xl shadow-lg p-5 text-white flex-shrink-0">
             <div className="flex items-center gap-2 mb-3">
               <Bug size={18} className="text-purple-200" />
-              <p className="text-sm font-semibold">Disease Outbreak Monitor</p>
+              <p className="text-sm font-semibold">เฝ้าระวังโรคระบาด</p>
             </div>
             <div className="grid grid-cols-3 gap-2 mb-3">
               <div className="bg-white/10 rounded-xl p-3 text-center">
