@@ -1874,26 +1874,6 @@ export default function GISMap() {
                 </div>
 
                 {/* 14-day sparkline */}
-                <h3 className="text-sm font-semibold text-text mb-3">ผู้ป่วยรายวัน (14 วัน)</h3>
-                <div className="bg-gray-50 rounded-xl p-4 mb-6">
-                  <div className="flex items-end gap-1 h-24">
-                    {obDailyData.map(([date, count]) => (
-                      <div key={date} className="flex-1 flex flex-col items-center group relative">
-                        <div
-                          className="w-full rounded-sm transition-all hover:opacity-100"
-                          style={{ height: count > 0 ? `${Math.max((count / obMaxDaily) * 100, 12)}%` : "4px", backgroundColor: count > 0 ? "#9333EA" : "#E5E7EB", opacity: count > 0 ? 0.5 : 0.3 }}
-                        />
-                        <span className="absolute bottom-full mb-1.5 px-2 py-1 rounded-lg bg-gray-900 text-white text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-10">
-                          {date.slice(5)} — {count} คน
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="flex justify-between text-xs text-text-muted mt-2">
-                    <span>{obDailyData[0]?.[0]?.slice(5)}</span>
-                    <span>{obDailyData[obDailyData.length - 1]?.[0]?.slice(5)}</span>
-                  </div>
-                </div>
 
                 {/* Patient list */}
                 <h3 className="text-sm font-semibold text-text mb-3">รายชื่อผู้ป่วย ({obTotal} ราย)</h3>
