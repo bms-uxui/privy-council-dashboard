@@ -1222,22 +1222,24 @@ export default function GISMap() {
 
               {/* 14-day sparkline */}
               <p className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-2">ผู้ป่วยรายวัน (14 วัน)</p>
-              <div className="flex items-end gap-[3px] h-12">
-                {dailyData.map(([date, count]) => (
-                  <div key={date} className="flex-1 flex flex-col items-center gap-0.5 group relative">
-                    <div
-                      className="w-full rounded-sm transition-all hover:opacity-100"
-                      style={{ height: `${Math.max((count / maxDaily) * 100, 8)}%`, backgroundColor: "#9333EA", opacity: 0.4 }}
-                    />
-                    <span className="absolute bottom-full mb-1 px-1.5 py-0.5 rounded bg-gray-900 text-white text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-10">
-                      {date.slice(5)} — {count} คน
-                    </span>
-                  </div>
-                ))}
-              </div>
-              <div className="flex justify-between text-[10px] text-text-muted mt-1">
-                <span>{dailyData[0]?.[0]?.slice(5)}</span>
-                <span>{dailyData[dailyData.length - 1]?.[0]?.slice(5)}</span>
+              <div className="bg-gray-50 rounded-xl p-3">
+                <div className="flex items-end gap-[3px] h-16">
+                  {dailyData.map(([date, count]) => (
+                    <div key={date} className="flex-1 flex flex-col items-center group relative">
+                      <div
+                        className="w-full rounded-sm transition-all hover:opacity-100"
+                        style={{ height: count > 0 ? `${Math.max((count / maxDaily) * 100, 15)}%` : "4px", backgroundColor: count > 0 ? "#9333EA" : "#E5E7EB", opacity: count > 0 ? 0.5 : 0.4 }}
+                      />
+                      <span className="absolute bottom-full mb-1 px-1.5 py-0.5 rounded bg-gray-900 text-white text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-10">
+                        {date.slice(5)} — {count} คน
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex justify-between text-[10px] text-text-muted mt-2">
+                  <span>{dailyData[0]?.[0]?.slice(5)}</span>
+                  <span>{dailyData[dailyData.length - 1]?.[0]?.slice(5)}</span>
+                </div>
               </div>
             </>
             )}
