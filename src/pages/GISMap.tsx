@@ -414,6 +414,11 @@ export default function GISMap() {
       markersRef.current = [];
 
       // Build GeoJSON from filtered houses
+      const outbreakDiseaseMap = new Map<string, string>();
+      if (activeFilter === "outbreak") {
+        outbreakCases.forEach((c) => { if (!outbreakDiseaseMap.has(c.houseId)) outbreakDiseaseMap.set(c.houseId, c.disease); });
+      }
+
       const geojson: GeoJSON.FeatureCollection = {
         type: "FeatureCollection",
         features: filteredHouses.map((h) => ({
@@ -427,6 +432,7 @@ export default function GISMap() {
             elderlyCount: h.elderlyCount,
             ncdCount: h.ncdCount,
             address: h.address,
+            outbreakDisease: outbreakDiseaseMap.get(h.id) || "",
           },
           geometry: { type: "Point", coordinates: [h.lng, h.lat] },
         })),
@@ -488,7 +494,15 @@ export default function GISMap() {
         filter: ["!", ["has", "point_count"]],
         paint: {
           "circle-color": activeFilter === "outbreak"
-            ? "#9333EA"
+            ? [
+                "match", ["get", "outbreakDisease"],
+                "ไข้หวัดใหญ่ (Influenza)", "#3B82F6",
+                "อุจจาระร่วง/อาหารเป็นพิษ (Diarrhea)", "#F59E0B",
+                "ไข้เลือดออก (Dengue)", "#DC2626",
+                "ปอดอักเสบ (Pneumonia)", "#10B981",
+                "สครับไทฟัส (Scrub Typhus)", "#EC4899",
+                "#9333EA",
+              ]
             : [
                 "match", ["get", "riskLevel"],
                 "high", "#DC2626",
@@ -499,7 +513,7 @@ export default function GISMap() {
           "circle-radius": activeFilter === "outbreak" ? 9 : 8,
           "circle-stroke-width": 2.5,
           "circle-stroke-color": activeFilter === "outbreak"
-            ? "#7C3AED"
+            ? "#ffffff"
             : [
                 "match", ["get", "moo"],
                 11, "#1C85AD",
@@ -510,12 +524,20 @@ export default function GISMap() {
         },
       });
 
-      // Outbreak pulse rings (DOM markers)
+      // Outbreak pulse rings (DOM markers) — color matches disease
       if (activeFilter === "outbreak") {
+        const pulseColors: Record<string, { bg: string; shadow: string }> = {
+          "ไข้หวัดใหญ่ (Influenza)": { bg: "rgba(59,130,246,0.25)", shadow: "59,130,246" },
+          "อุจจาระร่วง/อาหารเป็นพิษ (Diarrhea)": { bg: "rgba(245,158,11,0.25)", shadow: "245,158,11" },
+          "ไข้เลือดออก (Dengue)": { bg: "rgba(220,38,38,0.25)", shadow: "220,38,38" },
+          "ปอดอักเสบ (Pneumonia)": { bg: "rgba(16,185,129,0.25)", shadow: "16,185,129" },
+          "สครับไทฟัส (Scrub Typhus)": { bg: "rgba(236,72,153,0.25)", shadow: "236,72,153" },
+        };
         filteredHouses.forEach((h) => {
+          const disease = outbreakDiseaseMap.get(h.id) || "";
+          const colors = pulseColors[disease] || { bg: "rgba(147,51,234,0.25)", shadow: "147,51,234" };
           const el = document.createElement("div");
-          el.className = "outbreak-pulse";
-          el.style.cssText = "width:28px;height:28px;background:rgba(147,51,234,0.25);pointer-events:none;";
+          el.style.cssText = `width:28px;height:28px;background:${colors.bg};pointer-events:none;border-radius:50%;animation:outbreakPulseCustom 1.5s ease-out infinite;--pulse-rgb:${colors.shadow};`;
           const marker = new maplibregl.Marker({ element: el, anchor: "center" })
             .setLngLat([h.lng, h.lat])
             .addTo(map);
