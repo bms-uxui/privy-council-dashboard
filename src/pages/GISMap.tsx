@@ -1039,18 +1039,50 @@ export default function GISMap() {
         {activeFilter === "outbreak" ? (
         <>
           {/* Outbreak Summary Card */}
+          {(() => {
+            const DISEASE_COLORS: Record<string, { bg: string; dot: string }> = {
+              "ไข้หวัดใหญ่ (Influenza)": { bg: "rgba(59,130,246,0.15)", dot: "#3B82F6" },
+              "อุจจาระร่วง/อาหารเป็นพิษ (Diarrhea)": { bg: "rgba(245,158,11,0.15)", dot: "#F59E0B" },
+              "ไข้เลือดออก (Dengue)": { bg: "rgba(220,38,38,0.15)", dot: "#DC2626" },
+              "ปอดอักเสบ (Pneumonia)": { bg: "rgba(16,185,129,0.15)", dot: "#10B981" },
+              "สครับไทฟัส (Scrub Typhus)": { bg: "rgba(236,72,153,0.15)", dot: "#EC4899" },
+            };
+            const diseaseMap = new Map<string, number>();
+            outbreakCases.forEach((c) => diseaseMap.set(c.disease, (diseaseMap.get(c.disease) || 0) + 1));
+            const sorted = Array.from(diseaseMap.entries()).sort((a, b) => b[1] - a[1]);
+            const totalCases = outbreakCases.length;
+            const confirmed = outbreakCases.filter((c) => c.status === "confirmed").length;
+            const suspected = outbreakCases.filter((c) => c.status === "suspected").length;
+            const recovered = outbreakCases.filter((c) => c.status === "recovered").length;
+            const moo11Cases = outbreakCases.filter((c) => { const h = houses.find((h) => h.id === c.houseId); return h?.moo === 11; }).length;
+            const moo12Cases = totalCases - moo11Cases;
+            const maxDisease = sorted.length > 0 ? sorted[0][1] : 1;
+
+            // Daily trend (last 14 days)
+            const dailyMap = new Map<string, number>();
+            for (let i = 0; i < 14; i++) {
+              const d = new Date(2026, 2, 26 - 13 + i);
+              dailyMap.set(d.toISOString().split("T")[0], 0);
+            }
+            outbreakCases.forEach((c) => { if (dailyMap.has(c.reportDate)) dailyMap.set(c.reportDate, (dailyMap.get(c.reportDate) || 0) + 1); });
+            const dailyData = Array.from(dailyMap.entries());
+            const maxDaily = Math.max(...dailyData.map((d) => d[1]), 1);
+
+            return (
           <div className="bg-gradient-to-br from-purple-600 to-purple-800 rounded-2xl shadow-lg p-5 text-white flex-shrink-0">
             <div className="flex items-center gap-2 mb-3">
               <Bug size={18} className="text-purple-200" />
               <p className="text-sm font-semibold">เฝ้าระวังโรคระบาด</p>
             </div>
-            <div className="grid grid-cols-3 gap-2 mb-3">
+
+            {/* KPI row */}
+            <div className="grid grid-cols-3 gap-2 mb-4">
               <div className="bg-white/10 rounded-xl p-3 text-center">
-                <p className="text-2xl font-bold">{outbreakCases.length}</p>
+                <p className="text-2xl font-bold">{totalCases}</p>
                 <p className="text-[11px] text-white/70">รายทั้งหมด</p>
               </div>
               <div className="bg-white/10 rounded-xl p-3 text-center">
-                <p className="text-2xl font-bold">{outbreakCases.filter((c) => c.status === "confirmed").length}</p>
+                <p className="text-2xl font-bold">{confirmed}</p>
                 <p className="text-[11px] text-white/70">ยืนยัน</p>
               </div>
               <div className="bg-white/10 rounded-xl p-3 text-center">
@@ -1058,31 +1090,77 @@ export default function GISMap() {
                 <p className="text-[11px] text-white/70">หลังคาเรือน</p>
               </div>
             </div>
-            {/* Disease breakdown */}
-            <div className="space-y-1.5">
-              {(() => {
-                const DISEASE_COLORS: Record<string, { bg: string; dot: string }> = {
-                  "ไข้หวัดใหญ่ (Influenza)": { bg: "rgba(59,130,246,0.15)", dot: "#3B82F6" },
-                  "อุจจาระร่วง/อาหารเป็นพิษ (Diarrhea)": { bg: "rgba(245,158,11,0.15)", dot: "#F59E0B" },
-                  "ไข้เลือดออก (Dengue)": { bg: "rgba(220,38,38,0.15)", dot: "#DC2626" },
-                  "ปอดอักเสบ (Pneumonia)": { bg: "rgba(16,185,129,0.15)", dot: "#10B981" },
-                  "สครับไทฟัส (Scrub Typhus)": { bg: "rgba(236,72,153,0.15)", dot: "#EC4899" },
-                };
-                const diseaseMap = new Map<string, number>();
-                outbreakCases.forEach((c) => diseaseMap.set(c.disease, (diseaseMap.get(c.disease) || 0) + 1));
-                return Array.from(diseaseMap.entries()).sort((a, b) => b[1] - a[1]).map(([disease, count]) => {
-                  const color = DISEASE_COLORS[disease] || { bg: "rgba(255,255,255,0.1)", dot: "#fff" };
-                  return (
-                    <div key={disease} className="flex items-center gap-2 rounded-lg px-3 py-2" style={{ backgroundColor: color.bg }}>
-                      <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: color.dot }} />
-                      <span className="text-xs flex-1">{disease}</span>
-                      <span className="text-xs font-bold">{count} ราย</span>
+
+            {/* Status breakdown bar */}
+            <p className="text-[11px] text-white/50 uppercase tracking-wider mb-1.5">สถานะผู้ป่วย</p>
+            <div className="flex h-3 rounded-full overflow-hidden mb-1">
+              <div className="h-full bg-red-400" style={{ width: `${(confirmed / totalCases) * 100}%` }} />
+              <div className="h-full bg-amber-400" style={{ width: `${(suspected / totalCases) * 100}%` }} />
+              <div className="h-full bg-green-400" style={{ width: `${(recovered / totalCases) * 100}%` }} />
+            </div>
+            <div className="flex justify-between text-[10px] text-white/60 mb-4">
+              <span>ยืนยัน {confirmed}</span>
+              <span>สงสัย {suspected}</span>
+              <span>หายแล้ว {recovered}</span>
+            </div>
+
+            {/* Disease horizontal bars */}
+            <p className="text-[11px] text-white/50 uppercase tracking-wider mb-1.5">จำนวนตามโรค</p>
+            <div className="space-y-2 mb-4">
+              {sorted.map(([disease, count]) => {
+                const color = DISEASE_COLORS[disease] || { bg: "rgba(255,255,255,0.1)", dot: "#fff" };
+                return (
+                  <div key={disease}>
+                    <div className="flex items-center justify-between mb-0.5">
+                      <span className="text-[11px] flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: color.dot }} />
+                        {disease.split("(")[0].trim()}
+                      </span>
+                      <span className="text-[11px] font-bold">{count}</span>
                     </div>
-                  );
-                });
-              })()}
+                    <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                      <div className="h-full rounded-full transition-all duration-500" style={{ width: `${(count / maxDisease) * 100}%`, backgroundColor: color.dot }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Moo comparison */}
+            <p className="text-[11px] text-white/50 uppercase tracking-wider mb-1.5">เปรียบเทียบหมู่</p>
+            <div className="flex gap-2 mb-4">
+              <div className="flex-1 bg-white/10 rounded-lg p-2 text-center">
+                <p className="text-lg font-bold">{moo11Cases}</p>
+                <p className="text-[10px] text-white/60">หมู่ 11</p>
+              </div>
+              <div className="flex-1 bg-white/10 rounded-lg p-2 text-center">
+                <p className="text-lg font-bold">{moo12Cases}</p>
+                <p className="text-[10px] text-white/60">หมู่ 12</p>
+              </div>
+            </div>
+
+            {/* 14-day sparkline */}
+            <p className="text-[11px] text-white/50 uppercase tracking-wider mb-1.5">แนวโน้ม 14 วัน</p>
+            <div className="flex items-end gap-[3px] h-10">
+              {dailyData.map(([date, count]) => (
+                <div key={date} className="flex-1 flex flex-col items-center gap-0.5 group relative">
+                  <div
+                    className="w-full rounded-sm bg-white/60 transition-all hover:bg-white"
+                    style={{ height: `${Math.max((count / maxDaily) * 100, 8)}%` }}
+                  />
+                  <span className="absolute bottom-full mb-1 px-1.5 py-0.5 rounded bg-gray-900 text-white text-[10px] whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-10">
+                    {date.slice(5)} — {count} ราย
+                  </span>
+                </div>
+              ))}
+            </div>
+            <div className="flex justify-between text-[9px] text-white/40 mt-1">
+              <span>{dailyData[0]?.[0]?.slice(5)}</span>
+              <span>{dailyData[dailyData.length - 1]?.[0]?.slice(5)}</span>
             </div>
           </div>
+            );
+          })()}
 
           {/* Outbreak Case List */}
           <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg p-4 flex-1 flex flex-col min-h-0">
