@@ -144,14 +144,14 @@ export default function Dashboard() {
 
       {/* ── Row 1: KPI Summary Cards (Health Atlas style) ── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* หลังคาเรือนทั้งหมด */}
+        {/* ครัวเรือนทั้งหมด */}
         <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 rounded-2xl bg-teal-50 flex items-center justify-center flex-shrink-0">
               <Home size={28} className="text-teal-600" />
             </div>
             <div className="flex-1">
-              <p className="text-sm text-text-muted">หลังคาเรือนทั้งหมด</p>
+              <p className="text-sm text-text-muted">ครัวเรือนทั้งหมด</p>
               <p className="text-3xl font-bold text-text">
                 Total {fHouses.toLocaleString()}
               </p>
@@ -282,7 +282,7 @@ export default function Dashboard() {
                     ตำบล
                   </th>
                   <th className="text-center px-4 py-3 text-xs font-semibold text-text-muted">
-                    หลังคาเรือน
+                    ครัวเรือน
                     <br />
                     <span className="font-normal text-xs">ที่ปักหมุด / ทั้งหมด</span>
                   </th>

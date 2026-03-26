@@ -1118,7 +1118,7 @@ export default function GISMap() {
               </div>
               <div className="bg-gray-50 rounded-xl p-3 text-center">
                 <p className="text-2xl font-bold text-text">{outbreakHouseIds.size}</p>
-                <p className="text-xs text-text-muted">หลังคาเรือน</p>
+                <p className="text-xs text-text-muted">ครัวเรือน</p>
               </div>
             </div>
 
