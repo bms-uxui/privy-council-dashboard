@@ -1069,57 +1069,57 @@ export default function GISMap() {
             const maxDaily = Math.max(...dailyData.map((d) => d[1]), 1);
 
             return (
-          <div className="bg-gradient-to-br from-purple-600 to-purple-800 rounded-2xl shadow-lg p-5 text-white flex-shrink-0">
+          <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg p-5 flex-shrink-0">
             <div className="flex items-center gap-2 mb-3">
-              <Bug size={18} className="text-purple-200" />
-              <p className="text-sm font-semibold">เฝ้าระวังโรคระบาด</p>
+              <Bug size={18} className="text-purple-500" />
+              <p className="text-sm font-semibold text-text">เฝ้าระวังโรคระบาด</p>
             </div>
 
             {/* KPI row */}
             <div className="grid grid-cols-3 gap-2 mb-4">
-              <div className="bg-white/10 rounded-xl p-3 text-center">
-                <p className="text-2xl font-bold">{totalCases}</p>
-                <p className="text-[11px] text-white/70">รายทั้งหมด</p>
+              <div className="bg-gray-50 rounded-xl p-3 text-center">
+                <p className="text-2xl font-bold text-text">{totalCases}</p>
+                <p className="text-[11px] text-text-muted">รายทั้งหมด</p>
               </div>
-              <div className="bg-white/10 rounded-xl p-3 text-center">
-                <p className="text-2xl font-bold">{confirmed}</p>
-                <p className="text-[11px] text-white/70">ยืนยัน</p>
+              <div className="bg-red-50 rounded-xl p-3 text-center">
+                <p className="text-2xl font-bold text-red-600">{confirmed}</p>
+                <p className="text-[11px] text-red-400">ยืนยัน</p>
               </div>
-              <div className="bg-white/10 rounded-xl p-3 text-center">
-                <p className="text-2xl font-bold">{outbreakHouseIds.size}</p>
-                <p className="text-[11px] text-white/70">หลังคาเรือน</p>
+              <div className="bg-gray-50 rounded-xl p-3 text-center">
+                <p className="text-2xl font-bold text-text">{outbreakHouseIds.size}</p>
+                <p className="text-[11px] text-text-muted">หลังคาเรือน</p>
               </div>
             </div>
 
             {/* Status breakdown bar */}
-            <p className="text-[11px] text-white/50 uppercase tracking-wider mb-1.5">สถานะผู้ป่วย</p>
-            <div className="flex h-3 rounded-full overflow-hidden mb-1">
-              <div className="h-full bg-red-400" style={{ width: `${(confirmed / totalCases) * 100}%` }} />
+            <p className="text-[11px] text-text-muted uppercase tracking-wider mb-1.5">สถานะผู้ป่วย</p>
+            <div className="flex h-2.5 rounded-full overflow-hidden mb-1 bg-gray-100">
+              <div className="h-full bg-red-500" style={{ width: `${(confirmed / totalCases) * 100}%` }} />
               <div className="h-full bg-amber-400" style={{ width: `${(suspected / totalCases) * 100}%` }} />
-              <div className="h-full bg-green-400" style={{ width: `${(recovered / totalCases) * 100}%` }} />
+              <div className="h-full bg-green-500" style={{ width: `${(recovered / totalCases) * 100}%` }} />
             </div>
-            <div className="flex justify-between text-[10px] text-white/60 mb-4">
-              <span>ยืนยัน {confirmed}</span>
-              <span>สงสัย {suspected}</span>
-              <span>หายแล้ว {recovered}</span>
+            <div className="flex justify-between text-[10px] text-text-muted mb-4">
+              <span className="text-red-500">ยืนยัน {confirmed}</span>
+              <span className="text-amber-500">สงสัย {suspected}</span>
+              <span className="text-green-500">หายแล้ว {recovered}</span>
             </div>
 
             {/* Disease horizontal bars */}
-            <p className="text-[11px] text-white/50 uppercase tracking-wider mb-1.5">จำนวนตามโรค</p>
+            <p className="text-[11px] text-text-muted uppercase tracking-wider mb-1.5">จำนวนตามโรค</p>
             <div className="space-y-2 mb-4">
               {sorted.map(([disease, count]) => {
-                const color = DISEASE_COLORS[disease] || { bg: "rgba(255,255,255,0.1)", dot: "#fff" };
+                const color = DISEASE_COLORS[disease] || { bg: "rgba(0,0,0,0.05)", dot: "#6B7280" };
                 return (
                   <div key={disease}>
                     <div className="flex items-center justify-between mb-0.5">
-                      <span className="text-[11px] flex items-center gap-1.5">
+                      <span className="text-[11px] text-text flex items-center gap-1.5">
                         <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: color.dot }} />
                         {disease.split("(")[0].trim()}
                       </span>
-                      <span className="text-[11px] font-bold">{count}</span>
+                      <span className="text-[11px] font-bold text-text">{count}</span>
                     </div>
-                    <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                      <div className="h-full rounded-full transition-all duration-500" style={{ width: `${(count / maxDisease) * 100}%`, backgroundColor: color.dot }} />
+                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                      <div className="h-full rounded-full transition-all duration-500" style={{ width: `${(count / maxDisease) * 100}%`, backgroundColor: color.dot, opacity: 0.8 }} />
                     </div>
                   </div>
                 );
@@ -1127,26 +1127,26 @@ export default function GISMap() {
             </div>
 
             {/* Moo comparison */}
-            <p className="text-[11px] text-white/50 uppercase tracking-wider mb-1.5">เปรียบเทียบหมู่</p>
+            <p className="text-[11px] text-text-muted uppercase tracking-wider mb-1.5">เปรียบเทียบหมู่</p>
             <div className="flex gap-2 mb-4">
-              <div className="flex-1 bg-white/10 rounded-lg p-2 text-center">
-                <p className="text-lg font-bold">{moo11Cases}</p>
-                <p className="text-[10px] text-white/60">หมู่ 11</p>
+              <div className="flex-1 bg-gray-50 rounded-lg p-2 text-center">
+                <p className="text-lg font-bold text-text">{moo11Cases}</p>
+                <p className="text-[10px] text-text-muted">หมู่ 11</p>
               </div>
-              <div className="flex-1 bg-white/10 rounded-lg p-2 text-center">
-                <p className="text-lg font-bold">{moo12Cases}</p>
-                <p className="text-[10px] text-white/60">หมู่ 12</p>
+              <div className="flex-1 bg-gray-50 rounded-lg p-2 text-center">
+                <p className="text-lg font-bold text-text">{moo12Cases}</p>
+                <p className="text-[10px] text-text-muted">หมู่ 12</p>
               </div>
             </div>
 
             {/* 14-day sparkline */}
-            <p className="text-[11px] text-white/50 uppercase tracking-wider mb-1.5">แนวโน้ม 14 วัน</p>
+            <p className="text-[11px] text-text-muted uppercase tracking-wider mb-1.5">แนวโน้ม 14 วัน</p>
             <div className="flex items-end gap-[3px] h-10">
               {dailyData.map(([date, count]) => (
                 <div key={date} className="flex-1 flex flex-col items-center gap-0.5 group relative">
                   <div
-                    className="w-full rounded-sm bg-white/60 transition-all hover:bg-white"
-                    style={{ height: `${Math.max((count / maxDaily) * 100, 8)}%` }}
+                    className="w-full rounded-sm transition-all hover:opacity-100"
+                    style={{ height: `${Math.max((count / maxDaily) * 100, 8)}%`, backgroundColor: "#9333EA", opacity: 0.4 }}
                   />
                   <span className="absolute bottom-full mb-1 px-1.5 py-0.5 rounded bg-gray-900 text-white text-[10px] whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-10">
                     {date.slice(5)} — {count} ราย
@@ -1154,7 +1154,7 @@ export default function GISMap() {
                 </div>
               ))}
             </div>
-            <div className="flex justify-between text-[9px] text-white/40 mt-1">
+            <div className="flex justify-between text-[9px] text-text-light mt-1">
               <span>{dailyData[0]?.[0]?.slice(5)}</span>
               <span>{dailyData[dailyData.length - 1]?.[0]?.slice(5)}</span>
             </div>
