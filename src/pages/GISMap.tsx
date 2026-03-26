@@ -443,9 +443,9 @@ export default function GISMap() {
       map.addSource(SOURCE_ID, {
         type: "geojson",
         data: geojson,
-        cluster: true,
-        clusterMaxZoom: isOutbreak ? 12 : 14,
-        clusterRadius: isOutbreak ? 50 : 40,
+        cluster: !isOutbreak,
+        clusterMaxZoom: 14,
+        clusterRadius: 40,
       });
 
       // Cluster halo (outbreak only) — soft glow behind cluster
