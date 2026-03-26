@@ -1432,6 +1432,41 @@ export default function GISMap() {
             ))}
           </div>
 
+          {/* Outbreak cases for this house */}
+          {(() => {
+            const houseCases = outbreakCases.filter((c) => c.houseId === selectedHouse.id);
+            if (houseCases.length === 0) return null;
+            const OB_DOT: Record<string, string> = {
+              "ไข้หวัดใหญ่ (Influenza)": "#3B82F6", "อุจจาระร่วง/อาหารเป็นพิษ (Diarrhea)": "#F59E0B",
+              "ไข้เลือดออก (Dengue)": "#DC2626", "ปอดอักเสบ (Pneumonia)": "#10B981", "สครับไทฟัส (Scrub Typhus)": "#EC4899",
+            };
+            return (
+              <div className="mx-3 mb-3 p-3 rounded-xl bg-purple-50 border border-purple-200">
+                <div className="flex items-center gap-1.5 mb-2">
+                  <Bug size={14} className="text-purple-500" />
+                  <span className="text-xs font-semibold text-purple-700">โรคระบาด ({houseCases.length} ราย)</span>
+                </div>
+                <div className="space-y-1.5">
+                  {houseCases.map((c, i) => {
+                    const p = persons.find((p) => p.id === c.personId);
+                    const stLabel = c.status === "confirmed" ? "ยืนยัน" : c.status === "suspected" ? "สงสัย" : "หายแล้ว";
+                    const stColor = c.status === "confirmed" ? "text-red-600 bg-red-50" : c.status === "suspected" ? "text-amber-600 bg-amber-50" : "text-green-600 bg-green-50";
+                    return (
+                      <div key={i} className="flex items-center gap-2 bg-white rounded-lg p-2">
+                        <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: OB_DOT[c.disease] || "#9333EA" }} />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-medium text-text truncate">{p ? `${p.prefix}${p.firstName}` : "—"}</p>
+                          <p className="text-[10px] text-purple-500">{c.disease.split("(")[0].trim()}</p>
+                        </div>
+                        <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${stColor}`}>{stLabel}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })()}
+
           {/* Members */}
           <div className="px-3 pb-3 flex-1">
             <h4 className="text-sm font-semibold text-text mb-2">สมาชิก ({houseMembers.length})</h4>

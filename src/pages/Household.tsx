@@ -592,9 +592,17 @@ export default function Household() {
                     className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors"
                   >
                     <td className="px-5 py-4">
-                      <span className="text-sm font-medium text-text">
-                        บ้านเลขที่ {house.houseCode}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium text-text">
+                          บ้านเลขที่ {house.houseCode}
+                        </span>
+                        {outbreakHouseIds.has(house.id) && (
+                          <span className="flex items-center gap-0.5 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-purple-50 text-purple-600">
+                            <Bug size={10} />
+                            ระบาด
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-5 py-4">
                       <span className="text-sm text-text-muted">

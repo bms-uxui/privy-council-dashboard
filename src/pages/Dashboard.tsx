@@ -9,6 +9,8 @@ import {
   Hospital,
   Info,
   ChevronDown,
+  Bug,
+  ShieldAlert,
 } from "lucide-react";
 import {
   BarChart,
@@ -32,6 +34,8 @@ import {
   persons,
   riskCounts,
   generateAISummary,
+  outbreakCases,
+  outbreakHouseIds,
 } from "../data/mockData";
 import type { House } from "../types";
 
@@ -262,6 +266,79 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* ── Outbreak Alert Banner ── */}
+      {outbreakCases.length > 0 && (() => {
+        const confirmed = outbreakCases.filter((c) => c.status === "confirmed").length;
+        const suspected = outbreakCases.filter((c) => c.status === "suspected").length;
+        const recovered = outbreakCases.filter((c) => c.status === "recovered").length;
+        const diseaseMap = new Map<string, { count: number; color: string }>();
+        const OB_DOT: Record<string, string> = {
+          "ไข้หวัดใหญ่ (Influenza)": "#3B82F6", "อุจจาระร่วง/อาหารเป็นพิษ (Diarrhea)": "#F59E0B",
+          "ไข้เลือดออก (Dengue)": "#DC2626", "ปอดอักเสบ (Pneumonia)": "#10B981", "สครับไทฟัส (Scrub Typhus)": "#EC4899",
+        };
+        outbreakCases.forEach((c) => {
+          const prev = diseaseMap.get(c.disease);
+          diseaseMap.set(c.disease, { count: (prev?.count || 0) + 1, color: OB_DOT[c.disease] || "#9333EA" });
+        });
+        const sorted = Array.from(diseaseMap.entries()).sort((a, b) => b[1].count - a[1].count);
+
+        return (
+          <div className="bg-white rounded-2xl p-5 shadow-sm border border-purple-200">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center">
+                  <Bug size={20} className="text-purple-500" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-text">เฝ้าระวังโรคระบาด</h3>
+                  <p className="text-xs text-text-muted">รายงาน 14 วันล่าสุด</p>
+                </div>
+              </div>
+              <a href="#/gis" onClick={() => { /* will navigate via hash */ }} className="text-xs text-purple-600 hover:underline font-medium">
+                ดูแผนที่ →
+              </a>
+            </div>
+            <div className="grid grid-cols-4 gap-3 mb-4">
+              <div className="bg-gray-50 rounded-xl p-3 text-center">
+                <p className="text-xl font-bold text-text">{outbreakCases.length}</p>
+                <p className="text-xs text-text-muted">ผู้ป่วย</p>
+              </div>
+              <div className="bg-red-50 rounded-xl p-3 text-center">
+                <p className="text-xl font-bold text-red-600">{confirmed}</p>
+                <p className="text-xs text-red-400">ยืนยัน</p>
+              </div>
+              <div className="bg-amber-50 rounded-xl p-3 text-center">
+                <p className="text-xl font-bold text-amber-600">{suspected}</p>
+                <p className="text-xs text-amber-400">สงสัย</p>
+              </div>
+              <div className="bg-green-50 rounded-xl p-3 text-center">
+                <p className="text-xl font-bold text-green-600">{recovered}</p>
+                <p className="text-xs text-green-400">หายแล้ว</p>
+              </div>
+            </div>
+            {/* Status bar */}
+            <div className="flex h-2.5 rounded-full overflow-hidden mb-3 bg-gray-100">
+              <div className="h-full bg-red-500" style={{ width: `${(confirmed / outbreakCases.length) * 100}%` }} />
+              <div className="h-full bg-amber-400" style={{ width: `${(suspected / outbreakCases.length) * 100}%` }} />
+              <div className="h-full bg-green-500" style={{ width: `${(recovered / outbreakCases.length) * 100}%` }} />
+            </div>
+            {/* Disease pills */}
+            <div className="flex flex-wrap gap-2">
+              {sorted.map(([disease, { count, color }]) => (
+                <span key={disease} className="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full bg-gray-50 text-text font-medium">
+                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
+                  {disease.split("(")[0].trim()} {count} คน
+                </span>
+              ))}
+              <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-purple-50 text-purple-600 font-medium">
+                <ShieldAlert size={11} />
+                {outbreakHouseIds.size} ครัวเรือน
+              </span>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* ── Row 3: Patient Table + Right Panel ── */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-5 items-start">
