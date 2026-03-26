@@ -404,7 +404,7 @@ export default function GISMap() {
 
     const setupClusters = () => {
       // Remove existing layers/source if re-rendering
-      [CLUSTER_COUNT_LAYER, CLUSTER_LAYER, UNCLUSTER_LAYER].forEach((id) => {
+      [CLUSTER_COUNT_LAYER, CLUSTER_LAYER, CLUSTER_LAYER + "-halo", UNCLUSTER_LAYER].forEach((id) => {
         if (map.getLayer(id)) map.removeLayer(id);
       });
       if (map.getSource(SOURCE_ID)) map.removeSource(SOURCE_ID);
@@ -438,13 +438,33 @@ export default function GISMap() {
         })),
       };
 
+      const isOutbreak = activeFilter === "outbreak";
+
       map.addSource(SOURCE_ID, {
         type: "geojson",
         data: geojson,
         cluster: true,
-        clusterMaxZoom: 14,
-        clusterRadius: 40,
+        clusterMaxZoom: isOutbreak ? 12 : 14,
+        clusterRadius: isOutbreak ? 50 : 40,
       });
+
+      // Cluster halo (outbreak only) — soft glow behind cluster
+      if (isOutbreak) {
+        map.addLayer({
+          id: CLUSTER_LAYER + "-halo",
+          type: "circle",
+          source: SOURCE_ID,
+          filter: ["has", "point_count"],
+          paint: {
+            "circle-color": "#DC2626",
+            "circle-radius": [
+              "step", ["get", "point_count"],
+              28, 5, 34, 15, 42,
+            ],
+            "circle-opacity": 0.12,
+          },
+        });
+      }
 
       // Cluster circles — size based on point count
       map.addLayer({
@@ -453,21 +473,31 @@ export default function GISMap() {
         source: SOURCE_ID,
         filter: ["has", "point_count"],
         paint: {
-          "circle-color": [
-            "step", ["get", "point_count"],
-            "#6EC3C3",  // < 10
-            10, "#1C85AD", // 10-30
-            30, "#156A8A", // 30+
-          ],
-          "circle-radius": [
-            "step", ["get", "point_count"],
-            18,   // < 10
-            10, 24, // 10-30
-            30, 32, // 30+
-          ],
-          "circle-stroke-width": 3,
+          "circle-color": isOutbreak
+            ? [
+                "step", ["get", "point_count"],
+                "#F87171",  // < 5: light red
+                5, "#DC2626", // 5-15: red
+                15, "#991B1B", // 15+: dark red
+              ]
+            : [
+                "step", ["get", "point_count"],
+                "#6EC3C3",  // < 10
+                10, "#1C85AD", // 10-30
+                30, "#156A8A", // 30+
+              ],
+          "circle-radius": isOutbreak
+            ? [
+                "step", ["get", "point_count"],
+                20, 5, 26, 15, 34,
+              ]
+            : [
+                "step", ["get", "point_count"],
+                18, 10, 24, 30, 32,
+              ],
+          "circle-stroke-width": isOutbreak ? 2.5 : 3,
           "circle-stroke-color": "#ffffff",
-          "circle-opacity": 0.85,
+          "circle-opacity": isOutbreak ? 0.9 : 0.85,
         },
       });
 
@@ -479,7 +509,8 @@ export default function GISMap() {
         filter: ["has", "point_count"],
         layout: {
           "text-field": "{point_count_abbreviated}",
-          "text-size": 13,
+          "text-size": isOutbreak ? 14 : 13,
+          "text-font": ["Open Sans Bold"],
         },
         paint: {
           "text-color": "#ffffff",
