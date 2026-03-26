@@ -1069,7 +1069,7 @@ export default function GISMap() {
         {/* ── Outbreak Mode: Right Panel ── */}
         {activeFilter === "outbreak" ? (
         <>
-          {/* Outbreak Summary Card */}
+          {/* Outbreak Summary Card — individual-focused */}
           {(() => {
             const DISEASE_COLORS: Record<string, { bg: string; dot: string }> = {
               "ไข้หวัดใหญ่ (Influenza)": { bg: "rgba(59,130,246,0.15)", dot: "#3B82F6" },
@@ -1085,9 +1085,14 @@ export default function GISMap() {
             const confirmed = outbreakCases.filter((c) => c.status === "confirmed").length;
             const suspected = outbreakCases.filter((c) => c.status === "suspected").length;
             const recovered = outbreakCases.filter((c) => c.status === "recovered").length;
-            const moo11Cases = outbreakCases.filter((c) => { const h = houses.find((h) => h.id === c.houseId); return h?.moo === 11; }).length;
-            const moo12Cases = totalCases - moo11Cases;
             const maxDisease = sorted.length > 0 ? sorted[0][1] : 1;
+
+            // Individual-level stats
+            const affectedPersons = outbreakCases.map((c) => persons.find((p) => p.id === c.personId)).filter(Boolean);
+            const elderlyCount = affectedPersons.filter((p) => p!.isElderly).length;
+            const ncdCount = affectedPersons.filter((p) => p!.chronicDiseases.length > 0).length;
+            const childCount = affectedPersons.filter((p) => p!.age < 5).length;
+            const noFluVaccine = affectedPersons.filter((p) => !p!.vaccinations.some((v) => v.vaccineNameEn === "Influenza" && v.date >= "2025-06-01")).length;
 
             // Daily trend (last 14 days)
             const dailyMap = new Map<string, number>();
@@ -1106,24 +1111,19 @@ export default function GISMap() {
               <p className="text-base font-bold text-text">เฝ้าระวังโรคระบาด</p>
             </div>
 
-            {/* KPI row */}
-            <div className="grid grid-cols-3 gap-2 mb-5">
+            {/* KPI row — person focused */}
+            <div className="grid grid-cols-2 gap-2 mb-4">
               <div className="bg-gray-50 rounded-xl p-3 text-center">
                 <p className="text-2xl font-bold text-text">{totalCases}</p>
-                <p className="text-xs text-text-muted">รายทั้งหมด</p>
+                <p className="text-xs text-text-muted">ผู้ป่วยทั้งหมด</p>
               </div>
               <div className="bg-red-50 rounded-xl p-3 text-center">
                 <p className="text-2xl font-bold text-red-600">{confirmed}</p>
-                <p className="text-xs text-red-400">ยืนยัน</p>
-              </div>
-              <div className="bg-gray-50 rounded-xl p-3 text-center">
-                <p className="text-2xl font-bold text-text">{outbreakHouseIds.size}</p>
-                <p className="text-xs text-text-muted">ครัวเรือน</p>
+                <p className="text-xs text-red-400">ยืนยันแล้ว</p>
               </div>
             </div>
 
             {/* Status breakdown bar */}
-            <p className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-2">สถานะผู้ป่วย</p>
             <div className="flex h-3 rounded-full overflow-hidden mb-1.5 bg-gray-100">
               <div className="h-full bg-red-500" style={{ width: `${(confirmed / totalCases) * 100}%` }} />
               <div className="h-full bg-amber-400" style={{ width: `${(suspected / totalCases) * 100}%` }} />
@@ -1135,8 +1135,41 @@ export default function GISMap() {
               <span className="text-green-500 font-medium">หายแล้ว {recovered}</span>
             </div>
 
+            {/* Vulnerability breakdown */}
+            <p className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-2">กลุ่มเปราะบาง</p>
+            <div className="grid grid-cols-2 gap-2 mb-5">
+              <div className="flex items-center gap-2 bg-amber-50 rounded-lg px-3 py-2">
+                <UserRound size={14} className="text-amber-600" />
+                <div>
+                  <p className="text-sm font-bold text-amber-700">{elderlyCount}</p>
+                  <p className="text-[11px] text-amber-500">ผู้สูงอายุ</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 bg-red-50 rounded-lg px-3 py-2">
+                <HeartPulse size={14} className="text-red-500" />
+                <div>
+                  <p className="text-sm font-bold text-red-600">{ncdCount}</p>
+                  <p className="text-[11px] text-red-400">มีโรคเรื้อรัง</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 bg-blue-50 rounded-lg px-3 py-2">
+                <Users size={14} className="text-blue-500" />
+                <div>
+                  <p className="text-sm font-bold text-blue-600">{childCount}</p>
+                  <p className="text-[11px] text-blue-400">เด็กเล็ก (&lt;5 ปี)</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 bg-purple-50 rounded-lg px-3 py-2">
+                <ShieldAlert size={14} className="text-purple-500" />
+                <div>
+                  <p className="text-sm font-bold text-purple-600">{noFluVaccine}</p>
+                  <p className="text-[11px] text-purple-400">ไม่มีวัคซีนไข้หวัดใหญ่</p>
+                </div>
+              </div>
+            </div>
+
             {/* Disease horizontal bars */}
-            <p className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-2">จำนวนตามโรค</p>
+            <p className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-2">จำนวนผู้ป่วยตามโรค</p>
             <div className="space-y-2.5 mb-5">
               {sorted.map(([disease, count]) => {
                 const color = DISEASE_COLORS[disease] || { bg: "rgba(0,0,0,0.05)", dot: "#6B7280" };
@@ -1147,7 +1180,7 @@ export default function GISMap() {
                         <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: color.dot }} />
                         {disease.split("(")[0].trim()}
                       </span>
-                      <span className="text-xs font-bold text-text">{count}</span>
+                      <span className="text-xs font-bold text-text">{count} คน</span>
                     </div>
                     <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
                       <div className="h-full rounded-full transition-all duration-500" style={{ width: `${(count / maxDisease) * 100}%`, backgroundColor: color.dot, opacity: 0.8 }} />
@@ -1157,21 +1190,8 @@ export default function GISMap() {
               })}
             </div>
 
-            {/* Moo comparison */}
-            <p className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-2">เปรียบเทียบหมู่</p>
-            <div className="flex gap-2 mb-5">
-              <div className="flex-1 bg-gray-50 rounded-lg p-3 text-center">
-                <p className="text-xl font-bold text-text">{moo11Cases}</p>
-                <p className="text-xs text-text-muted">หมู่ 11</p>
-              </div>
-              <div className="flex-1 bg-gray-50 rounded-lg p-3 text-center">
-                <p className="text-xl font-bold text-text">{moo12Cases}</p>
-                <p className="text-xs text-text-muted">หมู่ 12</p>
-              </div>
-            </div>
-
             {/* 14-day sparkline */}
-            <p className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-2">แนวโน้ม 14 วัน</p>
+            <p className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-2">ผู้ป่วยรายวัน (14 วัน)</p>
             <div className="flex items-end gap-[3px] h-12">
               {dailyData.map(([date, count]) => (
                 <div key={date} className="flex-1 flex flex-col items-center gap-0.5 group relative">
@@ -1180,7 +1200,7 @@ export default function GISMap() {
                     style={{ height: `${Math.max((count / maxDaily) * 100, 8)}%`, backgroundColor: "#9333EA", opacity: 0.4 }}
                   />
                   <span className="absolute bottom-full mb-1 px-1.5 py-0.5 rounded bg-gray-900 text-white text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-10">
-                    {date.slice(5)} — {count} ราย
+                    {date.slice(5)} — {count} คน
                   </span>
                 </div>
               ))}
