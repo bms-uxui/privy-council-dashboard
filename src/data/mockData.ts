@@ -6,6 +6,8 @@ import type {
   Family,
   SubmissionLog,
   NCDStats,
+  Vaccination,
+  OutbreakCase,
 } from "../types";
 
 // ============================================
@@ -181,6 +183,15 @@ const EVENT_TEMPLATES = [
 
 const PROVIDERS_NAMES = ["รพ.สต.น้ำรีพัฒนา", "รพ.น่าน"];
 
+const VACCINE_POOL = [
+  { name: "วัคซีนไข้หวัดใหญ่", nameEn: "Influenza", doses: ["ประจำปี"] },
+  { name: "วัคซีนโควิด-19", nameEn: "COVID-19", doses: ["เข็ม 1", "เข็ม 2", "เข็ม 3 (บูสเตอร์)", "เข็ม 4"] },
+  { name: "วัคซีนบาดทะยัก-คอตีบ", nameEn: "Td", doses: ["เข็มกระตุ้น"] },
+  { name: "วัคซีนไวรัสตับอักเสบ B", nameEn: "Hepatitis B", doses: ["เข็ม 1", "เข็ม 2", "เข็ม 3"] },
+  { name: "วัคซีนปอดอักเสบ", nameEn: "Pneumococcal", doses: ["เข็ม 1"] },
+  { name: "วัคซีนงูสวัด", nameEn: "Shingles", doses: ["เข็ม 1", "เข็ม 2"] },
+];
+
 // ============================================
 // Generate persons for ALL 529 houses
 // ============================================
@@ -297,6 +308,64 @@ function generatePersons(): { persons: Person[]; families: Family[] } {
       const lastVisitMonth = String(Math.floor(rng() * 3) + 1).padStart(2, "0");
       const lastVisitDay = String(Math.floor(rng() * 28) + 1).padStart(2, "0");
 
+      // Generate vaccination history
+      const vaccinations: Vaccination[] = [];
+      // Most adults get COVID + Flu; elderly also get pneumococcal/shingles
+      if (age >= 12) {
+        // COVID-19 — most people got 2-4 doses
+        const covidDoses = Math.floor(rng() * 3) + (rng() < 0.15 ? 0 : 2); // 0-4, 85% got at least 2
+        for (let d = 0; d < Math.min(covidDoses, 4); d++) {
+          const doseYear = 2021 + Math.floor(d / 2);
+          const doseMonth = (d * 4 + Math.floor(rng() * 3) + 1);
+          const adjM = ((doseMonth - 1) % 12) + 1;
+          vaccinations.push({
+            id: `V-${personIdx}-covid-${d}`,
+            vaccineName: "วัคซีนโควิด-19",
+            vaccineNameEn: "COVID-19",
+            dose: VACCINE_POOL[1].doses[d],
+            date: `${doseYear}-${String(adjM).padStart(2, "0")}-${String(Math.floor(rng() * 28) + 1).padStart(2, "0")}`,
+            provider: pick(PROVIDERS_NAMES),
+            lot: `CV${String(Math.floor(rng() * 9000) + 1000)}`,
+          });
+        }
+        // Influenza — ~60% got it recently
+        if (rng() < 0.6) {
+          vaccinations.push({
+            id: `V-${personIdx}-flu`,
+            vaccineName: "วัคซีนไข้หวัดใหญ่",
+            vaccineNameEn: "Influenza",
+            dose: "ประจำปี",
+            date: `2025-${String(Math.floor(rng() * 3) + 10).padStart(2, "0")}-${String(Math.floor(rng() * 28) + 1).padStart(2, "0")}`,
+            provider: pick(PROVIDERS_NAMES),
+          });
+        }
+      }
+      if (isElderly) {
+        // Pneumococcal — ~40%
+        if (rng() < 0.4) {
+          vaccinations.push({
+            id: `V-${personIdx}-pneumo`,
+            vaccineName: "วัคซีนปอดอักเสบ",
+            vaccineNameEn: "Pneumococcal",
+            dose: "เข็ม 1",
+            date: `2024-${String(Math.floor(rng() * 12) + 1).padStart(2, "0")}-${String(Math.floor(rng() * 28) + 1).padStart(2, "0")}`,
+            provider: pick(PROVIDERS_NAMES),
+          });
+        }
+        // Shingles — ~20%
+        if (rng() < 0.2) {
+          vaccinations.push({
+            id: `V-${personIdx}-shingles`,
+            vaccineName: "วัคซีนงูสวัด",
+            vaccineNameEn: "Shingles",
+            dose: "เข็ม 1",
+            date: `2025-${String(Math.floor(rng() * 6) + 1).padStart(2, "0")}-${String(Math.floor(rng() * 28) + 1).padStart(2, "0")}`,
+            provider: pick(PROVIDERS_NAMES),
+          });
+        }
+      }
+      vaccinations.sort((a, b) => b.date.localeCompare(a.date));
+
       allPersons.push({
         id: pid,
         hn,
@@ -316,6 +385,7 @@ function generatePersons(): { persons: Person[]; families: Family[] } {
         lastVisit: `2026-${lastVisitMonth}-${lastVisitDay}`,
         chronicDiseases: diseases,
         healthEvents: events,
+        vaccinations,
       });
 
       personIdx++;
@@ -411,3 +481,33 @@ export function generateAISummary(): string {
 
   return `ขณะนี้หมู่ 12 (บ้านน้ำรีพัฒนา) มีสัดส่วนผู้สูงอายุและผู้ป่วยโรคความดันโลหิตสูงสูงกว่าหมู่ 11 เล็กน้อย (ร้อยละ ${elderlyPctMoo12} เทียบกับ ${elderlyPctMoo11}) จากประชากรรวม ${totalPop.toLocaleString()} คน ใน ${totalHouses} หลังคาเรือน ควรเฝ้าระวังกลุ่มเป้าหมายในบ้านที่มีความเสี่ยงสูงจำนวน ${highRiskTotal} หลังคาเรือน โดยเฉพาะครัวเรือนที่มีผู้สูงอายุ ≥2 คน หรือผู้ป่วย NCD ≥2 โรค`;
 }
+
+// ============================================
+// Outbreak Cases — last 14 days (simulated)
+// Dengue outbreak in parts of moo 11 & 12
+// ============================================
+function generateOutbreakCases(): OutbreakCase[] {
+  const rng = seededRandom(999);
+  const cases: OutbreakCase[] = [];
+  const outbreakHouses = houses.filter(() => rng() < 0.08); // ~8% of houses
+
+  for (const house of outbreakHouses) {
+    const housePersons = persons.filter((p) => p.houseId === house.id);
+    if (housePersons.length === 0) continue;
+    const person = housePersons[Math.floor(rng() * housePersons.length)];
+    const daysAgo = Math.floor(rng() * 14);
+    const reportDate = new Date(2026, 2, 26 - daysAgo);
+    const status: OutbreakCase["status"] = rng() < 0.6 ? "confirmed" : rng() < 0.8 ? "suspected" : "recovered";
+    cases.push({
+      houseId: house.id,
+      personId: person.id,
+      disease: rng() < 0.75 ? "ไข้เลือดออก (Dengue)" : "ไข้หวัดใหญ่ (Influenza)",
+      reportDate: reportDate.toISOString().split("T")[0],
+      status,
+    });
+  }
+  return cases;
+}
+
+export const outbreakCases: OutbreakCase[] = generateOutbreakCases();
+export const outbreakHouseIds = new Set(outbreakCases.map((c) => c.houseId));

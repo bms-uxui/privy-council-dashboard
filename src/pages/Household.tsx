@@ -16,8 +16,11 @@ import {
   FileText,
   Syringe,
   ArrowRightLeft,
+  Bug,
+  ShieldAlert,
+  CheckCircle2,
 } from "lucide-react";
-import { houses, persons } from "../data/mockData";
+import { houses, persons, outbreakCases, outbreakHouseIds } from "../data/mockData";
 import type { Person } from "../types";
 
 const RISK_COLORS = {
@@ -151,6 +154,24 @@ export default function Household() {
                 >
                   ความเสี่ยง{RISK_LABELS[selectedPerson.riskLevel]}
                 </span>
+                {/* Epidemic Risk Badge */}
+                {(() => {
+                  const inOutbreakArea = outbreakHouseIds.has(selectedPerson.houseId);
+                  const hasRecentFluVaccine = selectedPerson.vaccinations.some(
+                    (v) => v.vaccineNameEn === "Influenza" && v.date >= "2025-06-01"
+                  );
+                  const isVulnerable = selectedPerson.isElderly || selectedPerson.chronicDiseases.length > 0 || selectedPerson.age < 5;
+                  const isEpidemicRisk = inOutbreakArea && (!hasRecentFluVaccine || isVulnerable);
+                  if (isEpidemicRisk) {
+                    return (
+                      <span className="text-xs px-3 py-1 rounded-full bg-purple-50 text-purple-700 font-medium flex items-center gap-1">
+                        <Bug size={12} />
+                        เสี่ยงโรคระบาด
+                      </span>
+                    );
+                  }
+                  return null;
+                })()}
               </div>
             </div>
           </div>
@@ -365,6 +386,100 @@ export default function Household() {
             </p>
           )}
         </div>
+
+        {/* Vaccination History Timeline */}
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <h3 className="text-lg font-bold text-text mb-4 flex items-center gap-2">
+            <Syringe size={20} className="text-purple-600" />
+            ประวัติการฉีดวัคซีน
+          </h3>
+          {selectedPerson.vaccinations.length > 0 ? (
+            <div className="relative">
+              <div className="absolute left-[19px] top-0 bottom-0 w-[2px] bg-purple-100" />
+              <div className="space-y-5">
+                {selectedPerson.vaccinations.map((vax) => (
+                  <div key={vax.id} className="flex gap-4 relative">
+                    <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center z-10 flex-shrink-0">
+                      <CheckCircle2 size={18} className="text-purple-500" />
+                    </div>
+                    <div className="flex-1 pb-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs text-text-muted">{vax.date}</span>
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-purple-50 text-purple-600 font-medium">
+                          {vax.dose}
+                        </span>
+                        {vax.lot && (
+                          <span className="text-xs text-text-light">Lot: {vax.lot}</span>
+                        )}
+                      </div>
+                      <p className="text-sm font-medium text-text">
+                        {vax.vaccineName}
+                      </p>
+                      <p className="text-xs text-text-muted mt-0.5">
+                        {vax.vaccineNameEn} — {vax.provider}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm text-text-muted text-center py-6">
+              ไม่มีประวัติการฉีดวัคซีน
+            </p>
+          )}
+        </div>
+
+        {/* Epidemic Risk Alert */}
+        {(() => {
+          const inOutbreakArea = outbreakHouseIds.has(selectedPerson.houseId);
+          const outbreakForHouse = outbreakCases.filter((c) => c.houseId === selectedPerson.houseId);
+          const hasRecentFluVaccine = selectedPerson.vaccinations.some(
+            (v) => v.vaccineNameEn === "Influenza" && v.date >= "2025-06-01"
+          );
+          const isVulnerable = selectedPerson.isElderly || selectedPerson.chronicDiseases.length > 0 || selectedPerson.age < 5;
+          const isEpidemicRisk = inOutbreakArea && (!hasRecentFluVaccine || isVulnerable);
+
+          if (!isEpidemicRisk) return null;
+
+          return (
+            <div className="bg-purple-50 rounded-2xl p-6 shadow-sm border border-purple-200">
+              <h3 className="text-lg font-bold text-purple-700 mb-3 flex items-center gap-2">
+                <ShieldAlert size={20} />
+                แจ้งเตือนความเสี่ยงโรคระบาด
+              </h3>
+              <div className="space-y-2 text-sm text-purple-800">
+                {inOutbreakArea && (
+                  <p className="flex items-start gap-2">
+                    <Bug size={14} className="flex-shrink-0 mt-0.5" />
+                    อยู่ในพื้นที่ที่มีรายงานโรคระบาดใน 14 วันที่ผ่านมา
+                  </p>
+                )}
+                {outbreakForHouse.length > 0 && (
+                  <div className="ml-6 space-y-1">
+                    {outbreakForHouse.map((c, i) => (
+                      <p key={i} className="text-xs text-purple-600">
+                        {c.disease} — รายงานวันที่ {c.reportDate} ({c.status === "confirmed" ? "ยืนยัน" : c.status === "suspected" ? "สงสัย" : "หายแล้ว"})
+                      </p>
+                    ))}
+                  </div>
+                )}
+                {!hasRecentFluVaccine && (
+                  <p className="flex items-start gap-2">
+                    <Syringe size={14} className="flex-shrink-0 mt-0.5" />
+                    ยังไม่ได้รับวัคซีนไข้หวัดใหญ่ในปีนี้
+                  </p>
+                )}
+                {isVulnerable && (
+                  <p className="flex items-start gap-2">
+                    <AlertTriangle size={14} className="flex-shrink-0 mt-0.5" />
+                    กลุ่มเสี่ยง: {selectedPerson.isElderly ? "ผู้สูงอายุ" : ""}{selectedPerson.chronicDiseases.length > 0 ? " มีโรคเรื้อรัง" : ""}{selectedPerson.age < 5 ? " เด็กเล็ก" : ""}
+                  </p>
+                )}
+              </div>
+            </div>
+          );
+        })()}
       </div>
     );
   }

@@ -66,6 +66,7 @@ export interface Person {
   isElderly: boolean;
   lastVisit: string;
   healthEvents: HealthEvent[];
+  vaccinations: Vaccination[];
 }
 
 export interface ChronicDisease {
@@ -113,4 +114,22 @@ export interface NCDStats {
   moo11: number;
   moo12: number;
   total: number;
+}
+
+export interface Vaccination {
+  id: string;
+  vaccineName: string;
+  vaccineNameEn: string;
+  dose: string;
+  date: string;
+  provider: string;
+  lot?: string;
+}
+
+export interface OutbreakCase {
+  houseId: string;
+  personId: string;
+  disease: string;
+  reportDate: string;
+  status: "confirmed" | "suspected" | "recovered";
 }

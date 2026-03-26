@@ -86,8 +86,9 @@ import {
   Globe,
   Search,
   ChevronDown as ChevronDownIcon,
+  Bug,
 } from "lucide-react";
-import { houses, persons, villages, ncdStats, riskCounts, generateAISummary, populationComparison, healthCoverageData } from "../data/mockData";
+import { houses, persons, villages, ncdStats, riskCounts, generateAISummary, populationComparison, healthCoverageData, outbreakCases, outbreakHouseIds } from "../data/mockData";
 import type { House } from "../types";
 
 // ============================================
@@ -162,6 +163,7 @@ const FILTERS = [
   { key: "low", label: "เสี่ยงต่ำ", Icon: Home, color: "#16A34A" },
   { key: "elderly", label: "ผู้สูงอายุ", Icon: UserRound, color: "#6EC3C3" },
   { key: "ncd", label: "ผู้ป่วย NCD", Icon: Stethoscope, color: "#DC2626" },
+  { key: "outbreak", label: "Disease Outbreak", Icon: Bug, color: "#9333EA" },
 ];
 
 const RISK_COLORS: Record<string, string> = { high: "#DC2626", medium: "#F59E0B", low: "#16A34A" };
@@ -184,11 +186,13 @@ export default function GISMap() {
   const [searchResults, setSearchResults] = useState<{ type: "house" | "person"; house: House; personName?: string }[]>([]);
   const [showSearch, setShowSearch] = useState(false);
   const [aiExpanded, setAiExpanded] = useState(false);
+  const [outbreakMode, setOutbreakMode] = useState(false);
   const leftScroll = useScrollShadow();
   const rightScroll = useScrollShadow();
 
   const filteredHouses = useMemo(() => {
     return houses.filter((h) => {
+      if (activeFilter === "outbreak") return outbreakHouseIds.has(h.id);
       if (activeFilter === "all") return true;
       if (activeFilter === "high" || activeFilter === "medium" || activeFilter === "low") return h.riskLevel === activeFilter;
       if (activeFilter === "elderly") return h.elderlyCount > 0;
@@ -198,6 +202,9 @@ export default function GISMap() {
       return true;
     });
   }, [activeFilter]);
+
+  // Toggle outbreak mode when filter changes
+  const isOutbreakActive = activeFilter === "outbreak";
 
   const houseMembers = selectedHouse ? persons.filter((p) => p.houseId === selectedHouse.id) : [];
 
@@ -480,24 +487,41 @@ export default function GISMap() {
         source: SOURCE_ID,
         filter: ["!", ["has", "point_count"]],
         paint: {
-          "circle-color": [
-            "match", ["get", "riskLevel"],
-            "high", "#DC2626",
-            "medium", "#F59E0B",
-            "low", "#16A34A",
-            "#1C85AD",
-          ],
-          "circle-radius": 8,
+          "circle-color": activeFilter === "outbreak"
+            ? "#9333EA"
+            : [
+                "match", ["get", "riskLevel"],
+                "high", "#DC2626",
+                "medium", "#F59E0B",
+                "low", "#16A34A",
+                "#1C85AD",
+              ],
+          "circle-radius": activeFilter === "outbreak" ? 9 : 8,
           "circle-stroke-width": 2.5,
-          "circle-stroke-color": [
-            "match", ["get", "moo"],
-            11, "#1C85AD",
-            12, "#6EC3C3",
-            "#1C85AD",
-          ],
-          "circle-opacity": 0.85,
+          "circle-stroke-color": activeFilter === "outbreak"
+            ? "#7C3AED"
+            : [
+                "match", ["get", "moo"],
+                11, "#1C85AD",
+                12, "#6EC3C3",
+                "#1C85AD",
+              ],
+          "circle-opacity": 0.9,
         },
       });
+
+      // Outbreak pulse rings (DOM markers)
+      if (activeFilter === "outbreak") {
+        filteredHouses.forEach((h) => {
+          const el = document.createElement("div");
+          el.className = "outbreak-pulse";
+          el.style.cssText = "width:28px;height:28px;background:rgba(147,51,234,0.25);pointer-events:none;";
+          const marker = new maplibregl.Marker({ element: el, anchor: "center" })
+            .setLngLat([h.lng, h.lat])
+            .addTo(map);
+          markersRef.current.push(marker);
+        });
+      }
 
       // Click cluster → zoom in
       map.on("click", CLUSTER_LAYER, (e) => {
