@@ -1039,14 +1039,25 @@ export default function GISMap() {
             {/* Disease breakdown */}
             <div className="space-y-1.5">
               {(() => {
+                const DISEASE_COLORS: Record<string, { bg: string; dot: string }> = {
+                  "ไข้หวัดใหญ่ (Influenza)": { bg: "rgba(59,130,246,0.15)", dot: "#3B82F6" },
+                  "อุจจาระร่วง/อาหารเป็นพิษ (Diarrhea)": { bg: "rgba(245,158,11,0.15)", dot: "#F59E0B" },
+                  "ไข้เลือดออก (Dengue)": { bg: "rgba(220,38,38,0.15)", dot: "#DC2626" },
+                  "ปอดอักเสบ (Pneumonia)": { bg: "rgba(16,185,129,0.15)", dot: "#10B981" },
+                  "สครับไทฟัส (Scrub Typhus)": { bg: "rgba(236,72,153,0.15)", dot: "#EC4899" },
+                };
                 const diseaseMap = new Map<string, number>();
                 outbreakCases.forEach((c) => diseaseMap.set(c.disease, (diseaseMap.get(c.disease) || 0) + 1));
-                return Array.from(diseaseMap.entries()).sort((a, b) => b[1] - a[1]).map(([disease, count]) => (
-                  <div key={disease} className="flex items-center justify-between bg-white/10 rounded-lg px-3 py-2">
-                    <span className="text-xs">{disease}</span>
-                    <span className="text-xs font-bold">{count} ราย</span>
-                  </div>
-                ));
+                return Array.from(diseaseMap.entries()).sort((a, b) => b[1] - a[1]).map(([disease, count]) => {
+                  const color = DISEASE_COLORS[disease] || { bg: "rgba(255,255,255,0.1)", dot: "#fff" };
+                  return (
+                    <div key={disease} className="flex items-center gap-2 rounded-lg px-3 py-2" style={{ backgroundColor: color.bg }}>
+                      <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: color.dot }} />
+                      <span className="text-xs flex-1">{disease}</span>
+                      <span className="text-xs font-bold">{count} ราย</span>
+                    </div>
+                  );
+                });
               })()}
             </div>
           </div>
@@ -1062,10 +1073,19 @@ export default function GISMap() {
                   const house = houses.find((h) => h.id === c.houseId);
                   const statusColor = c.status === "confirmed" ? "bg-red-50 text-red-600" : c.status === "suspected" ? "bg-amber-50 text-amber-600" : "bg-green-50 text-green-600";
                   const statusLabel = c.status === "confirmed" ? "ยืนยัน" : c.status === "suspected" ? "สงสัย" : "หายแล้ว";
+                  const diseaseColorMap: Record<string, string> = {
+                    "ไข้หวัดใหญ่ (Influenza)": "#3B82F6",
+                    "อุจจาระร่วง/อาหารเป็นพิษ (Diarrhea)": "#F59E0B",
+                    "ไข้เลือดออก (Dengue)": "#DC2626",
+                    "ปอดอักเสบ (Pneumonia)": "#10B981",
+                    "สครับไทฟัส (Scrub Typhus)": "#EC4899",
+                  };
+                  const dotColor = diseaseColorMap[c.disease] || "#9333EA";
                   return (
                     <div
                       key={i}
                       className="p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer"
+                      style={{ borderLeft: `3px solid ${dotColor}` }}
                       onClick={() => { if (house) setSelectedHouse(house); }}
                     >
                       <div className="flex items-center justify-between mb-1.5">
@@ -1075,7 +1095,10 @@ export default function GISMap() {
                       {person && (
                         <p className="text-sm font-medium text-text">{person.prefix}{person.firstName} {person.lastName}</p>
                       )}
-                      <p className="text-xs text-purple-600 font-medium mt-0.5">{c.disease}</p>
+                      <p className="text-xs font-medium mt-0.5 flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: dotColor }} />
+                        <span style={{ color: dotColor }}>{c.disease}</span>
+                      </p>
                       {house && (
                         <p className="text-xs text-text-muted mt-0.5">บ้านเลขที่ {house.houseCode} · หมู่ {house.moo}</p>
                       )}
