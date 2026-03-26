@@ -1106,33 +1106,34 @@ export default function GISMap() {
             const maxDaily = Math.max(...dailyData.map((d) => d[1]), 1);
 
             return (
-          <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg p-5 flex-shrink-0">
+          <div
+            className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg p-5 flex-shrink-0 cursor-pointer hover:shadow-xl hover:ring-1 hover:ring-purple-200 active:scale-[0.99] transition-all"
+            onClick={() => setOutbreakView(outbreakView === "mini" ? "full" : "mini")}
+          >
             {/* Header with toggle */}
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <Bug size={20} className="text-purple-500" />
                 <p className="text-base font-bold text-text">เฝ้าระวังโรคระบาด</p>
               </div>
-              <button
-                onClick={(e) => { e.stopPropagation(); setOutbreakView(outbreakView === "mini" ? "full" : "mini"); }}
-                className="relative group w-7 h-7 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-text-muted hover:text-purple-600 transition-colors"
-              >
+              <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center text-text-muted">
                 {outbreakView === "mini" ? <Maximize2 size={13} /> : <Minimize2 size={13} />}
-                <span className="absolute bottom-full mb-1.5 px-2 py-0.5 rounded bg-gray-900 text-white text-[10px] whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity">
-                  {outbreakView === "mini" ? "ดูเพิ่มเติม" : "ย่อ"}
-                </span>
-              </button>
+              </div>
             </div>
 
             {/* KPI row — always visible */}
-            <div className="grid grid-cols-2 gap-2 mb-4">
+            <div className="grid grid-cols-3 gap-2 mb-4">
               <div className="bg-gray-50 rounded-xl p-3 text-center">
                 <p className="text-2xl font-bold text-text">{totalCases}</p>
-                <p className="text-xs text-text-muted">ผู้ป่วยทั้งหมด</p>
+                <p className="text-xs text-text-muted">ผู้ป่วย</p>
               </div>
               <div className="bg-red-50 rounded-xl p-3 text-center">
                 <p className="text-2xl font-bold text-red-600">{confirmed}</p>
-                <p className="text-xs text-red-400">ยืนยันแล้ว</p>
+                <p className="text-xs text-red-400">ยืนยัน</p>
+              </div>
+              <div className="bg-gray-50 rounded-xl p-3 text-center">
+                <p className="text-2xl font-bold text-text">{outbreakHouseIds.size}</p>
+                <p className="text-xs text-text-muted">ครัวเรือน</p>
               </div>
             </div>
 
@@ -1142,10 +1143,23 @@ export default function GISMap() {
               <div className="h-full bg-amber-400" style={{ width: `${(suspected / totalCases) * 100}%` }} />
               <div className="h-full bg-green-500" style={{ width: `${(recovered / totalCases) * 100}%` }} />
             </div>
-            <div className="flex justify-between text-xs">
+            <div className="flex justify-between text-xs mb-4">
               <span className="text-red-500 font-medium">ยืนยัน {confirmed}</span>
               <span className="text-amber-500 font-medium">สงสัย {suspected}</span>
               <span className="text-green-500 font-medium">หายแล้ว {recovered}</span>
+            </div>
+
+            {/* Disease dots — always visible (compact) */}
+            <div className="flex flex-wrap gap-1.5">
+              {sorted.map(([disease, count]) => {
+                const color = DISEASE_COLORS[disease] || { bg: "rgba(0,0,0,0.05)", dot: "#6B7280" };
+                return (
+                  <span key={disease} className="flex items-center gap-1 text-xs px-2 py-1 rounded-full" style={{ backgroundColor: color.bg }}>
+                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: color.dot }} />
+                    {disease.split("(")[0].trim()} {count}
+                  </span>
+                );
+              })}
             </div>
 
             {/* ── Full mode: extra details ── */}
