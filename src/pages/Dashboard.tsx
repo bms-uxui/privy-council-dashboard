@@ -93,190 +93,86 @@ export default function Dashboard() {
   const fFemale = fPersons.filter((p) => p.gender === "female").length;
 
   return (
-    <div className="space-y-5">
-      {/* ── Header with Filters ── */}
-      <div className="bg-gradient-to-r from-royal-blue to-royal-blue-light rounded-2xl p-5 text-white shadow-lg">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-white/15 flex items-center justify-center">
-              <img
-                src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Seal_of_the_Ministry_of_Public_Health_of_Thailand.svg/120px-Seal_of_the_Ministry_of_Public_Health_of_Thailand.svg.png"
-                alt="MoPH"
-                className="w-8 h-8 rounded-full"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = "none";
-                }}
-              />
+    <div className="space-y-4">
+      {/* ── Header: compact bar ── */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-lg font-bold text-text">ศูนย์บัญชาการสุขภาพ</h1>
+          <p className="text-xs text-text-muted">ต.ขุนน่าน อ.เฉลิมพระเกียรติ จ.น่าน — ข้อมูลจาก HDC API</p>
+        </div>
+        <div className="flex items-center gap-2">
+          {[
+            { label: "เขตสุขภาพที่ 1" },
+            { label: "น่าน" },
+            { label: "ท่าวังผา" },
+          ].map((f) => (
+            <div key={f.label} className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gray-100 text-xs text-text-muted">
+              {f.label} <ChevronDown size={10} />
             </div>
-            <div>
-              <h1 className="text-xl font-bold">
-                Executive Village Health Dashboard
-              </h1>
-              <p className="text-white/70 text-xs">
-                ระบบแดชบอร์ดสุขภาพระดับหมู่บ้าน — จ.น่าน
-              </p>
-            </div>
-          </div>
-          {/* Filter Dropdowns */}
-          <div className="flex flex-wrap gap-2">
-            {[
-              { label: "เขตสุขภาพที่ 1", disabled: true },
-              { label: "น่าน", disabled: true },
-              { label: "ท่าวังผา", disabled: true },
-            ].map((f) => (
-              <div
-                key={f.label}
-                className="flex items-center gap-1 px-3 py-2 rounded-lg bg-white/10 text-xs text-white/80 min-h-[40px]"
+          ))}
+          <div className="flex gap-0.5 bg-gray-100 rounded-lg p-0.5 ml-1">
+            {(["all", "11", "12"] as const).map((m) => (
+              <button
+                key={m}
+                onClick={() => setSelectedMoo(m)}
+                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                  selectedMoo === m ? "bg-royal-blue text-white shadow-sm" : "text-text-muted hover:text-text"
+                }`}
               >
-                {f.label}
-                <ChevronDown size={12} className="text-white/50" />
-              </div>
+                {m === "all" ? "ทุกหมู่" : `ม.${m}`}
+              </button>
             ))}
-            <div className="flex gap-1 bg-white/10 rounded-lg p-0.5">
-              {(["all", "11", "12"] as const).map((m) => (
-                <button
-                  key={m}
-                  onClick={() => setSelectedMoo(m)}
-                  className={`px-3 py-2 rounded-md text-xs font-medium transition-all min-h-[40px] ${
-                    selectedMoo === m
-                      ? "bg-white text-royal-blue shadow"
-                      : "text-white/70 hover:text-white"
-                  }`}
-                >
-                  {m === "all" ? "ทุกหมู่" : `ม.${m}`}
-                </button>
-              ))}
-            </div>
           </div>
+          <a href="#/gis" className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-royal-blue/10 text-xs text-royal-blue font-medium hover:bg-royal-blue/20 transition-colors ml-1">
+            <MapIcon size={14} /> แผนที่
+          </a>
         </div>
       </div>
 
-      {/* ── Row 1: KPI Summary Cards (Health Atlas style) ── */}
+      {/* ── Row 1: 4 KPI cards + service units in one row ── */}
+      <div className="grid grid-cols-6 gap-3">
+        {[
+          { icon: Home, label: "ครัวเรือน", value: fHouses, color: "#1C85AD", bg: "bg-sky-50" },
+          { icon: Users, label: "ประชากร", value: fPop, color: "#0D9488", bg: "bg-teal-50" },
+          { icon: Users, label: "ผู้สูงอายุ", value: fElderly, color: "#F59E0B", bg: "bg-amber-50" },
+          { icon: HeartPulse, label: "ผู้ป่วย NCD", value: fNCD, color: "#DC2626", bg: "bg-red-50" },
+        ].map((kpi) => (
+          <div key={kpi.label} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+            <div className="flex items-center gap-2 mb-2">
+              <div className={`w-8 h-8 rounded-lg ${kpi.bg} flex items-center justify-center`}>
+                <kpi.icon size={16} style={{ color: kpi.color }} />
+              </div>
+              <span className="text-xs text-text-muted">{kpi.label}</span>
+            </div>
+            <p className="text-2xl font-bold text-text">{kpi.value.toLocaleString()}</p>
+          </div>
+        ))}
+        {/* Gender mini cards */}
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+              <Users size={16} className="text-blue-500" />
+            </div>
+            <span className="text-xs text-text-muted">ชาย</span>
+          </div>
+          <p className="text-2xl font-bold text-blue-600">{fMale.toLocaleString()}</p>
+          <p className="text-[10px] text-text-muted">{fPersons.length > 0 ? ((fMale / fPersons.length) * 100).toFixed(0) : 0}%</p>
+        </div>
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-8 h-8 rounded-lg bg-pink-50 flex items-center justify-center">
+              <Users size={16} className="text-pink-500" />
+            </div>
+            <span className="text-xs text-text-muted">หญิง</span>
+          </div>
+          <p className="text-2xl font-bold text-pink-600">{fFemale.toLocaleString()}</p>
+          <p className="text-[10px] text-text-muted">{fPersons.length > 0 ? ((fFemale / fPersons.length) * 100).toFixed(0) : 0}%</p>
+        </div>
+      </div>
+
+      {/* ── Row 2: Outbreak + Vaccine side by side ── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* ครัวเรือนทั้งหมด */}
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-teal-50 flex items-center justify-center flex-shrink-0">
-              <Home size={28} className="text-teal-600" />
-            </div>
-            <div className="flex-1">
-              <p className="text-sm text-text-muted">ครัวเรือนทั้งหมด</p>
-              <p className="text-3xl font-bold text-text">
-                Total {fHouses.toLocaleString()}
-              </p>
-            </div>
-          </div>
-          <div className="mt-3 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <MapPin size={14} className="text-teal-500" />
-              <span className="text-xs text-teal-600 font-medium">
-                ปักหมุดแล้วทั้งหมด : {fHouses.toLocaleString()}
-              </span>
-            </div>
-            <a href="#/gis" className="flex items-center gap-1 text-xs text-royal-blue hover:underline font-medium">
-              <MapIcon size={12} /> ดูแผนที่
-            </a>
-          </div>
-          <div className="mt-2 w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-            <div className="h-full bg-teal-500 rounded-full" style={{ width: "100%" }} />
-          </div>
-        </div>
-
-        {/* จำนวนประชากร */}
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-teal-50 flex items-center justify-center flex-shrink-0">
-              <Users size={28} className="text-teal-600" />
-            </div>
-            <div className="flex-1">
-              <p className="text-sm text-text-muted">จำนวนประชากร</p>
-              <p className="text-3xl font-bold text-text">
-                Total {fPop.toLocaleString()}
-              </p>
-            </div>
-          </div>
-          <div className="mt-3 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <MapPin size={14} className="text-teal-500" />
-              <span className="text-xs text-teal-600 font-medium">
-                ปักหมุดแล้วทั้งหมด : {fPop.toLocaleString()}
-              </span>
-            </div>
-            <a href="#/gis" className="flex items-center gap-1 text-xs text-royal-blue hover:underline font-medium">
-              <MapIcon size={12} /> ดูแผนที่
-            </a>
-          </div>
-          <div className="mt-2 w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-            <div className="h-full bg-teal-500 rounded-full" style={{ width: "100%" }} />
-          </div>
-        </div>
-      </div>
-
-      {/* ── Row 2: Note + Service Units ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Note */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-start gap-2">
-          <Info size={14} className="text-text-muted mt-0.5 flex-shrink-0" />
-          <p className="text-xs text-text-muted leading-relaxed">
-            หมายเหตุ : จำนวนข้อมูลตั้งต้นทั้งหมดอ้างอิงตามระบบคลังข้อมูลด้านการแพทย์และสาธารณสุข
-            (HDC) ข้อมูลรับผ่าน API จาก รพ.สต.น้ำรีพัฒนา และ รพ.น่าน
-          </p>
-        </div>
-
-        {/* Service Units */}
-        <div className="lg:col-span-2 bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-          <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-            {/* อสม. */}
-            <div className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-gray-50">
-              <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center">
-                <Users size={18} className="text-blue-500" />
-              </div>
-              <span className="text-xs font-medium text-text">อสม.</span>
-              <span className="text-lg font-bold text-text">12 คน</span>
-            </div>
-            {/* หน่วยบริการ */}
-            <div className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-gray-50">
-              <div className="w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center">
-                <Building2 size={18} className="text-indigo-500" />
-              </div>
-              <span className="text-xs font-medium text-text">หน่วยบริการ</span>
-              <span className="text-lg font-bold text-text">1 แห่ง</span>
-            </div>
-            {/* รพ. */}
-            <div className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-gray-50">
-              <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center">
-                <Hospital size={18} className="text-green-600" />
-              </div>
-              <span className="text-xs font-medium text-text flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-green-500" /> รพ.
-              </span>
-              <span className="text-lg font-bold text-text">0 แห่ง</span>
-            </div>
-            {/* รพ.สต. */}
-            <div className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-gray-50">
-              <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center">
-                <Hospital size={18} className="text-emerald-500" />
-              </div>
-              <span className="text-xs font-medium text-text flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-emerald-500" /> รพ.สต.
-              </span>
-              <span className="text-lg font-bold text-text">1 แห่ง</span>
-            </div>
-            {/* อื่นๆ */}
-            <div className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-gray-50">
-              <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
-                <Building2 size={18} className="text-gray-400" />
-              </div>
-              <span className="text-xs font-medium text-text flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-gray-400" /> อื่นๆ
-              </span>
-              <span className="text-lg font-bold text-text">0 แห่ง</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ── Outbreak Alert Banner ── */}
+      {/* Outbreak */}
       {outbreakCases.length > 0 && (() => {
         const confirmed = outbreakCases.filter((c) => c.status === "confirmed").length;
         const suspected = outbreakCases.filter((c) => c.status === "suspected").length;
@@ -413,6 +309,7 @@ export default function Dashboard() {
           </div>
         );
       })()}
+      </div>
 
       {/* ── Row 3: Patient Table + Right Panel ── */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-5 items-start">
