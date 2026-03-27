@@ -13,6 +13,7 @@ import {
   ShieldAlert,
   Syringe,
   Map as MapIcon,
+  LayoutDashboard,
 } from "lucide-react";
 import {
   BarChart,
@@ -97,8 +98,13 @@ export default function Dashboard() {
       {/* ── Header ── */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-lg font-bold text-text">ศูนย์บัญชาการสุขภาพ</h1>
-          <p className="text-xs text-text-muted">ต.ขุนน่าน อ.เฉลิมพระเกียรติ จ.น่าน</p>
+          <h1 className="text-2xl lg:text-3xl font-bold text-royal-blue flex items-center gap-3">
+            <LayoutDashboard size={28} />
+            ศูนย์บัญชาการสุขภาพ
+          </h1>
+          <p className="text-text-muted text-sm mt-1">
+            ต.ขุนน่าน อ.เฉลิมพระเกียรติ จ.น่าน — ข้อมูลจาก HDC API
+          </p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <div className="hidden md:flex items-center gap-2">

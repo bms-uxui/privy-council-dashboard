@@ -89,6 +89,7 @@ import {
   ChevronDown as ChevronDownIcon,
   Bug,
   Syringe,
+  BookSearch,
 } from "lucide-react";
 import { houses, persons, villages, ncdStats, riskCounts, generateAISummary, populationComparison, healthCoverageData, outbreakCases, outbreakHouseIds, VACCINE_GROUP_LABELS, VACCINE_DEFS } from "../data/mockData";
 import type { House, VaccineGroup } from "../types";
@@ -117,42 +118,42 @@ const ICON_SVG = {
 
 // ต.ขุนน่าน district boundary (approximate from terrain)
 const KHUN_NAN_TAMBON: [number, number][] = [
-  [101.16,19.50],[101.17,19.51],[101.18,19.52],[101.19,19.53],
-  [101.19,19.55],[101.19,19.57],[101.20,19.58],[101.22,19.59],
-  [101.24,19.59],[101.26,19.58],[101.27,19.57],[101.27,19.55],
-  [101.26,19.53],[101.25,19.52],[101.25,19.51],[101.26,19.50],
-  [101.25,19.49],[101.24,19.48],[101.22,19.48],[101.20,19.49],
-  [101.18,19.50],[101.16,19.50],
+  [101.16, 19.50], [101.17, 19.51], [101.18, 19.52], [101.19, 19.53],
+  [101.19, 19.55], [101.19, 19.57], [101.20, 19.58], [101.22, 19.59],
+  [101.24, 19.59], [101.26, 19.58], [101.27, 19.57], [101.27, 19.55],
+  [101.26, 19.53], [101.25, 19.52], [101.25, 19.51], [101.26, 19.50],
+  [101.25, 19.49], [101.24, 19.48], [101.22, 19.48], [101.20, 19.49],
+  [101.18, 19.50], [101.16, 19.50],
 ];
 
 // หมู่ 11 บ้านน้ำช้าง — from OSM residential landuse + road 1307 valley
 const MOO_11_AREA: [number, number][] = [
-  [101.2000,19.5525],[101.2015,19.5535],[101.2030,19.5540],
-  [101.2045,19.5540],[101.2060,19.5535],[101.2075,19.5520],
-  [101.2090,19.5510],[101.2100,19.5505],[101.2110,19.5498],
-  [101.2120,19.5490],[101.2130,19.5478],[101.2125,19.5465],
-  [101.2118,19.5460],[101.2100,19.5455],[101.2085,19.5448],
-  [101.2070,19.5445],[101.2060,19.5448],[101.2055,19.5450],
-  [101.2045,19.5445],[101.2035,19.5435],[101.2025,19.5428],
-  [101.2015,19.5422],[101.2005,19.5420],[101.1998,19.5422],
-  [101.1990,19.5440],[101.1985,19.5460],[101.1988,19.5480],
-  [101.1993,19.5500],[101.1998,19.5515],[101.2000,19.5525],
+  [101.2000, 19.5525], [101.2015, 19.5535], [101.2030, 19.5540],
+  [101.2045, 19.5540], [101.2060, 19.5535], [101.2075, 19.5520],
+  [101.2090, 19.5510], [101.2100, 19.5505], [101.2110, 19.5498],
+  [101.2120, 19.5490], [101.2130, 19.5478], [101.2125, 19.5465],
+  [101.2118, 19.5460], [101.2100, 19.5455], [101.2085, 19.5448],
+  [101.2070, 19.5445], [101.2060, 19.5448], [101.2055, 19.5450],
+  [101.2045, 19.5445], [101.2035, 19.5435], [101.2025, 19.5428],
+  [101.2015, 19.5422], [101.2005, 19.5420], [101.1998, 19.5422],
+  [101.1990, 19.5440], [101.1985, 19.5460], [101.1988, 19.5480],
+  [101.1993, 19.5500], [101.1998, 19.5515], [101.2000, 19.5525],
 ];
 
 // หมู่ 12 บ้านน้ำรีพัฒนา — from OSM residential landuse along Nam Ri creek
 const MOO_12_AREA: [number, number][] = [
-  [101.2194,19.5210],[101.2205,19.5215],[101.2215,19.5212],
-  [101.2225,19.5210],[101.2232,19.5208],[101.2245,19.5207],
-  [101.2258,19.5210],[101.2270,19.5207],[101.2280,19.5202],
-  [101.2295,19.5200],[101.2302,19.5198],[101.2305,19.5195],
-  [101.2305,19.5185],[101.2300,19.5170],[101.2295,19.5165],
-  [101.2285,19.5160],[101.2270,19.5158],[101.2260,19.5162],
-  [101.2250,19.5168],[101.2240,19.5170],[101.2230,19.5167],
-  [101.2220,19.5162],[101.2210,19.5158],[101.2200,19.5150],
-  [101.2195,19.5145],[101.2192,19.5142],[101.2190,19.5148],
-  [101.2192,19.5155],[101.2190,19.5165],[101.2188,19.5175],
-  [101.2187,19.5185],[101.2188,19.5195],[101.2190,19.5202],
-  [101.2194,19.5210],
+  [101.2194, 19.5210], [101.2205, 19.5215], [101.2215, 19.5212],
+  [101.2225, 19.5210], [101.2232, 19.5208], [101.2245, 19.5207],
+  [101.2258, 19.5210], [101.2270, 19.5207], [101.2280, 19.5202],
+  [101.2295, 19.5200], [101.2302, 19.5198], [101.2305, 19.5195],
+  [101.2305, 19.5185], [101.2300, 19.5170], [101.2295, 19.5165],
+  [101.2285, 19.5160], [101.2270, 19.5158], [101.2260, 19.5162],
+  [101.2250, 19.5168], [101.2240, 19.5170], [101.2230, 19.5167],
+  [101.2220, 19.5162], [101.2210, 19.5158], [101.2200, 19.5150],
+  [101.2195, 19.5145], [101.2192, 19.5142], [101.2190, 19.5148],
+  [101.2192, 19.5155], [101.2190, 19.5165], [101.2188, 19.5175],
+  [101.2187, 19.5185], [101.2188, 19.5195], [101.2190, 19.5202],
+  [101.2194, 19.5210],
 ];
 
 // ============================================
@@ -204,6 +205,7 @@ export default function GISMap() {
   const [vaccineView, setVaccineView] = useState<"mini" | "full">("mini");
   const [villageTab, setVillageTab] = useState<number>(11);
   const [mobilePanel, setMobilePanel] = useState<"left" | "right" | null>(null);
+  const [fabOpen, setFabOpen] = useState(false);
   const leftScroll = useScrollShadow();
   const rightScroll = useScrollShadow();
 
@@ -515,26 +517,26 @@ export default function GISMap() {
         paint: {
           "circle-color": isOutbreak
             ? [
-                "step", ["get", "point_count"],
-                "#F87171",  // < 5: light red
-                5, "#DC2626", // 5-15: red
-                15, "#991B1B", // 15+: dark red
-              ]
+              "step", ["get", "point_count"],
+              "#F87171",  // < 5: light red
+              5, "#DC2626", // 5-15: red
+              15, "#991B1B", // 15+: dark red
+            ]
             : [
-                "step", ["get", "point_count"],
-                "#6EC3C3",  // < 10
-                10, "#1C85AD", // 10-30
-                30, "#156A8A", // 30+
-              ],
+              "step", ["get", "point_count"],
+              "#6EC3C3",  // < 10
+              10, "#1C85AD", // 10-30
+              30, "#156A8A", // 30+
+            ],
           "circle-radius": isOutbreak
             ? [
-                "step", ["get", "point_count"],
-                20, 5, 26, 15, 34,
-              ]
+              "step", ["get", "point_count"],
+              20, 5, 26, 15, 34,
+            ]
             : [
-                "step", ["get", "point_count"],
-                18, 10, 24, 30, 32,
-              ],
+              "step", ["get", "point_count"],
+              18, 10, 24, 30, 32,
+            ],
           "circle-stroke-width": activeFilter === "vaccine" ? 0 : isOutbreak ? 2.5 : 3,
           "circle-stroke-color": "#ffffff",
           "circle-opacity": activeFilter === "vaccine" ? 0 : isOutbreak ? 0.9 : 0.85,
@@ -567,31 +569,31 @@ export default function GISMap() {
         paint: {
           "circle-color": activeFilter === "outbreak"
             ? [
-                "match", ["get", "outbreakDisease"],
-                "ไข้หวัดใหญ่ (Influenza)", "#3B82F6",
-                "อุจจาระร่วง/อาหารเป็นพิษ (Diarrhea)", "#F59E0B",
-                "ไข้เลือดออก (Dengue)", "#DC2626",
-                "ปอดอักเสบ (Pneumonia)", "#10B981",
-                "สครับไทฟัส (Scrub Typhus)", "#EC4899",
-                "#9333EA",
-              ]
+              "match", ["get", "outbreakDisease"],
+              "ไข้หวัดใหญ่ (Influenza)", "#3B82F6",
+              "อุจจาระร่วง/อาหารเป็นพิษ (Diarrhea)", "#F59E0B",
+              "ไข้เลือดออก (Dengue)", "#DC2626",
+              "ปอดอักเสบ (Pneumonia)", "#10B981",
+              "สครับไทฟัส (Scrub Typhus)", "#EC4899",
+              "#9333EA",
+            ]
             : [
-                "match", ["get", "riskLevel"],
-                "high", "#DC2626",
-                "medium", "#F59E0B",
-                "low", "#16A34A",
-                "#1C85AD",
-              ],
+              "match", ["get", "riskLevel"],
+              "high", "#DC2626",
+              "medium", "#F59E0B",
+              "low", "#16A34A",
+              "#1C85AD",
+            ],
           "circle-radius": activeFilter === "outbreak" ? 9 : 8,
           "circle-stroke-width": 2.5,
           "circle-stroke-color": activeFilter === "outbreak"
             ? "#ffffff"
             : [
-                "match", ["get", "moo"],
-                11, "#1C85AD",
-                12, "#6EC3C3",
-                "#1C85AD",
-              ],
+              "match", ["get", "moo"],
+              11, "#1C85AD",
+              12, "#6EC3C3",
+              "#1C85AD",
+            ],
           "circle-opacity": 0.9,
         },
       });
@@ -814,7 +816,7 @@ export default function GISMap() {
   const elderlyPct = ((totalElderly / totalPop) * 100).toFixed(1);
 
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full overflow-hidden">
       {/* Map canvas */}
       <div ref={mapContainer} className="w-full h-full" />
 
@@ -946,9 +948,8 @@ export default function GISMap() {
                   <button
                     key={key}
                     onClick={() => { setMapStyle(key); setShowStylePicker(false); }}
-                    className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                      isActive ? "bg-royal-blue text-white" : "text-text hover:bg-gray-50"
-                    }`}
+                    className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${isActive ? "bg-royal-blue text-white" : "text-text hover:bg-gray-50"
+                      }`}
                   >
                     <Icon size={14} />
                     <span>{s.name}</span>
@@ -1218,418 +1219,418 @@ export default function GISMap() {
 
       {/* ══════ RIGHT PANEL — Summary insight + list (hidden when house selected) ══════ */}
       {!selectedHouse && (
-      <div ref={rightScroll.ref} className={`absolute top-20 right-3 bottom-14 z-10 w-[400px] flex-col gap-3 overflow-y-auto no-scrollbar ${rightScroll.shadowClass} hidden lg:flex`}>
+        <div ref={rightScroll.ref} className={`absolute top-20 right-3 bottom-14 z-10 w-[400px] flex-col gap-3 overflow-y-auto no-scrollbar ${rightScroll.shadowClass} hidden lg:flex`}>
 
-        {/* ── Vaccine Mode: Right Panel ── */}
-        {activeFilter === "vaccine" ? (
-        <>
-          {/* Vaccine summary card — click to open modal */}
-          {(() => {
-            const relevantDefs = vaccineGroup === "all" ? VACCINE_DEFS : VACCINE_DEFS.filter((d) => d.group === vaccineGroup);
-            const personsWithAnyVax = vaccineGroup === "all"
-              ? persons.filter((p) => p.vaccinations.length > 0).length
-              : persons.filter((p) => p.vaccinations.some((v) => v.group === vaccineGroup)).length;
-            const totalEligible = relevantDefs.reduce((sum, vd) => sum + persons.filter((p) => p.age >= vd.ageMin && p.age <= vd.ageMax && (!vd.gender || p.gender === vd.gender)).length, 0);
-            const totalVaccinated = relevantDefs.reduce((sum, vd) => sum + persons.filter((p) => p.vaccinations.some((v) => v.vaccineCode === vd.code)).length, 0);
-            const coveragePct = totalEligible > 0 ? ((totalVaccinated / totalEligible) * 100).toFixed(1) : "0";
+          {/* ── Vaccine Mode: Right Panel ── */}
+          {activeFilter === "vaccine" ? (
+            <>
+              {/* Vaccine summary card — click to open modal */}
+              {(() => {
+                const relevantDefs = vaccineGroup === "all" ? VACCINE_DEFS : VACCINE_DEFS.filter((d) => d.group === vaccineGroup);
+                const personsWithAnyVax = vaccineGroup === "all"
+                  ? persons.filter((p) => p.vaccinations.length > 0).length
+                  : persons.filter((p) => p.vaccinations.some((v) => v.group === vaccineGroup)).length;
+                const totalEligible = relevantDefs.reduce((sum, vd) => sum + persons.filter((p) => p.age >= vd.ageMin && p.age <= vd.ageMax && (!vd.gender || p.gender === vd.gender)).length, 0);
+                const totalVaccinated = relevantDefs.reduce((sum, vd) => sum + persons.filter((p) => p.vaccinations.some((v) => v.vaccineCode === vd.code)).length, 0);
+                const coveragePct = totalEligible > 0 ? ((totalVaccinated / totalEligible) * 100).toFixed(1) : "0";
 
-            return (
-          <div
-            className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg p-5 flex-shrink-0 cursor-pointer hover:shadow-xl hover:ring-1 hover:ring-sky-200 active:scale-[0.98] transition-all overflow-visible"
-            onClick={() => setExpandedWidget("vaccine")}
-          >
-            {/* Header */}
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <Syringe size={20} className="text-sky-500" />
-                <p className="text-base font-bold text-text">ความครอบคลุมวัคซีน</p>
-              </div>
-              <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center text-text-muted">
-                <Maximize2 size={13} />
-              </div>
-            </div>
-
-            {/* Group pills */}
-            <div className="flex flex-wrap gap-1.5 mb-4" onClick={(e) => e.stopPropagation()}>
-              <button
-                onClick={() => setVaccineGroup("all")}
-                className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${vaccineGroup === "all" ? "bg-sky-500 text-white border-sky-500" : "bg-white text-text-muted border-gray-200"}`}
-              >ทั้งหมด</button>
-              {(Object.entries(VACCINE_GROUP_LABELS) as [VaccineGroup, { name: string; color: string }][]).map(([key, { name, color }]) => (
-                <button
-                  key={key}
-                  onClick={() => setVaccineGroup(key)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${vaccineGroup === key ? "text-white border-transparent" : "bg-white text-text-muted border-gray-200"}`}
-                  style={vaccineGroup === key ? { backgroundColor: color, borderColor: color } : {}}
-                >
-                  {name}
-                </button>
-              ))}
-            </div>
-
-            {/* KPIs — always visible */}
-            <div className="grid grid-cols-3 gap-2 mb-4">
-              <div className="bg-sky-50 rounded-xl p-3 text-center">
-                <p className="text-xl font-bold text-sky-600">{personsWithAnyVax}</p>
-                <p className="text-xs text-sky-400">ได้รับวัคซีน</p>
-              </div>
-              <div className="bg-gray-50 rounded-xl p-3 text-center">
-                <p className="text-xl font-bold text-text">{persons.length}</p>
-                <p className="text-xs text-text-muted">ประชากร</p>
-              </div>
-              <div className="bg-green-50 rounded-xl p-3 text-center">
-                <p className="text-xl font-bold text-green-600">{coveragePct}%</p>
-                <p className="text-xs text-green-400">ครอบคลุม</p>
-              </div>
-            </div>
-
-            {/* Moo comparison — always visible */}
-            <p className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-2">แยกตามหมู่</p>
-            <div className="grid grid-cols-2 gap-2 mb-3">
-              {villages.map((v) => {
-                const mooPers = persons.filter((p) => p.moo === v.moo);
-                const mooVax = mooPers.filter((p) => {
-                  if (vaccineGroup === "all") return p.vaccinations.length > 0;
-                  return p.vaccinations.some((vx) => vx.group === vaccineGroup);
-                }).length;
-                const mooPct = mooPers.length > 0 ? ((mooVax / mooPers.length) * 100).toFixed(0) : "0";
-                const mooHouses = houses.filter((h) => h.moo === v.moo).length;
                 return (
-                  <div key={v.id} className="bg-gray-50 rounded-xl p-4">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-bold text-text">หมู่ {v.moo}</span>
-                      <span className="text-sm font-bold text-sky-600">{mooPct}%</span>
-                    </div>
-                    <p className="text-xs text-text-muted mb-2">{v.name} · {mooHouses} ครัวเรือน</p>
-                    <div className="h-2.5 bg-gray-200 rounded-full overflow-hidden mb-1.5">
-                      <div className="h-full rounded-full bg-sky-500 transition-all duration-500" style={{ width: `${mooPct}%` }} />
-                    </div>
-                    <p className="text-xs text-text-muted">ได้รับวัคซีน {mooVax} จาก {mooPers.length} คน</p>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Group segment bar + legend — always visible */}
-            {(() => {
-              const groupCounts = (Object.entries(VACCINE_GROUP_LABELS) as [VaccineGroup, { name: string; color: string }][]).map(([key, { name, color }]) => ({
-                key, name, color,
-                count: persons.filter((p) => p.vaccinations.some((v) => v.group === key)).length,
-              }));
-              const totalVax = groupCounts.reduce((s, g) => s + g.count, 0) || 1;
-              return (
-                <>
-                  <div className="flex h-3 rounded-full mb-2">
-                    {groupCounts.map((g, i) => (
-                      <div key={g.key} className={`h-full relative group/seg cursor-default ${i === 0 ? "rounded-l-full" : ""} ${i === groupCounts.length - 1 ? "rounded-r-full" : ""}`} style={{ width: `${(g.count / totalVax) * 100}%`, backgroundColor: g.color }}>
-                        <span className="absolute top-full mt-1.5 left-1/2 -translate-x-1/2 px-2 py-1 rounded-lg bg-gray-900 text-white text-xs whitespace-nowrap opacity-0 group-hover/seg:opacity-100 pointer-events-none transition-opacity shadow-lg z-50">
-                          {g.name} — {g.count} คน ({((g.count / totalVax) * 100).toFixed(0)}%)
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {groupCounts.map((g) => (
-                      <span key={g.key} className="flex items-center gap-1 text-xs text-text-muted">
-                        <span className="w-2 h-2 rounded-full" style={{ backgroundColor: g.color }} />
-                        {g.name} {g.count}
-                      </span>
-                    ))}
-                  </div>
-                </>
-              );
-            })()}
-          </div>
-            );
-          })()}
-        </>
-        ) : activeFilter === "outbreak" ? (
-        <>
-          {/* Outbreak Summary Card — individual-focused */}
-          {(() => {
-            const DISEASE_COLORS: Record<string, { bg: string; dot: string }> = {
-              "ไข้หวัดใหญ่ (Influenza)": { bg: "rgba(59,130,246,0.15)", dot: "#3B82F6" },
-              "อุจจาระร่วง/อาหารเป็นพิษ (Diarrhea)": { bg: "rgba(245,158,11,0.15)", dot: "#F59E0B" },
-              "ไข้เลือดออก (Dengue)": { bg: "rgba(220,38,38,0.15)", dot: "#DC2626" },
-              "ปอดอักเสบ (Pneumonia)": { bg: "rgba(16,185,129,0.15)", dot: "#10B981" },
-              "สครับไทฟัส (Scrub Typhus)": { bg: "rgba(236,72,153,0.15)", dot: "#EC4899" },
-            };
-            const diseaseMap = new Map<string, number>();
-            outbreakCases.forEach((c) => diseaseMap.set(c.disease, (diseaseMap.get(c.disease) || 0) + 1));
-            const sorted = Array.from(diseaseMap.entries()).sort((a, b) => b[1] - a[1]);
-            const totalCases = outbreakCases.length;
-            const confirmed = outbreakCases.filter((c) => c.status === "confirmed").length;
-            const suspected = outbreakCases.filter((c) => c.status === "suspected").length;
-            const recovered = outbreakCases.filter((c) => c.status === "recovered").length;
-            const maxDisease = sorted.length > 0 ? sorted[0][1] : 1;
-
-            // Individual-level stats
-            const affectedPersons = outbreakCases.map((c) => persons.find((p) => p.id === c.personId)).filter(Boolean);
-            const elderlyCount = affectedPersons.filter((p) => p!.isElderly).length;
-            const ncdCount = affectedPersons.filter((p) => p!.chronicDiseases.length > 0).length;
-            const childCount = affectedPersons.filter((p) => p!.age < 5).length;
-            const noFluVaccine = affectedPersons.filter((p) => !p!.vaccinations.some((v) => v.vaccineNameEn === "Influenza" && v.date >= "2025-06-01")).length;
-
-            // Daily trend (last 14 days)
-            const dailyMap = new Map<string, number>();
-            for (let i = 0; i < 14; i++) {
-              const d = new Date(2026, 2, 26 - 13 + i);
-              dailyMap.set(d.toISOString().split("T")[0], 0);
-            }
-            outbreakCases.forEach((c) => { if (dailyMap.has(c.reportDate)) dailyMap.set(c.reportDate, (dailyMap.get(c.reportDate) || 0) + 1); });
-            const dailyData = Array.from(dailyMap.entries());
-            const maxDaily = Math.max(...dailyData.map((d) => d[1]), 1);
-
-            return (
-          <div
-            className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg p-5 flex-shrink-0 cursor-pointer hover:shadow-xl hover:ring-1 hover:ring-purple-200 active:scale-[0.98] transition-all"
-            onClick={() => setExpandedWidget("outbreak")}
-          >
-            {/* Header with toggle */}
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <Bug size={20} className="text-purple-500" />
-                <p className="text-base font-bold text-text">เฝ้าระวังโรคระบาด</p>
-              </div>
-              <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center text-text-muted">
-                <Maximize2 size={13} />
-              </div>
-            </div>
-
-            {/* KPI row — always visible */}
-            <div className="grid grid-cols-3 gap-2 mb-4">
-              <div className="bg-gray-50 rounded-xl p-3 text-center">
-                <p className="text-2xl font-bold text-text">{totalCases}</p>
-                <p className="text-xs text-text-muted">ผู้ป่วย</p>
-              </div>
-              <div className="bg-red-50 rounded-xl p-3 text-center">
-                <p className="text-2xl font-bold text-red-600">{confirmed}</p>
-                <p className="text-xs text-red-400">ยืนยัน</p>
-              </div>
-              <div className="bg-gray-50 rounded-xl p-3 text-center">
-                <p className="text-2xl font-bold text-text">{outbreakHouseIds.size}</p>
-                <p className="text-xs text-text-muted">ครัวเรือน</p>
-              </div>
-            </div>
-
-            {/* Status bar — always visible */}
-            <div className="flex h-3 rounded-full overflow-hidden mb-1.5 bg-gray-100">
-              <div className="h-full bg-red-500" style={{ width: `${(confirmed / totalCases) * 100}%` }} />
-              <div className="h-full bg-amber-400" style={{ width: `${(suspected / totalCases) * 100}%` }} />
-              <div className="h-full bg-green-500" style={{ width: `${(recovered / totalCases) * 100}%` }} />
-            </div>
-            <div className="flex justify-between text-xs mb-4">
-              <span className="text-red-500 font-medium">ยืนยันแล้ว {confirmed}</span>
-              <span className="text-amber-500 font-medium">สงสัย {suspected}</span>
-              <span className="text-green-500 font-medium">หายแล้ว {recovered}</span>
-            </div>
-
-            {/* Disease dots — always visible (compact) */}
-            <div className="flex flex-wrap gap-1.5">
-              {sorted.map(([disease, count]) => {
-                const color = DISEASE_COLORS[disease] || { bg: "rgba(0,0,0,0.05)", dot: "#6B7280" };
-                return (
-                  <span key={disease} className="flex items-center gap-1 text-xs px-2 py-1 rounded-full" style={{ backgroundColor: color.bg }}>
-                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: color.dot }} />
-                    {disease.split("(")[0].trim()} {count}
-                  </span>
-                );
-              })}
-            </div>
-
-          </div>
-            );
-          })()}
-
-          {/* Outbreak Case List */}
-          <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg p-4 flex-1 flex flex-col min-h-0">
-            <p className="text-sm font-semibold text-text mb-3 flex-shrink-0">รายงานผู้ป่วย ({outbreakCases.length} ราย)</p>
-            <div className="space-y-2 overflow-y-auto no-scrollbar flex-1">
-              {outbreakCases
-                .sort((a, b) => b.reportDate.localeCompare(a.reportDate))
-                .map((c, i) => {
-                  const person = persons.find((p) => p.id === c.personId);
-                  const house = houses.find((h) => h.id === c.houseId);
-                  const statusColor = c.status === "confirmed" ? "bg-red-50 text-red-600" : c.status === "suspected" ? "bg-amber-50 text-amber-600" : "bg-green-50 text-green-600";
-                  const statusLabel = c.status === "confirmed" ? "ยืนยันแล้ว" : c.status === "suspected" ? "สงสัย" : "หายแล้ว";
-                  const diseaseColorMap: Record<string, string> = {
-                    "ไข้หวัดใหญ่ (Influenza)": "#3B82F6",
-                    "อุจจาระร่วง/อาหารเป็นพิษ (Diarrhea)": "#F59E0B",
-                    "ไข้เลือดออก (Dengue)": "#DC2626",
-                    "ปอดอักเสบ (Pneumonia)": "#10B981",
-                    "สครับไทฟัส (Scrub Typhus)": "#EC4899",
-                  };
-                  const dotColor = diseaseColorMap[c.disease] || "#9333EA";
-                  return (
-                    <div
-                      key={i}
-                      className="p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer"
-                      style={{ borderLeft: `3px solid ${dotColor}` }}
-                      onClick={() => { if (house) { setSelectedHouse(house); setMobilePanel(null); } }}
-                    >
-                      <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-xs text-text-muted">{c.reportDate}</span>
-                        <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${statusColor}`}>{statusLabel}</span>
-                      </div>
-                      {person && (
-                        <p className="text-sm font-medium text-text">{person.prefix}{person.firstName} {person.lastName}</p>
-                      )}
-                      <p className="text-xs font-medium mt-0.5 flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: dotColor }} />
-                        <span style={{ color: dotColor }}>{c.disease}</span>
-                      </p>
-                      {house && (
-                        <p className="text-xs text-text-muted mt-0.5">บ้านเลขที่ {house.houseCode} · หมู่ {house.moo}</p>
-                      )}
-                      {person && (
-                        <div className="flex gap-1.5 mt-1.5">
-                          {person.isElderly && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-600">ผู้สูงอายุ</span>}
-                          {person.chronicDiseases.length > 0 && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-red-50 text-red-600">NCD {person.chronicDiseases.length} โรค</span>}
-                          {!person.vaccinations.some((v) => v.vaccineNameEn === "Influenza" && v.date >= "2025-06-01") && (
-                            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-purple-50 text-purple-600">ไม่มีวัคซีนไข้หวัดใหญ่</span>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-            </div>
-          </div>
-        </>
-        ) : (
-        <>
-        {/* AI Summary — moved from left panel */}
-        <div
-          className="bg-gradient-to-br from-[#1C85AD] to-[#6EC3C3] rounded-2xl shadow-lg p-4 text-white flex-shrink-0 cursor-pointer select-none active:scale-[0.99] transition-transform"
-          onClick={() => setAiExpanded(!aiExpanded)}
-        >
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <Sparkles size={14} className="text-white/80" />
-              <p className="text-sm font-semibold text-white/80">การวิเคราะห์จาก AI</p>
-            </div>
-            <ChevronDownIcon
-              size={16}
-              className="text-white/60"
-              style={{ transition: "transform 0.35s cubic-bezier(0.4,0,0.2,1)", transform: aiExpanded ? "rotate(180deg)" : "rotate(0deg)" }}
-            />
-          </div>
-
-          <p className="text-sm leading-relaxed text-white/90 line-clamp-3">
-            {generateAISummary()}
-          </p>
-
-          <div className="grid" style={{ gridTemplateRows: aiExpanded ? "1fr" : "0fr", transition: "grid-template-rows 0.35s cubic-bezier(0.4,0,0.2,1)" }}>
-            <div className="overflow-hidden">
-              <p className="text-sm leading-relaxed text-white/90 pt-0.5">
-                {generateAISummary()}
-              </p>
-              <div className="flex items-center justify-between pt-2 mt-2 border-t border-white/20 text-white/80 text-sm">
-                <span>สร้างจากข้อมูล HDC API</span>
-                <span>25 มี.ค. 2569, 09:10</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="grid" style={{ gridTemplateRows: aiExpanded ? "0fr" : "1fr", transition: "grid-template-rows 0.3s cubic-bezier(0.4,0,0.2,1)" }}>
-            <div className="overflow-hidden">
-              <p className="text-sm text-white/50 mt-1.5">แตะเพื่ออ่านเพิ่มเติม</p>
-            </div>
-          </div>
-        </div>
-
-        {/* NCD Type list (scrollable, expandable detail) */}
-        <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg p-4 flex-1 flex flex-col min-h-0">
-          <div className="flex items-center justify-between mb-3 flex-shrink-0">
-            <p className="text-sm font-semibold text-text">รายชื่อกลุ่มโรค</p>
-            <button onClick={() => setExpandedWidget("ncd")} className="relative group w-6 h-6 rounded-md hover:bg-gray-100 flex items-center justify-center text-text-light hover:text-royal-blue transition-colors" title="ดูรายละเอียด">
-              <Maximize2 size={12} />
-              <span className="absolute bottom-full mb-1.5 px-2 py-0.5 rounded bg-gray-900 text-white text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity">ดูเพิ่มเติม</span>
-            </button>
-          </div>
-          <div className="space-y-2 overflow-y-auto no-scrollbar flex-1">
-            {ncdStats.map((ncd) => {
-              const isOpen = selectedNCD === ncd.diseaseEn;
-              const ncdColor = ncd.diseaseEn === "HT" ? "#1C85AD" : ncd.diseaseEn === "DM" ? "#16A34A" : ncd.diseaseEn === "CKD" ? "#D97706" : "#DC2626";
-              const ncdBg = ncd.diseaseEn === "HT" ? "#E0F2FE" : ncd.diseaseEn === "DM" ? "#D1FAE5" : ncd.diseaseEn === "CKD" ? "#FEF3C7" : ncd.diseaseEn === "Stroke" ? "#FEE2E2" : ncd.diseaseEn === "Heart" ? "#FCE7F3" : "#EDE9FE";
-              const patientsWithDisease = persons.filter((p) => p.chronicDiseases.some((d) => d.code === ncd.diseaseEn));
-              return (
-                <div key={ncd.diseaseEn}>
-                  {/* Row */}
-                  <button
-                    onClick={() => setSelectedNCD(isOpen ? null : ncd.diseaseEn)}
-                    className={`w-full flex items-center gap-3 p-3 rounded-xl transition-colors text-left ${isOpen ? "bg-royal-blue/5 ring-1 ring-royal-blue/20" : "bg-gray-50 hover:bg-gray-100"}`}
+                  <div
+                    className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg p-5 flex-shrink-0 cursor-pointer hover:shadow-xl hover:ring-1 hover:ring-sky-200 active:scale-[0.98] transition-all overflow-visible"
+                    onClick={() => setExpandedWidget("vaccine")}
                   >
-                    <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: ncdBg }}>
-                      <HeartPulse size={16} style={{ color: ncdColor }} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-text">{ncd.disease}</p>
-                      <p className="text-sm text-text-muted">{ncd.diseaseEn}</p>
-                    </div>
-                    <span className="text-sm font-bold text-text">{ncd.total} <span className="text-sm font-normal text-text-muted">ราย</span></span>
-                    <ChevronRight size={14} className={`text-text-light transition-transform ${isOpen ? "rotate-90" : ""}`} />
-                  </button>
-
-                  {/* Expanded detail */}
-                  {isOpen && (
-                    <div className="mt-1 ml-2 mr-1 p-3 rounded-xl bg-white border border-gray-100 shadow-sm space-y-3">
-                      {/* Moo breakdown */}
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="bg-royal-blue/5 rounded-lg p-2 text-center">
-                          <p className="text-lg font-bold text-royal-blue">{ncd.moo11}</p>
-                          <p className="text-sm text-text-muted">หมู่ 11</p>
-                        </div>
-                        <div className="rounded-lg p-2 text-center" style={{ backgroundColor: "#6EC3C310" }}>
-                          <p className="text-lg font-bold" style={{ color: "#4FAAAA" }}>{ncd.moo12}</p>
-                          <p className="text-sm text-text-muted">หมู่ 12</p>
-                        </div>
+                    {/* Header */}
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2">
+                        <Syringe size={20} className="text-sky-500" />
+                        <p className="text-base font-bold text-text">ความครอบคลุมวัคซีน</p>
                       </div>
-
-                      {/* Percentage bar */}
-                      <div>
-                        <div className="flex justify-between mb-1">
-                          <span className="text-sm text-text-muted">สัดส่วนต่อประชากร</span>
-                          <span className="text-sm font-bold" style={{ color: ncdColor }}>{((ncd.total / totalPop) * 100).toFixed(1)}%</span>
-                        </div>
-                        <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-                          <div className="h-full rounded-full" style={{ width: `${(ncd.total / totalPop) * 100}%`, backgroundColor: ncdColor }} />
-                        </div>
+                      <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center text-text-muted">
+                        <Maximize2 size={13} />
                       </div>
+                    </div>
 
-                      {/* Patient list */}
-                      <div>
-                        <p className="text-sm font-semibold text-text mb-2">ผู้ป่วย ({patientsWithDisease.length} ราย)</p>
-                        <div className="space-y-1 max-h-[160px] overflow-y-auto no-scrollbar">
-                          {patientsWithDisease.slice(0, 20).map((p) => (
-                            <div key={p.id} className="flex items-center gap-2 p-2 rounded-lg bg-gray-50 text-sm">
-                              <div className="w-6 h-6 rounded-full bg-royal-blue/10 flex items-center justify-center text-sm font-bold text-royal-blue flex-shrink-0">
-                                {p.firstName[0]}
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <p className="font-medium text-text truncate">{p.prefix}{p.firstName} {p.lastName}</p>
-                                <p className="text-text-muted">อายุ {p.age} | ม.{p.moo}</p>
-                              </div>
-                              {p.chronicDiseases.filter((d) => d.code !== ncd.diseaseEn).map((d) => (
-                                <span key={d.code} className="text-sm px-1.5 py-0.5 rounded-full bg-red-50 text-red-600 font-medium flex-shrink-0">{d.code}</span>
-                              ))}
+                    {/* Group pills */}
+                    <div className="flex flex-wrap gap-1.5 mb-4" onClick={(e) => e.stopPropagation()}>
+                      <button
+                        onClick={() => setVaccineGroup("all")}
+                        className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${vaccineGroup === "all" ? "bg-sky-500 text-white border-sky-500" : "bg-white text-text-muted border-gray-200"}`}
+                      >ทั้งหมด</button>
+                      {(Object.entries(VACCINE_GROUP_LABELS) as [VaccineGroup, { name: string; color: string }][]).map(([key, { name, color }]) => (
+                        <button
+                          key={key}
+                          onClick={() => setVaccineGroup(key)}
+                          className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${vaccineGroup === key ? "text-white border-transparent" : "bg-white text-text-muted border-gray-200"}`}
+                          style={vaccineGroup === key ? { backgroundColor: color, borderColor: color } : {}}
+                        >
+                          {name}
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* KPIs — always visible */}
+                    <div className="grid grid-cols-3 gap-2 mb-4">
+                      <div className="bg-sky-50 rounded-xl p-3 text-center">
+                        <p className="text-xl font-bold text-sky-600">{personsWithAnyVax}</p>
+                        <p className="text-xs text-sky-400">ได้รับวัคซีน</p>
+                      </div>
+                      <div className="bg-gray-50 rounded-xl p-3 text-center">
+                        <p className="text-xl font-bold text-text">{persons.length}</p>
+                        <p className="text-xs text-text-muted">ประชากร</p>
+                      </div>
+                      <div className="bg-green-50 rounded-xl p-3 text-center">
+                        <p className="text-xl font-bold text-green-600">{coveragePct}%</p>
+                        <p className="text-xs text-green-400">ครอบคลุม</p>
+                      </div>
+                    </div>
+
+                    {/* Moo comparison — always visible */}
+                    <p className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-2">แยกตามหมู่</p>
+                    <div className="grid grid-cols-2 gap-2 mb-3">
+                      {villages.map((v) => {
+                        const mooPers = persons.filter((p) => p.moo === v.moo);
+                        const mooVax = mooPers.filter((p) => {
+                          if (vaccineGroup === "all") return p.vaccinations.length > 0;
+                          return p.vaccinations.some((vx) => vx.group === vaccineGroup);
+                        }).length;
+                        const mooPct = mooPers.length > 0 ? ((mooVax / mooPers.length) * 100).toFixed(0) : "0";
+                        const mooHouses = houses.filter((h) => h.moo === v.moo).length;
+                        return (
+                          <div key={v.id} className="bg-gray-50 rounded-xl p-4">
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-sm font-bold text-text">หมู่ {v.moo}</span>
+                              <span className="text-sm font-bold text-sky-600">{mooPct}%</span>
                             </div>
-                          ))}
-                          {patientsWithDisease.length > 20 && (
-                            <p className="text-sm text-text-muted text-center py-1">และอีก {patientsWithDisease.length - 20} ราย...</p>
+                            <p className="text-xs text-text-muted mb-2">{v.name} · {mooHouses} ครัวเรือน</p>
+                            <div className="h-2.5 bg-gray-200 rounded-full overflow-hidden mb-1.5">
+                              <div className="h-full rounded-full bg-sky-500 transition-all duration-500" style={{ width: `${mooPct}%` }} />
+                            </div>
+                            <p className="text-xs text-text-muted">ได้รับวัคซีน {mooVax} จาก {mooPers.length} คน</p>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Group segment bar + legend — always visible */}
+                    {(() => {
+                      const groupCounts = (Object.entries(VACCINE_GROUP_LABELS) as [VaccineGroup, { name: string; color: string }][]).map(([key, { name, color }]) => ({
+                        key, name, color,
+                        count: persons.filter((p) => p.vaccinations.some((v) => v.group === key)).length,
+                      }));
+                      const totalVax = groupCounts.reduce((s, g) => s + g.count, 0) || 1;
+                      return (
+                        <>
+                          <div className="flex h-3 rounded-full mb-2">
+                            {groupCounts.map((g, i) => (
+                              <div key={g.key} className={`h-full relative group/seg cursor-default ${i === 0 ? "rounded-l-full" : ""} ${i === groupCounts.length - 1 ? "rounded-r-full" : ""}`} style={{ width: `${(g.count / totalVax) * 100}%`, backgroundColor: g.color }}>
+                                <span className="absolute top-full mt-1.5 left-1/2 -translate-x-1/2 px-2 py-1 rounded-lg bg-gray-900 text-white text-xs whitespace-nowrap opacity-0 group-hover/seg:opacity-100 pointer-events-none transition-opacity shadow-lg z-50">
+                                  {g.name} — {g.count} คน ({((g.count / totalVax) * 100).toFixed(0)}%)
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                          <div className="flex flex-wrap gap-1.5">
+                            {groupCounts.map((g) => (
+                              <span key={g.key} className="flex items-center gap-1 text-xs text-text-muted">
+                                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: g.color }} />
+                                {g.name} {g.count}
+                              </span>
+                            ))}
+                          </div>
+                        </>
+                      );
+                    })()}
+                  </div>
+                );
+              })()}
+            </>
+          ) : activeFilter === "outbreak" ? (
+            <>
+              {/* Outbreak Summary Card — individual-focused */}
+              {(() => {
+                const DISEASE_COLORS: Record<string, { bg: string; dot: string }> = {
+                  "ไข้หวัดใหญ่ (Influenza)": { bg: "rgba(59,130,246,0.15)", dot: "#3B82F6" },
+                  "อุจจาระร่วง/อาหารเป็นพิษ (Diarrhea)": { bg: "rgba(245,158,11,0.15)", dot: "#F59E0B" },
+                  "ไข้เลือดออก (Dengue)": { bg: "rgba(220,38,38,0.15)", dot: "#DC2626" },
+                  "ปอดอักเสบ (Pneumonia)": { bg: "rgba(16,185,129,0.15)", dot: "#10B981" },
+                  "สครับไทฟัส (Scrub Typhus)": { bg: "rgba(236,72,153,0.15)", dot: "#EC4899" },
+                };
+                const diseaseMap = new Map<string, number>();
+                outbreakCases.forEach((c) => diseaseMap.set(c.disease, (diseaseMap.get(c.disease) || 0) + 1));
+                const sorted = Array.from(diseaseMap.entries()).sort((a, b) => b[1] - a[1]);
+                const totalCases = outbreakCases.length;
+                const confirmed = outbreakCases.filter((c) => c.status === "confirmed").length;
+                const suspected = outbreakCases.filter((c) => c.status === "suspected").length;
+                const recovered = outbreakCases.filter((c) => c.status === "recovered").length;
+                const maxDisease = sorted.length > 0 ? sorted[0][1] : 1;
+
+                // Individual-level stats
+                const affectedPersons = outbreakCases.map((c) => persons.find((p) => p.id === c.personId)).filter(Boolean);
+                const elderlyCount = affectedPersons.filter((p) => p!.isElderly).length;
+                const ncdCount = affectedPersons.filter((p) => p!.chronicDiseases.length > 0).length;
+                const childCount = affectedPersons.filter((p) => p!.age < 5).length;
+                const noFluVaccine = affectedPersons.filter((p) => !p!.vaccinations.some((v) => v.vaccineNameEn === "Influenza" && v.date >= "2025-06-01")).length;
+
+                // Daily trend (last 14 days)
+                const dailyMap = new Map<string, number>();
+                for (let i = 0; i < 14; i++) {
+                  const d = new Date(2026, 2, 26 - 13 + i);
+                  dailyMap.set(d.toISOString().split("T")[0], 0);
+                }
+                outbreakCases.forEach((c) => { if (dailyMap.has(c.reportDate)) dailyMap.set(c.reportDate, (dailyMap.get(c.reportDate) || 0) + 1); });
+                const dailyData = Array.from(dailyMap.entries());
+                const maxDaily = Math.max(...dailyData.map((d) => d[1]), 1);
+
+                return (
+                  <div
+                    className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg p-5 flex-shrink-0 cursor-pointer hover:shadow-xl hover:ring-1 hover:ring-purple-200 active:scale-[0.98] transition-all"
+                    onClick={() => setExpandedWidget("outbreak")}
+                  >
+                    {/* Header with toggle */}
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2">
+                        <Bug size={20} className="text-purple-500" />
+                        <p className="text-base font-bold text-text">เฝ้าระวังโรคระบาด</p>
+                      </div>
+                      <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center text-text-muted">
+                        <Maximize2 size={13} />
+                      </div>
+                    </div>
+
+                    {/* KPI row — always visible */}
+                    <div className="grid grid-cols-3 gap-2 mb-4">
+                      <div className="bg-gray-50 rounded-xl p-3 text-center">
+                        <p className="text-2xl font-bold text-text">{totalCases}</p>
+                        <p className="text-xs text-text-muted">ผู้ป่วย</p>
+                      </div>
+                      <div className="bg-red-50 rounded-xl p-3 text-center">
+                        <p className="text-2xl font-bold text-red-600">{confirmed}</p>
+                        <p className="text-xs text-red-400">ยืนยัน</p>
+                      </div>
+                      <div className="bg-gray-50 rounded-xl p-3 text-center">
+                        <p className="text-2xl font-bold text-text">{outbreakHouseIds.size}</p>
+                        <p className="text-xs text-text-muted">ครัวเรือน</p>
+                      </div>
+                    </div>
+
+                    {/* Status bar — always visible */}
+                    <div className="flex h-3 rounded-full overflow-hidden mb-1.5 bg-gray-100">
+                      <div className="h-full bg-red-500" style={{ width: `${(confirmed / totalCases) * 100}%` }} />
+                      <div className="h-full bg-amber-400" style={{ width: `${(suspected / totalCases) * 100}%` }} />
+                      <div className="h-full bg-green-500" style={{ width: `${(recovered / totalCases) * 100}%` }} />
+                    </div>
+                    <div className="flex justify-between text-xs mb-4">
+                      <span className="text-red-500 font-medium">ยืนยันแล้ว {confirmed}</span>
+                      <span className="text-amber-500 font-medium">สงสัย {suspected}</span>
+                      <span className="text-green-500 font-medium">หายแล้ว {recovered}</span>
+                    </div>
+
+                    {/* Disease dots — always visible (compact) */}
+                    <div className="flex flex-wrap gap-1.5">
+                      {sorted.map(([disease, count]) => {
+                        const color = DISEASE_COLORS[disease] || { bg: "rgba(0,0,0,0.05)", dot: "#6B7280" };
+                        return (
+                          <span key={disease} className="flex items-center gap-1 text-xs px-2 py-1 rounded-full" style={{ backgroundColor: color.bg }}>
+                            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: color.dot }} />
+                            {disease.split("(")[0].trim()} {count}
+                          </span>
+                        );
+                      })}
+                    </div>
+
+                  </div>
+                );
+              })()}
+
+              {/* Outbreak Case List */}
+              <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg p-4 flex-1 flex flex-col min-h-0">
+                <p className="text-sm font-semibold text-text mb-3 flex-shrink-0">รายงานผู้ป่วย ({outbreakCases.length} ราย)</p>
+                <div className="space-y-2 overflow-y-auto no-scrollbar flex-1">
+                  {outbreakCases
+                    .sort((a, b) => b.reportDate.localeCompare(a.reportDate))
+                    .map((c, i) => {
+                      const person = persons.find((p) => p.id === c.personId);
+                      const house = houses.find((h) => h.id === c.houseId);
+                      const statusColor = c.status === "confirmed" ? "bg-red-50 text-red-600" : c.status === "suspected" ? "bg-amber-50 text-amber-600" : "bg-green-50 text-green-600";
+                      const statusLabel = c.status === "confirmed" ? "ยืนยันแล้ว" : c.status === "suspected" ? "สงสัย" : "หายแล้ว";
+                      const diseaseColorMap: Record<string, string> = {
+                        "ไข้หวัดใหญ่ (Influenza)": "#3B82F6",
+                        "อุจจาระร่วง/อาหารเป็นพิษ (Diarrhea)": "#F59E0B",
+                        "ไข้เลือดออก (Dengue)": "#DC2626",
+                        "ปอดอักเสบ (Pneumonia)": "#10B981",
+                        "สครับไทฟัส (Scrub Typhus)": "#EC4899",
+                      };
+                      const dotColor = diseaseColorMap[c.disease] || "#9333EA";
+                      return (
+                        <div
+                          key={i}
+                          className="p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer"
+                          style={{ borderLeft: `3px solid ${dotColor}` }}
+                          onClick={() => { if (house) { setSelectedHouse(house); setMobilePanel(null); } }}
+                        >
+                          <div className="flex items-center justify-between mb-1.5">
+                            <span className="text-xs text-text-muted">{c.reportDate}</span>
+                            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${statusColor}`}>{statusLabel}</span>
+                          </div>
+                          {person && (
+                            <p className="text-sm font-medium text-text">{person.prefix}{person.firstName} {person.lastName}</p>
+                          )}
+                          <p className="text-xs font-medium mt-0.5 flex items-center gap-1.5">
+                            <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: dotColor }} />
+                            <span style={{ color: dotColor }}>{c.disease}</span>
+                          </p>
+                          {house && (
+                            <p className="text-xs text-text-muted mt-0.5">บ้านเลขที่ {house.houseCode} · หมู่ {house.moo}</p>
+                          )}
+                          {person && (
+                            <div className="flex gap-1.5 mt-1.5">
+                              {person.isElderly && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-600">ผู้สูงอายุ</span>}
+                              {person.chronicDiseases.length > 0 && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-red-50 text-red-600">NCD {person.chronicDiseases.length} โรค</span>}
+                              {!person.vaccinations.some((v) => v.vaccineNameEn === "Influenza" && v.date >= "2025-06-01") && (
+                                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-purple-50 text-purple-600">ไม่มีวัคซีนไข้หวัดใหญ่</span>
+                              )}
+                            </div>
                           )}
                         </div>
-                      </div>
-                    </div>
-                  )}
+                      );
+                    })}
                 </div>
-              );
-            })}
-          </div>
+              </div>
+            </>
+          ) : (
+            <>
+              {/* AI Summary — moved from left panel */}
+              <div
+                className="bg-gradient-to-br from-[#1C85AD] to-[#6EC3C3] rounded-2xl shadow-lg p-4 text-white flex-shrink-0 cursor-pointer select-none active:scale-[0.99] transition-transform"
+                onClick={() => setAiExpanded(!aiExpanded)}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <Sparkles size={14} className="text-white/80" />
+                    <p className="text-sm font-semibold text-white/80">การวิเคราะห์จาก AI</p>
+                  </div>
+                  <ChevronDownIcon
+                    size={16}
+                    className="text-white/60"
+                    style={{ transition: "transform 0.35s cubic-bezier(0.4,0,0.2,1)", transform: aiExpanded ? "rotate(180deg)" : "rotate(0deg)" }}
+                  />
+                </div>
+
+                <p className="text-sm leading-relaxed text-white/90 line-clamp-3">
+                  {generateAISummary()}
+                </p>
+
+                <div className="grid" style={{ gridTemplateRows: aiExpanded ? "1fr" : "0fr", transition: "grid-template-rows 0.35s cubic-bezier(0.4,0,0.2,1)" }}>
+                  <div className="overflow-hidden">
+                    <p className="text-sm leading-relaxed text-white/90 pt-0.5">
+                      {generateAISummary()}
+                    </p>
+                    <div className="flex items-center justify-between pt-2 mt-2 border-t border-white/20 text-white/80 text-sm">
+                      <span>สร้างจากข้อมูล HDC API</span>
+                      <span>25 มี.ค. 2569, 09:10</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid" style={{ gridTemplateRows: aiExpanded ? "0fr" : "1fr", transition: "grid-template-rows 0.3s cubic-bezier(0.4,0,0.2,1)" }}>
+                  <div className="overflow-hidden">
+                    <p className="text-sm text-white/50 mt-1.5">แตะเพื่ออ่านเพิ่มเติม</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* NCD Type list (scrollable, expandable detail) */}
+              <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg p-4 flex-1 flex flex-col min-h-0">
+                <div className="flex items-center justify-between mb-3 flex-shrink-0">
+                  <p className="text-sm font-semibold text-text">รายชื่อกลุ่มโรค</p>
+                  <button onClick={() => setExpandedWidget("ncd")} className="relative group w-6 h-6 rounded-md hover:bg-gray-100 flex items-center justify-center text-text-light hover:text-royal-blue transition-colors" title="ดูรายละเอียด">
+                    <Maximize2 size={12} />
+                    <span className="absolute bottom-full mb-1.5 px-2 py-0.5 rounded bg-gray-900 text-white text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity">ดูเพิ่มเติม</span>
+                  </button>
+                </div>
+                <div className="space-y-2 overflow-y-auto no-scrollbar flex-1">
+                  {ncdStats.map((ncd) => {
+                    const isOpen = selectedNCD === ncd.diseaseEn;
+                    const ncdColor = ncd.diseaseEn === "HT" ? "#1C85AD" : ncd.diseaseEn === "DM" ? "#16A34A" : ncd.diseaseEn === "CKD" ? "#D97706" : "#DC2626";
+                    const ncdBg = ncd.diseaseEn === "HT" ? "#E0F2FE" : ncd.diseaseEn === "DM" ? "#D1FAE5" : ncd.diseaseEn === "CKD" ? "#FEF3C7" : ncd.diseaseEn === "Stroke" ? "#FEE2E2" : ncd.diseaseEn === "Heart" ? "#FCE7F3" : "#EDE9FE";
+                    const patientsWithDisease = persons.filter((p) => p.chronicDiseases.some((d) => d.code === ncd.diseaseEn));
+                    return (
+                      <div key={ncd.diseaseEn}>
+                        {/* Row */}
+                        <button
+                          onClick={() => setSelectedNCD(isOpen ? null : ncd.diseaseEn)}
+                          className={`w-full flex items-center gap-3 p-3 rounded-xl transition-colors text-left ${isOpen ? "bg-royal-blue/5 ring-1 ring-royal-blue/20" : "bg-gray-50 hover:bg-gray-100"}`}
+                        >
+                          <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: ncdBg }}>
+                            <HeartPulse size={16} style={{ color: ncdColor }} />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-text">{ncd.disease}</p>
+                            <p className="text-sm text-text-muted">{ncd.diseaseEn}</p>
+                          </div>
+                          <span className="text-sm font-bold text-text">{ncd.total} <span className="text-sm font-normal text-text-muted">ราย</span></span>
+                          <ChevronRight size={14} className={`text-text-light transition-transform ${isOpen ? "rotate-90" : ""}`} />
+                        </button>
+
+                        {/* Expanded detail */}
+                        {isOpen && (
+                          <div className="mt-1 ml-2 mr-1 p-3 rounded-xl bg-white border border-gray-100 shadow-sm space-y-3">
+                            {/* Moo breakdown */}
+                            <div className="grid grid-cols-2 gap-2">
+                              <div className="bg-royal-blue/5 rounded-lg p-2 text-center">
+                                <p className="text-lg font-bold text-royal-blue">{ncd.moo11}</p>
+                                <p className="text-sm text-text-muted">หมู่ 11</p>
+                              </div>
+                              <div className="rounded-lg p-2 text-center" style={{ backgroundColor: "#6EC3C310" }}>
+                                <p className="text-lg font-bold" style={{ color: "#4FAAAA" }}>{ncd.moo12}</p>
+                                <p className="text-sm text-text-muted">หมู่ 12</p>
+                              </div>
+                            </div>
+
+                            {/* Percentage bar */}
+                            <div>
+                              <div className="flex justify-between mb-1">
+                                <span className="text-sm text-text-muted">สัดส่วนต่อประชากร</span>
+                                <span className="text-sm font-bold" style={{ color: ncdColor }}>{((ncd.total / totalPop) * 100).toFixed(1)}%</span>
+                              </div>
+                              <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                                <div className="h-full rounded-full" style={{ width: `${(ncd.total / totalPop) * 100}%`, backgroundColor: ncdColor }} />
+                              </div>
+                            </div>
+
+                            {/* Patient list */}
+                            <div>
+                              <p className="text-sm font-semibold text-text mb-2">ผู้ป่วย ({patientsWithDisease.length} ราย)</p>
+                              <div className="space-y-1 max-h-[160px] overflow-y-auto no-scrollbar">
+                                {patientsWithDisease.slice(0, 20).map((p) => (
+                                  <div key={p.id} className="flex items-center gap-2 p-2 rounded-lg bg-gray-50 text-sm">
+                                    <div className="w-6 h-6 rounded-full bg-royal-blue/10 flex items-center justify-center text-sm font-bold text-royal-blue flex-shrink-0">
+                                      {p.firstName[0]}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <p className="font-medium text-text truncate">{p.prefix}{p.firstName} {p.lastName}</p>
+                                      <p className="text-text-muted">อายุ {p.age} | ม.{p.moo}</p>
+                                    </div>
+                                    {p.chronicDiseases.filter((d) => d.code !== ncd.diseaseEn).map((d) => (
+                                      <span key={d.code} className="text-sm px-1.5 py-0.5 rounded-full bg-red-50 text-red-600 font-medium flex-shrink-0">{d.code}</span>
+                                    ))}
+                                  </div>
+                                ))}
+                                {patientsWithDisease.length > 20 && (
+                                  <p className="text-sm text-text-muted text-center py-1">และอีก {patientsWithDisease.length - 20} ราย...</p>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </>
+          )}
         </div>
-        </>
-        )}
-      </div>
       )}
 
       {/* ══════ HEALTH FILTERS — top, right of left panel (desktop only) ══════ */}
@@ -1642,11 +1643,10 @@ export default function GISMap() {
               <button
                 key={f.key}
                 onClick={() => setActiveFilter(isActive ? "all" : f.key)}
-                className={`relative group flex items-center gap-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all shadow-sm border h-10 ${
-                  isActive && !isViewMode
+                className={`relative group flex items-center gap-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all shadow-sm border h-10 ${isActive && !isViewMode
                     ? "pl-3 pr-3.5 text-white border-transparent"
                     : "px-3 bg-white/95 backdrop-blur-sm text-text-muted border-gray-200/80 hover:shadow-md"
-                }`}
+                  }`}
                 style={isActive && !isViewMode ? { backgroundColor: f.color, borderColor: f.color } : {}}
               >
                 <f.Icon size={14} />
@@ -1669,11 +1669,10 @@ export default function GISMap() {
               <button
                 key={f.key}
                 onClick={() => setActiveFilter(isActive ? "all" : f.key)}
-                className={`relative group flex items-center gap-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all shadow-sm border h-10 ${
-                  isActive
+                className={`relative group flex items-center gap-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all shadow-sm border h-10 ${isActive
                     ? "pl-3 pr-3.5 text-white border-transparent"
                     : "px-3 bg-white/95 backdrop-blur-sm text-text-muted border-gray-200/80 hover:shadow-md"
-                }`}
+                  }`}
                 style={isActive ? { backgroundColor: f.color, borderColor: f.color } : {}}
               >
                 <f.Icon size={14} />
@@ -1690,7 +1689,7 @@ export default function GISMap() {
       {/* ══════ MOBILE: Google Maps–style layout ══════ */}
 
       {/* Mobile search bar — full width at top */}
-      <div className="absolute top-2 left-3 right-3 z-20 lg:hidden">
+      <div className="absolute top-3 left-3 right-3 z-20 lg:hidden">
         <div className="bg-white rounded-2xl shadow-lg px-4 py-2.5 flex items-center gap-3">
           <Search size={18} className="text-text-muted flex-shrink-0" />
           <input
@@ -1741,7 +1740,7 @@ export default function GISMap() {
       </div>
 
       {/* Mobile filter pills — health filters only (no outbreak/vaccine) */}
-      <div className="absolute top-[72px] left-0 right-0 z-10 lg:hidden">
+      <div className="absolute top-[76px] left-0 right-0 z-10 lg:hidden">
         <div className="flex gap-2 px-3 overflow-x-auto no-scrollbar pb-1">
           {HEALTH_FILTERS.map((f) => {
             const isActive = activeFilter === f.key;
@@ -1749,9 +1748,8 @@ export default function GISMap() {
               <button
                 key={f.key}
                 onClick={() => { setActiveFilter(isActive ? "all" : f.key); setMobilePanel(null); }}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium whitespace-nowrap shadow-sm border transition-all ${
-                  isActive ? "text-white border-transparent shadow-md" : "bg-white text-text-muted border-gray-200"
-                }`}
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium whitespace-nowrap shadow-sm border transition-all ${isActive ? "text-white border-transparent shadow-md" : "bg-white text-text-muted border-gray-200"
+                  }`}
                 style={isActive ? { backgroundColor: f.color } : {}}
               >
                 <f.Icon size={13} />
@@ -1762,32 +1760,32 @@ export default function GISMap() {
         </div>
       </div>
 
-      {/* Mobile FAB — view modes */}
+      {/* Mobile FAB — view modes (left side, above navbar) */}
       {(() => {
-        const fabOpen = mobilePanel === "fab";
         const isViewMode = activeFilter === "outbreak" || activeFilter === "vaccine" || activeFilter === "ncd";
         const fabColor = activeFilter === "outbreak" ? "bg-purple-600" : activeFilter === "vaccine" ? "bg-sky-500" : activeFilter === "ncd" ? "bg-red-500" : "bg-royal-blue";
-        const FabMainIcon = activeFilter === "outbreak" ? Bug : activeFilter === "vaccine" ? Syringe : activeFilter === "ncd" ? Stethoscope : Layers;
+        const FabMainIcon = activeFilter === "outbreak" ? Bug : activeFilter === "vaccine" ? Syringe : activeFilter === "ncd" ? Stethoscope : BookSearch;
 
         return (
           <>
-            {/* FAB button — bottom right above navbar + bottom sheet */}
-            <button
-              onClick={() => setMobilePanel(fabOpen ? null : "fab" as any)}
-              className={`absolute right-4 z-30 lg:hidden w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-all ${
-                isViewMode ? `${fabColor} text-white` : "bg-royal-blue text-white"
-              }`}
-              style={{ bottom: mobilePanel && mobilePanel !== "fab" ? "calc(50vh + 4.5rem)" : "5rem" }}
-            >
-              <FabMainIcon size={22} />
-            </button>
+            {/* FAB button — bottom left above navbar */}
+            {!mobilePanel && (
+              <button
+                onClick={() => setFabOpen(!fabOpen)}
+                className={`fixed left-4 z-30 lg:hidden w-12 h-12 rounded-full shadow-xl flex items-center justify-center transition-all ${fabOpen ? "bg-gray-700 text-white" : isViewMode ? `${fabColor} text-white` : "bg-royal-blue text-white"
+                  }`}
+                style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 9rem)" }}
+              >
+                {fabOpen ? <X size={20} /> : <FabMainIcon size={20} />}
+              </button>
+            )}
 
-            {/* FAB bottom sheet */}
+            {/* FAB selection sheet */}
             {fabOpen && (
               <>
-                <div className="absolute inset-0 z-20 bg-black/20 lg:hidden" onClick={() => setMobilePanel(null)} />
-                <div className="absolute left-0 right-0 bottom-14 z-30 lg:hidden">
-                  <div className="bg-white rounded-t-2xl shadow-[0_-4px_20px_rgba(0,0,0,0.12)] px-4 pb-6 pt-3">
+                <div className="absolute inset-0 z-20 bg-black/20 lg:hidden animate-[fadeIn_0.2s_ease]" onClick={() => setFabOpen(false)} />
+                <div className="absolute left-0 right-0 bottom-14 z-30 lg:hidden animate-slide-up">
+                  <div className="bg-white rounded-t-2xl shadow-[0_-4px_20px_rgba(0,0,0,0.12)] px-4 pb-20 pt-3">
                     <div className="flex justify-center mb-3">
                       <div className="w-10 h-1 rounded-full bg-gray-300" />
                     </div>
@@ -1802,10 +1800,9 @@ export default function GISMap() {
                         return (
                           <button
                             key={mode.key}
-                            onClick={() => { setActiveFilter(isActive ? "all" : mode.key); setMobilePanel(null); }}
-                            className={`w-full flex items-center gap-3 p-4 rounded-xl transition-all text-left ${
-                              isActive ? "ring-2 ring-offset-1" : "hover:bg-gray-50"
-                            } ${mode.bg}`}
+                            onClick={() => { setActiveFilter(isActive ? "all" : mode.key); setFabOpen(false); }}
+                            className={`w-full flex items-center gap-3 p-4 rounded-xl transition-all text-left ${isActive ? "ring-2 ring-offset-1" : "hover:bg-gray-50"
+                              } ${mode.bg}`}
                             style={isActive ? { ringColor: mode.color } : {}}
                           >
                             <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: isActive ? mode.color : `${mode.color}20` }}>
@@ -1823,7 +1820,7 @@ export default function GISMap() {
                       })}
                     </div>
                     <button
-                      onClick={() => { setActiveFilter("all"); setMobilePanel(null); }}
+                      onClick={() => { setActiveFilter("all"); setFabOpen(false); }}
                       className="w-full mt-3 py-3 rounded-xl bg-gray-100 text-sm font-medium text-text-muted text-center"
                     >
                       รีเซ็ตเป็นโหมดปกติ
@@ -1837,75 +1834,103 @@ export default function GISMap() {
       })()}
 
       {/* Mobile bottom sheet */}
-      <div className="absolute left-0 right-0 bottom-14 z-20 lg:hidden transition-all duration-300">
+      <div
+        className="fixed left-0 right-0 z-20 lg:hidden flex flex-col transition-[max-height] duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]"
+        style={{
+          bottom: "3.5rem",
+          maxHeight: mobilePanel ? "calc(100vh - 140px - 3.5rem)" : "auto",
+        }}
+      >
         {/* Handle + summary — tap to expand */}
         <div
-          className="bg-white rounded-t-2xl shadow-[0_-4px_20px_rgba(0,0,0,0.1)] cursor-pointer active:bg-gray-50 transition-colors"
+          className="bg-white rounded-t-2xl shadow-[0_-4px_20px_rgba(0,0,0,0.1)] cursor-pointer active:bg-gray-50 transition-colors flex-shrink-0"
           onClick={() => setMobilePanel(mobilePanel ? null : "left")}
         >
-          <div className="flex justify-center pt-2 pb-1">
+          <div className="flex justify-center pt-3 pb-2">
             <div className="w-10 h-1 rounded-full bg-gray-300" />
           </div>
-          <div className="flex items-center gap-3 px-4 pb-3">
-            <div className="flex-1">
-              <p className="text-sm font-bold text-text">ต.ขุนน่าน</p>
-              <p className="text-xs text-text-muted">{filteredHouses.length} ครัวเรือน · {persons.length.toLocaleString()} คน</p>
-            </div>
-            <ChevronDownIcon
-              size={18}
-              className="text-text-muted transition-transform duration-300"
-              style={{ transform: mobilePanel ? "rotate(180deg)" : "rotate(0deg)" }}
-            />
-          </div>
+          {(() => {
+            const areaLabel = visibleArea === "moo11" ? "หมู่ 11 บ้านน้ำช้าง" : visibleArea === "moo12" ? "หมู่ 12 บ้านน้ำรีพัฒนา" : "ต.ขุนน่าน";
+            const mooFilter = visibleArea === "moo11" ? 11 : visibleArea === "moo12" ? 12 : null;
+            const areaHouses = mooFilter ? filteredHouses.filter((h) => h.moo === mooFilter) : filteredHouses;
+            const areaPersons = mooFilter ? persons.filter((p) => p.moo === mooFilter) : persons;
+            return (
+              <>
+                <div className="flex items-center gap-3 px-4 pb-3">
+                  <div className="flex-1">
+                    <p className="text-sm font-bold text-text">{areaLabel}</p>
+                    <p className="text-xs text-text-muted">{areaHouses.length} ครัวเรือน · {areaPersons.length.toLocaleString()} คน</p>
+                  </div>
+                  <ChevronDownIcon
+                    size={18}
+                    className="text-text-muted transition-transform duration-300"
+                    style={{ transform: mobilePanel ? "rotate(180deg)" : "rotate(0deg)" }}
+                  />
+                </div>
+              </>
+            );
+          })()}
         </div>
 
         {/* Expanded: vertical scrollable widget cards */}
-        {mobilePanel && (
-          <div className="bg-white px-3 pb-4 max-h-[85vh] overflow-y-auto no-scrollbar space-y-3 pt-2">
-            {/* KPI + Risk */}
-            <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 active:scale-[0.98] transition-transform" onClick={() => setExpandedWidget("overview")}>
-              <p className="text-sm font-semibold text-text mb-3">ภาพรวมสุขภาพ</p>
-              <div className="grid grid-cols-4 gap-2 mb-3">
-                {[
-                  { label: "ครัวเรือน", value: filteredHouses.length, color: "#1C85AD" },
-                  { label: "ประชากร", value: persons.length, color: "#0D9488" },
-                  { label: "ผู้สูงอายุ", value: persons.filter((p) => p.isElderly).length, color: "#F59E0B" },
-                  { label: "NCD", value: persons.filter((p) => p.chronicDiseases.length > 0).length, color: "#DC2626" },
-                ].map((k) => (
-                  <div key={k.label} className="bg-gray-50 rounded-lg p-2 text-center">
-                    <p className="text-lg font-bold" style={{ color: k.color }}>{k.value.toLocaleString()}</p>
-                    <p className="text-[10px] text-text-muted">{k.label}</p>
+        <div
+          className="bg-white overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]"
+          style={{ maxHeight: mobilePanel ? "100vh" : "0px" }}
+        >
+          <div className="px-3 pb-20 overflow-y-auto no-scrollbar space-y-3 pt-2" style={{ maxHeight: "calc(100vh - 200px)" }}>
+            {/* KPI + Risk — filtered by visible area */}
+            {(() => {
+              const mooFilter = visibleArea === "moo11" ? 11 : visibleArea === "moo12" ? 12 : null;
+              const areaHouses = mooFilter ? filteredHouses.filter((h) => h.moo === mooFilter) : filteredHouses;
+              const areaPersons = mooFilter ? persons.filter((p) => p.moo === mooFilter) : persons;
+              const areaLabel = visibleArea === "moo11" ? "หมู่ 11 บ้านน้ำช้าง" : visibleArea === "moo12" ? "หมู่ 12 บ้านน้ำรีพัฒนา" : "ภาพรวมสุขภาพ";
+              return (
+                <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 active:scale-[0.98] transition-transform" onClick={() => setExpandedWidget("overview")}>
+                  <p className="text-sm font-semibold text-text mb-3">{areaLabel}</p>
+                  <div className="grid grid-cols-4 gap-2 mb-3">
+                    {[
+                      { label: "ครัวเรือน", value: areaHouses.length, color: "#1C85AD" },
+                      { label: "ประชากร", value: areaPersons.length, color: "#0D9488" },
+                      { label: "ผู้สูงอายุ", value: areaPersons.filter((p) => p.isElderly).length, color: "#F59E0B" },
+                      { label: "NCD", value: areaPersons.filter((p) => p.chronicDiseases.length > 0).length, color: "#DC2626" },
+                    ].map((k) => (
+                      <div key={k.label} className="bg-gray-50 rounded-lg p-2 text-center">
+                        <p className="text-lg font-bold" style={{ color: k.color }}>{k.value.toLocaleString()}</p>
+                        <p className="text-[10px] text-text-muted">{k.label}</p>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-              <div className="flex gap-2">
-                {[
-                  { label: "เสี่ยงสูง", count: filteredHouses.filter((h) => h.riskLevel === "high").length, color: "#DC2626", bg: "#FEE2E2" },
-                  { label: "ปานกลาง", count: filteredHouses.filter((h) => h.riskLevel === "medium").length, color: "#D97706", bg: "#FEF3C7" },
-                  { label: "ต่ำ", count: filteredHouses.filter((h) => h.riskLevel === "low").length, color: "#16A34A", bg: "#DCFCE7" },
-                ].map((r) => (
-                  <div key={r.label} className="flex-1 rounded-lg p-2 text-center" style={{ backgroundColor: r.bg }}>
-                    <p className="text-base font-bold" style={{ color: r.color }}>{r.count}</p>
-                    <p className="text-[10px]" style={{ color: r.color }}>{r.label}</p>
+                  <div className="flex gap-2">
+                    {[
+                      { label: "เสี่ยงสูง", count: areaHouses.filter((h) => h.riskLevel === "high").length, color: "#DC2626", bg: "#FEE2E2" },
+                      { label: "ปานกลาง", count: areaHouses.filter((h) => h.riskLevel === "medium").length, color: "#D97706", bg: "#FEF3C7" },
+                      { label: "ต่ำ", count: areaHouses.filter((h) => h.riskLevel === "low").length, color: "#16A34A", bg: "#DCFCE7" },
+                    ].map((r) => (
+                      <div key={r.label} className="flex-1 rounded-lg p-2 text-center" style={{ backgroundColor: r.bg }}>
+                        <p className="text-base font-bold" style={{ color: r.color }}>{r.count}</p>
+                        <p className="text-[10px]" style={{ color: r.color }}>{r.label}</p>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </div>
+                </div>
+              );
+            })()}
 
-            {/* NCD */}
+            {/* NCD — filtered by visible area */}
             <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 active:scale-[0.98] transition-transform" onClick={() => setExpandedWidget("ncd")}>
               <p className="text-sm font-semibold text-text mb-3">โรคเรื้อรัง NCD</p>
               <div className="space-y-2">
                 {ncdStats.map((ncd) => {
-                  const maxVal = Math.max(...ncdStats.map((n) => n.total));
+                  const val = visibleArea === "moo11" ? ncd.moo11 : visibleArea === "moo12" ? ncd.moo12 : ncd.total;
+                  const maxVal = Math.max(...ncdStats.map((n) => visibleArea === "moo11" ? n.moo11 : visibleArea === "moo12" ? n.moo12 : n.total));
                   return (
                     <div key={ncd.diseaseEn}>
                       <div className="flex justify-between mb-0.5">
                         <span className="text-xs text-text">{ncd.disease}</span>
-                        <span className="text-xs font-bold text-text">{ncd.total}</span>
+                        <span className="text-xs font-bold text-text">{val}</span>
                       </div>
                       <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                        <div className="h-full rounded-full bg-royal-blue" style={{ width: `${(ncd.total / maxVal) * 100}%` }} />
+                        <div className="h-full rounded-full bg-royal-blue" style={{ width: `${(val / maxVal) * 100}%` }} />
                       </div>
                     </div>
                   );
@@ -1972,13 +1997,13 @@ export default function GISMap() {
               </div>
             </div>
           </div>
-        )}
+        </div>
       </div>
 
 
       {/* ══════ HOUSE DETAIL DRAWER (on click) ══════ */}
       {selectedHouse && (
-        <div className="absolute lg:top-20 lg:right-3 lg:bottom-16 lg:w-[400px] bottom-0 left-0 right-0 max-h-[80vh] lg:max-h-none bg-white rounded-t-2xl lg:rounded-2xl shadow-2xl z-30 overflow-y-auto flex flex-col animate-slide-up">
+        <div className="fixed lg:absolute lg:top-20 lg:right-3 lg:bottom-16 lg:w-[400px] bottom-14 left-0 right-0 max-h-[80vh] lg:max-h-none bg-white rounded-t-2xl lg:rounded-2xl shadow-2xl z-30 overflow-y-auto flex flex-col animate-slide-up">
           {/* Header */}
           <div className="bg-gradient-to-r from-[#156A8A] to-[#1C85AD] text-white p-4 rounded-t-2xl flex-shrink-0">
             <div className="flex items-center justify-between mb-2">
@@ -2060,7 +2085,7 @@ export default function GISMap() {
           })()}
 
           {/* Members */}
-          <div className="px-3 pb-3 flex-1">
+          <div className="px-3 pb-8 flex-1">
             <h4 className="text-sm font-semibold text-text mb-2">สมาชิก ({houseMembers.length})</h4>
             <div className="space-y-1.5">
               {houseMembers.length > 0 ? houseMembers.map((p) => (
@@ -2288,89 +2313,88 @@ export default function GISMap() {
               const riskTotal = vHouses.length;
 
               return (
-              <div>
-                <p className="text-sm text-text-muted uppercase tracking-wider mb-1">รายละเอียด</p>
-                <h2 className="text-2xl font-bold text-text mb-5">สรุปสถานะแบ่งตามหมู่</h2>
+                <div>
+                  <p className="text-sm text-text-muted uppercase tracking-wider mb-1">รายละเอียด</p>
+                  <h2 className="text-2xl font-bold text-text mb-5">สรุปสถานะแบ่งตามหมู่</h2>
 
-                {/* Tabs */}
-                <div className="flex gap-1 bg-gray-100 rounded-xl p-1 mb-5">
-                  {villages.map((tab) => (
-                    <button
-                      key={tab.moo}
-                      onClick={() => setVillageTab(tab.moo)}
-                      className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                        villageTab === tab.moo
-                          ? "bg-white text-royal-blue shadow-sm"
-                          : "text-text-muted hover:text-text"
-                      }`}
-                    >
-                      หมู่ {tab.moo} {tab.name}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Summary */}
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-bold text-text">ม.{v.moo} {v.name}</h3>
-                  <span className="text-sm text-text-muted">{vHouses.length} หลัง / {vPersons.length.toLocaleString()} คน / เฉลี่ย {avg} คน/หลัง</span>
-                </div>
-
-                {/* Risk cards */}
-                <div className="grid grid-cols-3 gap-3 mb-3">
-                  <div className="bg-red-50 rounded-xl p-4 text-center">
-                    <p className="text-2xl font-bold text-red-600">{high.length}</p>
-                    <p className="text-sm text-red-500">เสี่ยงสูง</p>
-                    <p className="text-xs text-red-400 mt-1">{riskTotal > 0 ? ((high.length / riskTotal) * 100).toFixed(0) : 0}%</p>
+                  {/* Tabs */}
+                  <div className="flex gap-1 bg-gray-100 rounded-xl p-1 mb-5">
+                    {villages.map((tab) => (
+                      <button
+                        key={tab.moo}
+                        onClick={() => setVillageTab(tab.moo)}
+                        className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${villageTab === tab.moo
+                            ? "bg-white text-royal-blue shadow-sm"
+                            : "text-text-muted hover:text-text"
+                          }`}
+                      >
+                        หมู่ {tab.moo} {tab.name}
+                      </button>
+                    ))}
                   </div>
-                  <div className="bg-amber-50 rounded-xl p-4 text-center">
-                    <p className="text-2xl font-bold text-amber-600">{medium.length}</p>
-                    <p className="text-sm text-amber-500">ปานกลาง</p>
-                    <p className="text-xs text-amber-400 mt-1">{riskTotal > 0 ? ((medium.length / riskTotal) * 100).toFixed(0) : 0}%</p>
+
+                  {/* Summary */}
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-bold text-text">ม.{v.moo} {v.name}</h3>
+                    <span className="text-sm text-text-muted">{vHouses.length} หลัง / {vPersons.length.toLocaleString()} คน / เฉลี่ย {avg} คน/หลัง</span>
                   </div>
-                  <div className="bg-green-50 rounded-xl p-4 text-center">
-                    <p className="text-2xl font-bold text-green-600">{low.length}</p>
-                    <p className="text-sm text-green-500">ต่ำ</p>
-                    <p className="text-xs text-green-400 mt-1">{riskTotal > 0 ? ((low.length / riskTotal) * 100).toFixed(0) : 0}%</p>
+
+                  {/* Risk cards */}
+                  <div className="grid grid-cols-3 gap-3 mb-3">
+                    <div className="bg-red-50 rounded-xl p-4 text-center">
+                      <p className="text-2xl font-bold text-red-600">{high.length}</p>
+                      <p className="text-sm text-red-500">เสี่ยงสูง</p>
+                      <p className="text-xs text-red-400 mt-1">{riskTotal > 0 ? ((high.length / riskTotal) * 100).toFixed(0) : 0}%</p>
+                    </div>
+                    <div className="bg-amber-50 rounded-xl p-4 text-center">
+                      <p className="text-2xl font-bold text-amber-600">{medium.length}</p>
+                      <p className="text-sm text-amber-500">ปานกลาง</p>
+                      <p className="text-xs text-amber-400 mt-1">{riskTotal > 0 ? ((medium.length / riskTotal) * 100).toFixed(0) : 0}%</p>
+                    </div>
+                    <div className="bg-green-50 rounded-xl p-4 text-center">
+                      <p className="text-2xl font-bold text-green-600">{low.length}</p>
+                      <p className="text-sm text-green-500">ต่ำ</p>
+                      <p className="text-xs text-green-400 mt-1">{riskTotal > 0 ? ((low.length / riskTotal) * 100).toFixed(0) : 0}%</p>
+                    </div>
                   </div>
-                </div>
 
 
-                {/* Household table */}
-                <h3 className="text-sm font-semibold text-text mb-3">ครัวเรือนทั้งหมด ({vHouses.length} หลัง)</h3>
-                <div className="overflow-hidden rounded-xl border border-gray-100">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="bg-gray-50">
-                        <th className="text-left px-4 py-2.5 text-sm font-semibold text-text-muted">บ้านเลขที่</th>
-                        <th className="text-center px-3 py-2.5 text-sm font-semibold text-text-muted">สมาชิก</th>
-                        <th className="text-center px-3 py-2.5 text-sm font-semibold text-text-muted">ผู้สูงอายุ</th>
-                        <th className="text-center px-3 py-2.5 text-sm font-semibold text-text-muted">NCD</th>
-                        <th className="text-center px-3 py-2.5 text-sm font-semibold text-text-muted">ความเสี่ยง</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {vHouses.sort((a, b) => {
-                        const order = { high: 0, medium: 1, low: 2 };
-                        return order[a.riskLevel] - order[b.riskLevel];
-                      }).map((h) => {
-                        const riskBg = h.riskLevel === "high" ? "bg-red-50 text-red-600" : h.riskLevel === "medium" ? "bg-amber-50 text-amber-600" : "bg-green-50 text-green-600";
-                        const riskLabel = h.riskLevel === "high" ? "สูง" : h.riskLevel === "medium" ? "กลาง" : "ต่ำ";
-                        return (
-                          <tr key={h.id} className="border-t border-gray-50 hover:bg-gray-50/50">
-                            <td className="px-4 py-2.5 font-medium text-text">{h.houseCode}</td>
-                            <td className="px-3 py-2.5 text-center text-text">{h.memberCount}</td>
-                            <td className="px-3 py-2.5 text-center text-text">{h.elderlyCount}</td>
-                            <td className="px-3 py-2.5 text-center text-text">{h.ncdCount}</td>
-                            <td className="px-3 py-2.5 text-center">
-                              <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${riskBg}`}>{riskLabel}</span>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+                  {/* Household table */}
+                  <h3 className="text-sm font-semibold text-text mb-3">ครัวเรือนทั้งหมด ({vHouses.length} หลัง)</h3>
+                  <div className="overflow-hidden rounded-xl border border-gray-100">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="bg-gray-50">
+                          <th className="text-left px-4 py-2.5 text-sm font-semibold text-text-muted">บ้านเลขที่</th>
+                          <th className="text-center px-3 py-2.5 text-sm font-semibold text-text-muted">สมาชิก</th>
+                          <th className="text-center px-3 py-2.5 text-sm font-semibold text-text-muted">ผู้สูงอายุ</th>
+                          <th className="text-center px-3 py-2.5 text-sm font-semibold text-text-muted">NCD</th>
+                          <th className="text-center px-3 py-2.5 text-sm font-semibold text-text-muted">ความเสี่ยง</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {vHouses.sort((a, b) => {
+                          const order = { high: 0, medium: 1, low: 2 };
+                          return order[a.riskLevel] - order[b.riskLevel];
+                        }).map((h) => {
+                          const riskBg = h.riskLevel === "high" ? "bg-red-50 text-red-600" : h.riskLevel === "medium" ? "bg-amber-50 text-amber-600" : "bg-green-50 text-green-600";
+                          const riskLabel = h.riskLevel === "high" ? "สูง" : h.riskLevel === "medium" ? "กลาง" : "ต่ำ";
+                          return (
+                            <tr key={h.id} className="border-t border-gray-50 hover:bg-gray-50/50">
+                              <td className="px-4 py-2.5 font-medium text-text">{h.houseCode}</td>
+                              <td className="px-3 py-2.5 text-center text-text">{h.memberCount}</td>
+                              <td className="px-3 py-2.5 text-center text-text">{h.elderlyCount}</td>
+                              <td className="px-3 py-2.5 text-center text-text">{h.ncdCount}</td>
+                              <td className="px-3 py-2.5 text-center">
+                                <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${riskBg}`}>{riskLabel}</span>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
-              </div>
               );
             })()}
 
@@ -2404,135 +2428,135 @@ export default function GISMap() {
               const obMaxDaily = Math.max(...obDailyData.map((d) => d[1]), 1);
 
               return (
-              <div>
-                <p className="text-sm text-text-muted uppercase tracking-wider mb-1">รายละเอียด</p>
-                <h2 className="text-2xl font-bold text-text mb-5 flex items-center gap-2">
-                  <Bug size={24} className="text-purple-500" />
-                  เฝ้าระวังโรคระบาด
-                </h2>
+                <div>
+                  <p className="text-sm text-text-muted uppercase tracking-wider mb-1">รายละเอียด</p>
+                  <h2 className="text-2xl font-bold text-text mb-5 flex items-center gap-2">
+                    <Bug size={24} className="text-purple-500" />
+                    เฝ้าระวังโรคระบาด
+                  </h2>
 
-                {/* KPI */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-                  <div className="bg-gray-50 rounded-xl p-4 text-center">
-                    <p className="text-3xl font-bold text-text">{obTotal}</p>
-                    <p className="text-sm text-text-muted">ผู้ป่วยทั้งหมด</p>
+                  {/* KPI */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+                    <div className="bg-gray-50 rounded-xl p-4 text-center">
+                      <p className="text-3xl font-bold text-text">{obTotal}</p>
+                      <p className="text-sm text-text-muted">ผู้ป่วยทั้งหมด</p>
+                    </div>
+                    <div className="bg-red-50 rounded-xl p-4 text-center">
+                      <p className="text-3xl font-bold text-red-600">{obConfirmed}</p>
+                      <p className="text-sm text-red-400">ยืนยัน</p>
+                    </div>
+                    <div className="bg-amber-50 rounded-xl p-4 text-center">
+                      <p className="text-3xl font-bold text-amber-600">{obSuspected}</p>
+                      <p className="text-sm text-amber-400">สงสัย</p>
+                    </div>
+                    <div className="bg-green-50 rounded-xl p-4 text-center">
+                      <p className="text-3xl font-bold text-green-600">{obRecovered}</p>
+                      <p className="text-sm text-green-400">หายแล้ว</p>
+                    </div>
                   </div>
-                  <div className="bg-red-50 rounded-xl p-4 text-center">
-                    <p className="text-3xl font-bold text-red-600">{obConfirmed}</p>
-                    <p className="text-sm text-red-400">ยืนยัน</p>
-                  </div>
-                  <div className="bg-amber-50 rounded-xl p-4 text-center">
-                    <p className="text-3xl font-bold text-amber-600">{obSuspected}</p>
-                    <p className="text-sm text-amber-400">สงสัย</p>
-                  </div>
-                  <div className="bg-green-50 rounded-xl p-4 text-center">
-                    <p className="text-3xl font-bold text-green-600">{obRecovered}</p>
-                    <p className="text-sm text-green-400">หายแล้ว</p>
-                  </div>
-                </div>
 
-                {/* Vulnerability */}
-                <h3 className="text-sm font-semibold text-text mb-3">กลุ่มเปราะบาง</h3>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-                  <div className="flex items-center gap-3 bg-amber-50 rounded-xl p-4">
-                    <UserRound size={20} className="text-amber-600" />
-                    <div>
-                      <p className="text-xl font-bold text-amber-700">{obElderly}</p>
-                      <p className="text-xs text-amber-500">ผู้สูงอายุ</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 bg-red-50 rounded-xl p-4">
-                    <HeartPulse size={20} className="text-red-500" />
-                    <div>
-                      <p className="text-xl font-bold text-red-600">{obNcd}</p>
-                      <p className="text-xs text-red-400">มีโรคเรื้อรัง</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 bg-blue-50 rounded-xl p-4">
-                    <Users size={20} className="text-blue-500" />
-                    <div>
-                      <p className="text-xl font-bold text-blue-600">{obChild}</p>
-                      <p className="text-xs text-blue-400">เด็กเล็ก (&lt;5 ปี)</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 bg-purple-50 rounded-xl p-4">
-                    <ShieldAlert size={20} className="text-purple-500" />
-                    <div>
-                      <p className="text-xl font-bold text-purple-600">{obNoFlu}</p>
-                      <p className="text-xs text-purple-400">ไม่มีวัคซีนไข้หวัดใหญ่</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Disease bars */}
-                <h3 className="text-sm font-semibold text-text mb-3">จำนวนผู้ป่วยตามโรค</h3>
-                <div className="space-y-3 mb-6">
-                  {obSorted.map(([disease, count]) => {
-                    const color = OB_COLORS[disease] || { bg: "rgba(0,0,0,0.05)", dot: "#6B7280" };
-                    return (
-                      <div key={disease}>
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-sm text-text flex items-center gap-2">
-                            <span className="w-3 h-3 rounded-full" style={{ backgroundColor: color.dot }} />
-                            {disease}
-                          </span>
-                          <span className="text-sm font-bold text-text">{count} คน</span>
-                        </div>
-                        <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
-                          <div className="h-full rounded-full transition-all duration-500" style={{ width: `${(count / obMaxDisease) * 100}%`, backgroundColor: color.dot, opacity: 0.75 }} />
-                        </div>
+                  {/* Vulnerability */}
+                  <h3 className="text-sm font-semibold text-text mb-3">กลุ่มเปราะบาง</h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+                    <div className="flex items-center gap-3 bg-amber-50 rounded-xl p-4">
+                      <UserRound size={20} className="text-amber-600" />
+                      <div>
+                        <p className="text-xl font-bold text-amber-700">{obElderly}</p>
+                        <p className="text-xs text-amber-500">ผู้สูงอายุ</p>
                       </div>
-                    );
-                  })}
-                </div>
+                    </div>
+                    <div className="flex items-center gap-3 bg-red-50 rounded-xl p-4">
+                      <HeartPulse size={20} className="text-red-500" />
+                      <div>
+                        <p className="text-xl font-bold text-red-600">{obNcd}</p>
+                        <p className="text-xs text-red-400">มีโรคเรื้อรัง</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 bg-blue-50 rounded-xl p-4">
+                      <Users size={20} className="text-blue-500" />
+                      <div>
+                        <p className="text-xl font-bold text-blue-600">{obChild}</p>
+                        <p className="text-xs text-blue-400">เด็กเล็ก (&lt;5 ปี)</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 bg-purple-50 rounded-xl p-4">
+                      <ShieldAlert size={20} className="text-purple-500" />
+                      <div>
+                        <p className="text-xl font-bold text-purple-600">{obNoFlu}</p>
+                        <p className="text-xs text-purple-400">ไม่มีวัคซีนไข้หวัดใหญ่</p>
+                      </div>
+                    </div>
+                  </div>
 
-                {/* 14-day sparkline */}
+                  {/* Disease bars */}
+                  <h3 className="text-sm font-semibold text-text mb-3">จำนวนผู้ป่วยตามโรค</h3>
+                  <div className="space-y-3 mb-6">
+                    {obSorted.map(([disease, count]) => {
+                      const color = OB_COLORS[disease] || { bg: "rgba(0,0,0,0.05)", dot: "#6B7280" };
+                      return (
+                        <div key={disease}>
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-sm text-text flex items-center gap-2">
+                              <span className="w-3 h-3 rounded-full" style={{ backgroundColor: color.dot }} />
+                              {disease}
+                            </span>
+                            <span className="text-sm font-bold text-text">{count} คน</span>
+                          </div>
+                          <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+                            <div className="h-full rounded-full transition-all duration-500" style={{ width: `${(count / obMaxDisease) * 100}%`, backgroundColor: color.dot, opacity: 0.75 }} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
 
-                {/* Patient list */}
-                <h3 className="text-sm font-semibold text-text mb-3">รายชื่อผู้ป่วย ({obTotal} ราย)</h3>
-                <div className="overflow-hidden rounded-xl border border-gray-100">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="bg-gray-50">
-                        <th className="text-left px-4 py-2.5 text-sm font-semibold text-text-muted">ชื่อ</th>
-                        <th className="text-left px-4 py-2.5 text-sm font-semibold text-text-muted">โรค</th>
-                        <th className="text-center px-4 py-2.5 text-sm font-semibold text-text-muted">สถานะ</th>
-                        <th className="text-center px-4 py-2.5 text-sm font-semibold text-text-muted">วันที่</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {outbreakCases.sort((a, b) => b.reportDate.localeCompare(a.reportDate)).map((c, i) => {
-                        const p = persons.find((p) => p.id === c.personId);
-                        const color = OB_COLORS[c.disease]?.dot || "#6B7280";
-                        const stColor = c.status === "confirmed" ? "bg-red-50 text-red-600" : c.status === "suspected" ? "bg-amber-50 text-amber-600" : "bg-green-50 text-green-600";
-                        const stLabel = c.status === "confirmed" ? "ยืนยันแล้ว" : c.status === "suspected" ? "สงสัย" : "หายแล้ว";
-                        return (
-                          <tr key={i} className="border-t border-gray-50">
-                            <td className="px-4 py-2.5">
-                              {p ? (
-                                <div>
-                                  <p className="font-medium text-text">{p.prefix}{p.firstName} {p.lastName}</p>
-                                  <p className="text-xs text-text-muted">อายุ {p.age} · หมู่ {p.moo}</p>
-                                </div>
-                              ) : <span className="text-text-muted">—</span>}
-                            </td>
-                            <td className="px-4 py-2.5">
-                              <span className="flex items-center gap-1.5 text-sm">
-                                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
-                                {c.disease.split("(")[0].trim()}
-                              </span>
-                            </td>
-                            <td className="px-4 py-2.5 text-center">
-                              <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${stColor}`}>{stLabel}</span>
-                            </td>
-                            <td className="px-4 py-2.5 text-center text-sm text-text-muted">{c.reportDate}</td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+                  {/* 14-day sparkline */}
+
+                  {/* Patient list */}
+                  <h3 className="text-sm font-semibold text-text mb-3">รายชื่อผู้ป่วย ({obTotal} ราย)</h3>
+                  <div className="overflow-hidden rounded-xl border border-gray-100">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="bg-gray-50">
+                          <th className="text-left px-4 py-2.5 text-sm font-semibold text-text-muted">ชื่อ</th>
+                          <th className="text-left px-4 py-2.5 text-sm font-semibold text-text-muted">โรค</th>
+                          <th className="text-center px-4 py-2.5 text-sm font-semibold text-text-muted">สถานะ</th>
+                          <th className="text-center px-4 py-2.5 text-sm font-semibold text-text-muted">วันที่</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {outbreakCases.sort((a, b) => b.reportDate.localeCompare(a.reportDate)).map((c, i) => {
+                          const p = persons.find((p) => p.id === c.personId);
+                          const color = OB_COLORS[c.disease]?.dot || "#6B7280";
+                          const stColor = c.status === "confirmed" ? "bg-red-50 text-red-600" : c.status === "suspected" ? "bg-amber-50 text-amber-600" : "bg-green-50 text-green-600";
+                          const stLabel = c.status === "confirmed" ? "ยืนยันแล้ว" : c.status === "suspected" ? "สงสัย" : "หายแล้ว";
+                          return (
+                            <tr key={i} className="border-t border-gray-50">
+                              <td className="px-4 py-2.5">
+                                {p ? (
+                                  <div>
+                                    <p className="font-medium text-text">{p.prefix}{p.firstName} {p.lastName}</p>
+                                    <p className="text-xs text-text-muted">อายุ {p.age} · หมู่ {p.moo}</p>
+                                  </div>
+                                ) : <span className="text-text-muted">—</span>}
+                              </td>
+                              <td className="px-4 py-2.5">
+                                <span className="flex items-center gap-1.5 text-sm">
+                                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
+                                  {c.disease.split("(")[0].trim()}
+                                </span>
+                              </td>
+                              <td className="px-4 py-2.5 text-center">
+                                <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${stColor}`}>{stLabel}</span>
+                              </td>
+                              <td className="px-4 py-2.5 text-center text-sm text-text-muted">{c.reportDate}</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
-              </div>
               );
             })()}
 
@@ -2542,96 +2566,96 @@ export default function GISMap() {
               const relDefs = vgFilter === "all" ? VACCINE_DEFS : VACCINE_DEFS.filter((d) => d.group === vgFilter);
 
               return (
-              <div>
-                <p className="text-sm text-text-muted uppercase tracking-wider mb-1">รายละเอียด</p>
-                <h2 className="text-2xl font-bold text-text mb-5 flex items-center gap-2">
-                  <Syringe size={24} className="text-sky-500" />
-                  ความครอบคลุมวัคซีน
-                </h2>
+                <div>
+                  <p className="text-sm text-text-muted uppercase tracking-wider mb-1">รายละเอียด</p>
+                  <h2 className="text-2xl font-bold text-text mb-5 flex items-center gap-2">
+                    <Syringe size={24} className="text-sky-500" />
+                    ความครอบคลุมวัคซีน
+                  </h2>
 
-                {/* Group filter in modal */}
-                <div className="flex flex-wrap gap-1.5 mb-5">
-                  <button onClick={() => setVaccineGroup("all")}
-                    className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${vgFilter === "all" ? "bg-sky-500 text-white border-sky-500" : "bg-white text-text-muted border-gray-200"}`}
-                  >ทั้งหมด</button>
-                  {(Object.entries(VACCINE_GROUP_LABELS) as [VaccineGroup, { name: string; color: string }][]).map(([key, { name, color }]) => (
-                    <button key={key} onClick={() => setVaccineGroup(key)}
-                      className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${vgFilter === key ? "text-white border-transparent" : "bg-white text-text-muted border-gray-200"}`}
-                      style={vgFilter === key ? { backgroundColor: color, borderColor: color } : {}}
-                    >{name}</button>
-                  ))}
-                </div>
+                  {/* Group filter in modal */}
+                  <div className="flex flex-wrap gap-1.5 mb-5">
+                    <button onClick={() => setVaccineGroup("all")}
+                      className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${vgFilter === "all" ? "bg-sky-500 text-white border-sky-500" : "bg-white text-text-muted border-gray-200"}`}
+                    >ทั้งหมด</button>
+                    {(Object.entries(VACCINE_GROUP_LABELS) as [VaccineGroup, { name: string; color: string }][]).map(([key, { name, color }]) => (
+                      <button key={key} onClick={() => setVaccineGroup(key)}
+                        className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${vgFilter === key ? "text-white border-transparent" : "bg-white text-text-muted border-gray-200"}`}
+                        style={vgFilter === key ? { backgroundColor: color, borderColor: color } : {}}
+                      >{name}</button>
+                    ))}
+                  </div>
 
-                {/* Moo comparison */}
-                <h3 className="text-sm font-semibold text-text mb-3">แยกตามหมู่</h3>
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  {villages.map((v) => {
-                    const mooPers = persons.filter((p) => p.moo === v.moo);
-                    const mooVax = mooPers.filter((p) => vgFilter === "all" ? p.vaccinations.length > 0 : p.vaccinations.some((vx) => vx.group === vgFilter)).length;
-                    const mooPct = mooPers.length > 0 ? ((mooVax / mooPers.length) * 100).toFixed(0) : "0";
-                    const mooHouses = houses.filter((h) => h.moo === v.moo).length;
-                    return (
-                      <div key={v.id} className="bg-gray-50 rounded-xl p-5">
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-base font-bold text-text">หมู่ {v.moo}</span>
-                          <span className="text-base font-bold text-sky-600">{mooPct}%</span>
+                  {/* Moo comparison */}
+                  <h3 className="text-sm font-semibold text-text mb-3">แยกตามหมู่</h3>
+                  <div className="grid grid-cols-2 gap-4 mb-6">
+                    {villages.map((v) => {
+                      const mooPers = persons.filter((p) => p.moo === v.moo);
+                      const mooVax = mooPers.filter((p) => vgFilter === "all" ? p.vaccinations.length > 0 : p.vaccinations.some((vx) => vx.group === vgFilter)).length;
+                      const mooPct = mooPers.length > 0 ? ((mooVax / mooPers.length) * 100).toFixed(0) : "0";
+                      const mooHouses = houses.filter((h) => h.moo === v.moo).length;
+                      return (
+                        <div key={v.id} className="bg-gray-50 rounded-xl p-5">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-base font-bold text-text">หมู่ {v.moo}</span>
+                            <span className="text-base font-bold text-sky-600">{mooPct}%</span>
+                          </div>
+                          <p className="text-sm text-text-muted mb-3">{v.name} · {mooHouses} ครัวเรือน</p>
+                          <div className="h-3 bg-gray-200 rounded-full overflow-hidden mb-2">
+                            <div className="h-full rounded-full bg-sky-500 transition-all duration-500" style={{ width: `${mooPct}%` }} />
+                          </div>
+                          <p className="text-sm text-text-muted">ได้รับวัคซีน {mooVax} จาก {mooPers.length} คน</p>
                         </div>
-                        <p className="text-sm text-text-muted mb-3">{v.name} · {mooHouses} ครัวเรือน</p>
-                        <div className="h-3 bg-gray-200 rounded-full overflow-hidden mb-2">
-                          <div className="h-full rounded-full bg-sky-500 transition-all duration-500" style={{ width: `${mooPct}%` }} />
-                        </div>
-                        <p className="text-sm text-text-muted">ได้รับวัคซีน {mooVax} จาก {mooPers.length} คน</p>
-                      </div>
-                    );
-                  })}
-                </div>
+                      );
+                    })}
+                  </div>
 
-                {/* Per-vaccine table */}
-                <h3 className="text-sm font-semibold text-text mb-3">รายวัคซีน</h3>
-                <div className="overflow-hidden rounded-xl border border-gray-100">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="bg-gray-50">
-                        <th className="text-left px-4 py-2.5 text-sm font-semibold text-text-muted">วัคซีน</th>
-                        <th className="text-center px-4 py-2.5 text-sm font-semibold text-text-muted">กลุ่มเป้าหมาย</th>
-                        <th className="text-center px-4 py-2.5 text-sm font-semibold text-text-muted">ได้รับ</th>
-                        <th className="text-center px-4 py-2.5 text-sm font-semibold text-text-muted">ครอบคลุม</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {relDefs.map((vd) => {
-                        const eligible = persons.filter((p) => p.age >= vd.ageMin && p.age <= vd.ageMax && (!vd.gender || p.gender === vd.gender)).length;
-                        const received = persons.filter((p) => p.vaccinations.some((v) => v.vaccineCode === vd.code)).length;
-                        const pct = eligible > 0 ? ((received / eligible) * 100).toFixed(0) : "0";
-                        const groupColor = VACCINE_GROUP_LABELS[vd.group].color;
-                        return (
-                          <tr key={vd.code} className="border-t border-gray-50">
-                            <td className="px-4 py-2.5">
-                              <div className="flex items-center gap-2">
-                                <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: groupColor }} />
-                                <div>
-                                  <p className="font-medium text-text">{vd.code}</p>
-                                  <p className="text-xs text-text-muted">{vd.name}</p>
+                  {/* Per-vaccine table */}
+                  <h3 className="text-sm font-semibold text-text mb-3">รายวัคซีน</h3>
+                  <div className="overflow-hidden rounded-xl border border-gray-100">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="bg-gray-50">
+                          <th className="text-left px-4 py-2.5 text-sm font-semibold text-text-muted">วัคซีน</th>
+                          <th className="text-center px-4 py-2.5 text-sm font-semibold text-text-muted">กลุ่มเป้าหมาย</th>
+                          <th className="text-center px-4 py-2.5 text-sm font-semibold text-text-muted">ได้รับ</th>
+                          <th className="text-center px-4 py-2.5 text-sm font-semibold text-text-muted">ครอบคลุม</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {relDefs.map((vd) => {
+                          const eligible = persons.filter((p) => p.age >= vd.ageMin && p.age <= vd.ageMax && (!vd.gender || p.gender === vd.gender)).length;
+                          const received = persons.filter((p) => p.vaccinations.some((v) => v.vaccineCode === vd.code)).length;
+                          const pct = eligible > 0 ? ((received / eligible) * 100).toFixed(0) : "0";
+                          const groupColor = VACCINE_GROUP_LABELS[vd.group].color;
+                          return (
+                            <tr key={vd.code} className="border-t border-gray-50">
+                              <td className="px-4 py-2.5">
+                                <div className="flex items-center gap-2">
+                                  <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: groupColor }} />
+                                  <div>
+                                    <p className="font-medium text-text">{vd.code}</p>
+                                    <p className="text-xs text-text-muted">{vd.name}</p>
+                                  </div>
                                 </div>
-                              </div>
-                            </td>
-                            <td className="px-4 py-2.5 text-center text-text-muted">{eligible}</td>
-                            <td className="px-4 py-2.5 text-center font-medium text-text">{received}</td>
-                            <td className="px-4 py-2.5 text-center">
-                              <div className="flex items-center gap-2 justify-center">
-                                <div className="w-16 h-2 bg-gray-100 rounded-full overflow-hidden">
-                                  <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: groupColor }} />
+                              </td>
+                              <td className="px-4 py-2.5 text-center text-text-muted">{eligible}</td>
+                              <td className="px-4 py-2.5 text-center font-medium text-text">{received}</td>
+                              <td className="px-4 py-2.5 text-center">
+                                <div className="flex items-center gap-2 justify-center">
+                                  <div className="w-16 h-2 bg-gray-100 rounded-full overflow-hidden">
+                                    <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: groupColor }} />
+                                  </div>
+                                  <span className="text-sm font-bold" style={{ color: groupColor }}>{pct}%</span>
                                 </div>
-                                <span className="text-sm font-bold" style={{ color: groupColor }}>{pct}%</span>
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
-              </div>
               );
             })()}
 

@@ -21,8 +21,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-background">
-      {/* ── Top Header (desktop: always, mobile: hidden on GIS) ── */}
-      <div className={`${isGis ? "absolute top-0 left-0 right-0 z-30" : "flex-shrink-0"} ${isGis ? "hidden lg:block" : ""}`}>
+      {/* ── Top Header (desktop only) ── */}
+      <div className={`${isGis ? "absolute top-0 left-0 right-0 z-30" : "flex-shrink-0"} hidden md:block`}>
         <header className={`bg-white text-text border-b border-gray-200 ${isGis ? "shadow-md" : ""}`}>
           <div className="max-w-[1400px] mx-auto flex items-center justify-between px-3 sm:px-4 lg:px-5 h-[56px]">
               {/* Logo */}

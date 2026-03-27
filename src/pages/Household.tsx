@@ -499,7 +499,8 @@ export default function Household() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl lg:text-3xl font-bold text-royal-blue">
+        <h1 className="text-2xl lg:text-3xl font-bold text-royal-blue flex items-center gap-3">
+          <Users size={28} />
           ครัวเรือนและข้อมูลบุคคล
         </h1>
         <p className="text-text-muted text-sm mt-1">

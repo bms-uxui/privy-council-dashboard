@@ -92,6 +92,11 @@ body {
   animation: slideUpFadeIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 /* Shadow scroll indicators — dynamic classes set by JS */
 .scroll-shadow-bottom {
   mask-image: linear-gradient(to bottom, black calc(100% - 32px), transparent 100%);
