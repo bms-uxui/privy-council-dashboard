@@ -2114,12 +2114,12 @@ export default function GISMap() {
       )}
       {/* ══════ EXPANDED WIDGET MODAL ══════ */}
       {expandedWidget && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center">
+        <div className="fixed lg:absolute inset-0 z-50 flex items-end md:items-center justify-center">
           {/* Backdrop */}
-          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setExpandedWidget(null)} />
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm animate-[fadeIn_0.2s_ease]" onClick={() => setExpandedWidget(null)} />
 
           {/* Modal */}
-          <div className="relative bg-white rounded-2xl shadow-2xl w-[90%] max-w-[700px] max-h-[85vh] overflow-y-auto no-scrollbar p-6">
+          <div className="relative bg-white md:rounded-2xl rounded-t-2xl shadow-2xl w-full md:w-[90%] md:max-w-[700px] max-h-[90vh] md:max-h-[85vh] overflow-y-auto no-scrollbar p-5 md:p-6 pb-20 md:pb-6 animate-slide-up">
             {/* Close */}
             <button onClick={() => setExpandedWidget(null)} className="absolute top-4 right-4 w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors z-10 group">
               <X size={16} />
