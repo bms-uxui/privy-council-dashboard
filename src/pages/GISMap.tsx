@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useMemo, useCallback } from "react";
+import { useSearchParams } from "react-router";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 
@@ -180,6 +181,7 @@ const RISK_COLORS: Record<string, string> = { high: "#DC2626", medium: "#F59E0B"
 const RISK_LABELS: Record<string, string> = { high: "สูง", medium: "ปานกลาง", low: "ต่ำ" };
 
 export default function GISMap() {
+  const [searchParams] = useSearchParams();
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const markersRef = useRef<maplibregl.Marker[]>([]);
@@ -203,6 +205,25 @@ export default function GISMap() {
   const [villageTab, setVillageTab] = useState<number>(11);
   const leftScroll = useScrollShadow();
   const rightScroll = useScrollShadow();
+
+  // Auto-zoom to house from query param (e.g. from Household page)
+  useEffect(() => {
+    const houseId = searchParams.get("house");
+    if (!houseId) return;
+    const house = houses.find((h) => h.id === houseId);
+    if (!house) return;
+    setSelectedHouse(house);
+    // Wait for map to be ready then zoom
+    const tryZoom = () => {
+      const map = mapRef.current;
+      if (map) {
+        map.easeTo({ center: [house.lng, house.lat], zoom: 16, duration: 800 });
+      } else {
+        setTimeout(tryZoom, 200);
+      }
+    };
+    tryZoom();
+  }, [searchParams]);
 
   const filteredHouses = useMemo(() => {
     return houses.filter((h) => {

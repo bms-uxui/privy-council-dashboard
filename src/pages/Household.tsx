@@ -108,7 +108,7 @@ export default function Household() {
             กลับไปรายการครัวเรือน
           </button>
           <a
-            href={`#/gis`}
+            href={`#/gis?house=${selectedPerson.houseId}`}
             className="flex items-center gap-1.5 text-sm text-royal-blue hover:text-royal-blue-light font-medium transition-colors min-h-[44px]"
           >
             <MapIcon size={16} />
@@ -656,7 +656,7 @@ export default function Household() {
                         ) : (
                           <span className="text-xs text-text-light">—</span>
                         )}
-                        <a href="#/gis" className="flex items-center gap-1 text-xs text-text-muted hover:text-royal-blue transition-colors">
+                        <a href={`#/gis?house=${house.id}`} className="flex items-center gap-1 text-xs text-text-muted hover:text-royal-blue transition-colors">
                           <MapIcon size={12} />
                         </a>
                       </div>
