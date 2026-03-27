@@ -1234,7 +1234,7 @@ export default function GISMap() {
 
             return (
           <div
-            className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg p-5 flex-shrink-0 cursor-pointer hover:shadow-xl hover:ring-1 hover:ring-sky-200 active:scale-[0.98] transition-all"
+            className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg p-5 flex-shrink-0 cursor-pointer hover:shadow-xl hover:ring-1 hover:ring-sky-200 active:scale-[0.98] transition-all overflow-visible"
             onClick={() => setExpandedWidget("vaccine")}
           >
             {/* Header */}
