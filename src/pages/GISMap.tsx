@@ -1803,7 +1803,7 @@ export default function GISMap() {
                             onClick={() => { setActiveFilter(isActive ? "all" : mode.key); setFabOpen(false); }}
                             className={`w-full flex items-center gap-3 p-4 rounded-xl transition-all text-left ${isActive ? "ring-2 ring-offset-1" : "hover:bg-gray-50"
                               } ${mode.bg}`}
-                            style={isActive ? { ringColor: mode.color } : {}}
+                            style={isActive ? { "--tw-ring-color": mode.color } as React.CSSProperties : undefined}
                           >
                             <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: isActive ? mode.color : `${mode.color}20` }}>
                               <mode.Icon size={20} style={{ color: isActive ? "white" : mode.color }} />
