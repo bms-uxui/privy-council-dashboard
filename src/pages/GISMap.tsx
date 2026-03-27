@@ -1612,7 +1612,7 @@ export default function GISMap() {
                 <f.Icon size={14} />
                 {isActive && !isViewMode && <span>{f.label}</span>}
                 {(!isActive || isViewMode) && (
-                  <span className="absolute bottom-full mb-1.5 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded bg-gray-900 text-white text-[10px] whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity">{f.label}</span>
+                  <span className="absolute top-full mt-2 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-lg bg-gray-900 text-white text-xs font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity shadow-lg">{f.label}</span>
                 )}
               </button>
             );
@@ -1639,7 +1639,7 @@ export default function GISMap() {
                 <f.Icon size={14} />
                 {isActive && <span>{f.label}</span>}
                 {!isActive && (
-                  <span className="absolute bottom-full mb-1.5 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded bg-gray-900 text-white text-[10px] whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity">{f.label}</span>
+                  <span className="absolute top-full mt-2 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-lg bg-gray-900 text-white text-xs font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity shadow-lg">{f.label}</span>
                 )}
               </button>
             );
