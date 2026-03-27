@@ -2119,17 +2119,24 @@ export default function GISMap() {
           <div className="absolute inset-0 bg-black/30 backdrop-blur-sm animate-[fadeIn_0.2s_ease]" onClick={() => setExpandedWidget(null)} />
 
           {/* Modal */}
-          <div className="relative bg-white md:rounded-2xl rounded-t-2xl shadow-2xl w-full md:w-[90%] md:max-w-[700px] max-h-[90vh] md:max-h-[85vh] overflow-y-auto no-scrollbar p-5 md:p-6 pb-20 md:pb-6 animate-slide-up">
-            {/* Close */}
-            <button onClick={() => setExpandedWidget(null)} className="absolute top-4 right-4 w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors z-10 group">
-              <X size={16} />
-              <span className="absolute top-full mt-1.5 px-2 py-0.5 rounded bg-gray-900 text-white text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity">ปิด</span>
-            </button>
+          <div className="relative bg-white md:rounded-2xl rounded-t-2xl shadow-2xl w-full md:w-[90%] md:max-w-[700px] max-h-[90vh] md:max-h-[85vh] flex flex-col animate-slide-up">
+            {/* Sticky header */}
+            <div className="sticky top-0 z-10 bg-white md:rounded-t-2xl rounded-t-2xl px-5 md:px-6 pt-5 md:pt-6 pb-3 border-b border-gray-100 flex items-center justify-between flex-shrink-0">
+              <div>
+                <p className="text-xs text-text-muted uppercase tracking-wider">
+                  {expandedWidget === "overview" ? "ข้อมูลภาพรวม" : expandedWidget === "ncd" ? "รายละเอียด" : expandedWidget === "demographics" ? "รายละเอียด" : expandedWidget === "village-status" ? "รายละเอียด" : expandedWidget === "outbreak" ? "รายละเอียด" : expandedWidget === "vaccine" ? "รายละเอียด" : "รายละเอียด"}
+                </p>
+              </div>
+              <button onClick={() => setExpandedWidget(null)} className="w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
+                <X size={16} />
+              </button>
+            </div>
+            {/* Scrollable content */}
+            <div className="overflow-y-auto no-scrollbar p-5 md:p-6 pb-20 md:pb-6 flex-1">
 
             {/* OVERVIEW */}
             {expandedWidget === "overview" && (
               <div>
-                <p className="text-sm text-text-muted uppercase tracking-wider mb-1">ข้อมูลภาพรวม</p>
                 <h2 className="text-xl sm:text-2xl font-bold text-text mb-4 sm:mb-5">สุขภาพระดับหมู่บ้าน — ต.ขุนน่าน อ.เฉลิมพระเกียรติ จ.น่าน</h2>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
@@ -2189,7 +2196,6 @@ export default function GISMap() {
             {/* NCD */}
             {expandedWidget === "ncd" && (
               <div>
-                <p className="text-sm text-text-muted uppercase tracking-wider mb-1">รายละเอียด</p>
                 <h2 className="text-xl sm:text-2xl font-bold text-text mb-4 sm:mb-5">โรคไม่ติดต่อเรื้อรัง (NCD)</h2>
 
                 <div className="overflow-hidden rounded-xl border border-gray-100 mb-5">
@@ -2245,8 +2251,7 @@ export default function GISMap() {
               const femalePctVal = ((female / persons.length) * 100).toFixed(1);
               return (
                 <div>
-                  <p className="text-sm text-text-muted uppercase tracking-wider mb-1">รายละเอียด</p>
-                  <h2 className="text-xl sm:text-2xl font-bold text-text mb-4 sm:mb-5">ข้อมูลประชากรและความเสี่ยง</h2>
+                    <h2 className="text-xl sm:text-2xl font-bold text-text mb-4 sm:mb-5">ข้อมูลประชากรและความเสี่ยง</h2>
 
                   {/* Risk breakdown */}
                   <h3 className="text-sm font-semibold text-text mb-3">ระดับความเสี่ยงครัวเรือน</h3>
@@ -2314,8 +2319,7 @@ export default function GISMap() {
 
               return (
                 <div>
-                  <p className="text-sm text-text-muted uppercase tracking-wider mb-1">รายละเอียด</p>
-                  <h2 className="text-xl sm:text-2xl font-bold text-text mb-4 sm:mb-5">สรุปสถานะแบ่งตามหมู่</h2>
+                    <h2 className="text-xl sm:text-2xl font-bold text-text mb-4 sm:mb-5">สรุปสถานะแบ่งตามหมู่</h2>
 
                   {/* Tabs */}
                   <div className="flex gap-1 bg-gray-100 rounded-xl p-1 mb-5">
@@ -2429,8 +2433,7 @@ export default function GISMap() {
 
               return (
                 <div>
-                  <p className="text-sm text-text-muted uppercase tracking-wider mb-1">รายละเอียด</p>
-                  <h2 className="text-xl sm:text-2xl font-bold text-text mb-4 sm:mb-5 flex items-center gap-2">
+                    <h2 className="text-xl sm:text-2xl font-bold text-text mb-4 sm:mb-5 flex items-center gap-2">
                     <Bug size={24} className="text-purple-500" />
                     เฝ้าระวังโรคระบาด
                   </h2>
@@ -2567,8 +2570,7 @@ export default function GISMap() {
 
               return (
                 <div>
-                  <p className="text-sm text-text-muted uppercase tracking-wider mb-1">รายละเอียด</p>
-                  <h2 className="text-xl sm:text-2xl font-bold text-text mb-4 sm:mb-5 flex items-center gap-2">
+                    <h2 className="text-xl sm:text-2xl font-bold text-text mb-4 sm:mb-5 flex items-center gap-2">
                     <Syringe size={24} className="text-sky-500" />
                     ความครอบคลุมวัคซีน
                   </h2>
@@ -2661,7 +2663,6 @@ export default function GISMap() {
 
             {expandedWidget === "coverage" && (
               <div>
-                <p className="text-sm text-text-muted uppercase tracking-wider mb-1">รายละเอียด</p>
                 <h2 className="text-xl sm:text-2xl font-bold text-text mb-4 sm:mb-5">สิทธิการรักษาพยาบาล</h2>
 
                 <div className="space-y-4">
@@ -2687,6 +2688,7 @@ export default function GISMap() {
                 </div>
               </div>
             )}
+          </div>
           </div>
         </div>
       )}
