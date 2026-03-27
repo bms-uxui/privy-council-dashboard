@@ -1841,7 +1841,7 @@ export default function GISMap() {
 
             {/* Outbreak */}
             {outbreakCases.length > 0 && (
-              <div className="bg-white rounded-2xl p-4 shadow-sm border border-purple-100 active:scale-[0.98] transition-transform" onClick={() => setExpandedWidget("outbreak")}
+              <div className="bg-white rounded-2xl p-4 shadow-sm border border-purple-100 active:scale-[0.98] transition-transform" onClick={() => setExpandedWidget("outbreak")}>
                 <div className="flex items-center gap-2 mb-3">
                   <Bug size={16} className="text-purple-500" />
                   <p className="text-sm font-semibold text-text">โรคระบาด</p>
@@ -1877,7 +1877,7 @@ export default function GISMap() {
             )}
 
             {/* Vaccine */}
-            <div className="bg-white rounded-2xl p-4 shadow-sm border border-sky-100 active:scale-[0.98] transition-transform" onClick={() => setExpandedWidget("vaccine")}
+            <div className="bg-white rounded-2xl p-4 shadow-sm border border-sky-100 active:scale-[0.98] transition-transform" onClick={() => setExpandedWidget("vaccine")}>
               <div className="flex items-center gap-2 mb-3">
                 <Syringe size={16} className="text-sky-500" />
                 <p className="text-sm font-semibold text-text">วัคซีน</p>
