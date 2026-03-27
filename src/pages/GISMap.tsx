@@ -1318,10 +1318,10 @@ export default function GISMap() {
               const totalVax = groupCounts.reduce((s, g) => s + g.count, 0) || 1;
               return (
                 <>
-                  <div className="flex h-3 rounded-full overflow-hidden mb-2">
-                    {groupCounts.map((g) => (
-                      <div key={g.key} className="h-full relative group/seg cursor-default" style={{ width: `${(g.count / totalVax) * 100}%`, backgroundColor: g.color }}>
-                        <span className="absolute bottom-full mb-1.5 left-1/2 -translate-x-1/2 px-2 py-1 rounded-lg bg-gray-900 text-white text-xs whitespace-nowrap opacity-0 group-hover/seg:opacity-100 pointer-events-none transition-opacity shadow-lg z-30">
+                  <div className="flex h-3 rounded-full mb-2">
+                    {groupCounts.map((g, i) => (
+                      <div key={g.key} className={`h-full relative group/seg cursor-default ${i === 0 ? "rounded-l-full" : ""} ${i === groupCounts.length - 1 ? "rounded-r-full" : ""}`} style={{ width: `${(g.count / totalVax) * 100}%`, backgroundColor: g.color }}>
+                        <span className="absolute bottom-full mb-1.5 left-1/2 -translate-x-1/2 px-2 py-1 rounded-lg bg-gray-900 text-white text-xs whitespace-nowrap opacity-0 group-hover/seg:opacity-100 pointer-events-none transition-opacity shadow-lg z-50">
                           {g.name} — {g.count} คน ({((g.count / totalVax) * 100).toFixed(0)}%)
                         </span>
                       </div>
