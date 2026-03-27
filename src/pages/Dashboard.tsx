@@ -94,23 +94,25 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-4">
-      {/* ── Header: compact bar ── */}
-      <div className="flex items-center justify-between">
+      {/* ── Header ── */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h1 className="text-lg font-bold text-text">ศูนย์บัญชาการสุขภาพ</h1>
-          <p className="text-xs text-text-muted">ต.ขุนน่าน อ.เฉลิมพระเกียรติ จ.น่าน — ข้อมูลจาก HDC API</p>
+          <p className="text-xs text-text-muted">ต.ขุนน่าน อ.เฉลิมพระเกียรติ จ.น่าน</p>
         </div>
-        <div className="flex items-center gap-2">
-          {[
-            { label: "เขตสุขภาพที่ 1" },
-            { label: "น่าน" },
-            { label: "ท่าวังผา" },
-          ].map((f) => (
-            <div key={f.label} className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gray-100 text-xs text-text-muted">
-              {f.label} <ChevronDown size={10} />
-            </div>
-          ))}
-          <div className="flex gap-0.5 bg-gray-100 rounded-lg p-0.5 ml-1">
+        <div className="flex items-center gap-2 flex-wrap">
+          <div className="hidden md:flex items-center gap-2">
+            {[
+              { label: "เขตสุขภาพที่ 1" },
+              { label: "น่าน" },
+              { label: "ท่าวังผา" },
+            ].map((f) => (
+              <div key={f.label} className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gray-100 text-xs text-text-muted">
+                {f.label} <ChevronDown size={10} />
+              </div>
+            ))}
+          </div>
+          <div className="flex gap-0.5 bg-gray-100 rounded-lg p-0.5">
             {(["all", "11", "12"] as const).map((m) => (
               <button
                 key={m}
@@ -123,14 +125,14 @@ export default function Dashboard() {
               </button>
             ))}
           </div>
-          <a href="#/gis" className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-royal-blue/10 text-xs text-royal-blue font-medium hover:bg-royal-blue/20 transition-colors ml-1">
+          <a href="#/gis" className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-royal-blue/10 text-xs text-royal-blue font-medium hover:bg-royal-blue/20 transition-colors">
             <MapIcon size={14} /> แผนที่
           </a>
         </div>
       </div>
 
       {/* ── Row 1: 4 KPI cards + service units in one row ── */}
-      <div className="grid grid-cols-6 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         {[
           { icon: Home, label: "ครัวเรือน", value: fHouses, color: "#1C85AD", bg: "bg-sky-50" },
           { icon: Users, label: "ประชากร", value: fPop, color: "#0D9488", bg: "bg-teal-50" },
@@ -323,7 +325,8 @@ export default function Dashboard() {
                 จำนวนผู้ป่วยทั้งหมด
               </h3>
             </div>
-            <table className="w-full">
+            <div className="overflow-x-auto">
+            <table className="w-full min-w-[500px]">
               <thead>
                 <tr className="bg-gray-50">
                   <th className="text-left px-5 py-3 text-xs font-semibold text-text-muted">
@@ -382,6 +385,7 @@ export default function Dashboard() {
                 </tr>
               </tbody>
             </table>
+            </div>
             {/* Progress bar under table */}
             <div className="px-5 py-3 border-t border-gray-100">
               <div className="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
