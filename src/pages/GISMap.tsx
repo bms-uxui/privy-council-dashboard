@@ -1762,25 +1762,50 @@ export default function GISMap() {
         </div>
       </div>
 
-      {/* Mobile FAB buttons — outbreak & vaccine */}
-      <div className="absolute right-3 top-[120px] z-10 lg:hidden flex flex-col gap-2">
-        <button
-          onClick={() => setActiveFilter(activeFilter === "outbreak" ? "all" : "outbreak")}
-          className={`w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition-all ${
-            activeFilter === "outbreak" ? "bg-purple-600 text-white scale-110" : "bg-white text-purple-500 border border-gray-200"
-          }`}
-        >
-          <Bug size={20} />
-        </button>
-        <button
-          onClick={() => setActiveFilter(activeFilter === "vaccine" ? "all" : "vaccine")}
-          className={`w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition-all ${
-            activeFilter === "vaccine" ? "bg-sky-500 text-white scale-110" : "bg-white text-sky-500 border border-gray-200"
-          }`}
-        >
-          <Syringe size={20} />
-        </button>
-      </div>
+      {/* Mobile FAB — view modes (outbreak/vaccine) */}
+      {(() => {
+        const [fabOpen, setFabOpen] = [mobilePanel === "fab", (v: boolean) => setMobilePanel(v ? "fab" as any : null)];
+        const isViewMode = activeFilter === "outbreak" || activeFilter === "vaccine";
+        const fabColor = activeFilter === "outbreak" ? "bg-purple-600" : activeFilter === "vaccine" ? "bg-sky-500" : "bg-royal-blue";
+        const FabMainIcon = activeFilter === "outbreak" ? Bug : activeFilter === "vaccine" ? Syringe : Layers;
+
+        return (
+          <div className="absolute right-3 top-[120px] z-10 lg:hidden flex flex-col items-end gap-2">
+            {/* Expanded options */}
+            {fabOpen && (
+              <div className="flex flex-col gap-2 mb-1">
+                <button
+                  onClick={() => { setActiveFilter(activeFilter === "outbreak" ? "all" : "outbreak"); setMobilePanel(null); }}
+                  className={`flex items-center gap-2 pl-3 pr-4 h-10 rounded-full shadow-lg text-xs font-medium transition-all ${
+                    activeFilter === "outbreak" ? "bg-purple-600 text-white" : "bg-white text-text border border-gray-200"
+                  }`}
+                >
+                  <Bug size={16} />
+                  โรคระบาด
+                </button>
+                <button
+                  onClick={() => { setActiveFilter(activeFilter === "vaccine" ? "all" : "vaccine"); setMobilePanel(null); }}
+                  className={`flex items-center gap-2 pl-3 pr-4 h-10 rounded-full shadow-lg text-xs font-medium transition-all ${
+                    activeFilter === "vaccine" ? "bg-sky-500 text-white" : "bg-white text-text border border-gray-200"
+                  }`}
+                >
+                  <Syringe size={16} />
+                  วัคซีน
+                </button>
+              </div>
+            )}
+            {/* Main FAB */}
+            <button
+              onClick={() => setFabOpen(!fabOpen)}
+              className={`w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition-all ${
+                isViewMode ? `${fabColor} text-white` : fabOpen ? "bg-gray-200 text-text" : "bg-white text-royal-blue border border-gray-200"
+              }`}
+            >
+              {fabOpen ? <X size={20} /> : <FabMainIcon size={20} />}
+            </button>
+          </div>
+        );
+      })()}
 
       {/* Mobile bottom sheet */}
       <div className="absolute left-0 right-0 bottom-14 z-20 lg:hidden transition-all duration-300">
