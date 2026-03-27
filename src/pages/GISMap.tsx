@@ -935,6 +935,15 @@ export default function GISMap() {
             </div>
           )}
         </div>
+
+        {/* Reset zoom */}
+        <button
+          onClick={() => { mapRef.current?.easeTo({ center: [101.220, 19.533], zoom: 13.5, duration: 600 }); }}
+          className="pointer-events-auto relative group w-10 h-10 rounded-xl bg-white/95 backdrop-blur-sm shadow-md flex items-center justify-center hover:bg-gray-50 transition-colors text-text-muted"
+        >
+          <ZoomOut size={18} />
+          <span className="absolute top-full mt-1.5 px-2 py-0.5 rounded bg-gray-900 text-white text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity">รีเซ็ตแผนที่</span>
+        </button>
       </div>
 
       {/* ══════ LEFT PANEL — Dashboard widgets ══════ */}
