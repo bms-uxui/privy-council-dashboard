@@ -1764,8 +1764,11 @@ export default function GISMap() {
 
       {/* Mobile bottom sheet */}
       <div className="absolute left-0 right-0 bottom-14 z-20 lg:hidden transition-all duration-300">
-        {/* Handle + summary */}
-        <div className="bg-white rounded-t-2xl shadow-[0_-4px_20px_rgba(0,0,0,0.1)]">
+        {/* Handle + summary — tap to expand */}
+        <div
+          className="bg-white rounded-t-2xl shadow-[0_-4px_20px_rgba(0,0,0,0.1)] cursor-pointer active:bg-gray-50 transition-colors"
+          onClick={() => setMobilePanel(mobilePanel ? null : "left")}
+        >
           <div className="flex justify-center pt-2 pb-1">
             <div className="w-10 h-1 rounded-full bg-gray-300" />
           </div>
@@ -1774,20 +1777,19 @@ export default function GISMap() {
               <p className="text-sm font-bold text-text">ต.ขุนน่าน</p>
               <p className="text-xs text-text-muted">{filteredHouses.length} ครัวเรือน · {persons.length.toLocaleString()} คน</p>
             </div>
-            <button
-              onClick={() => setMobilePanel(mobilePanel ? null : "left")}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${mobilePanel ? "bg-gray-200 text-text" : "bg-royal-blue text-white"}`}
-            >
-              {mobilePanel ? "ปิด" : "ดูข้อมูล"}
-            </button>
+            <ChevronDownIcon
+              size={18}
+              className="text-text-muted transition-transform duration-300"
+              style={{ transform: mobilePanel ? "rotate(180deg)" : "rotate(0deg)" }}
+            />
           </div>
         </div>
 
-        {/* Expanded: vertical scrollable widget cards (same style as desktop) */}
+        {/* Expanded: vertical scrollable widget cards */}
         {mobilePanel && (
-          <div className="bg-white px-3 pb-4 max-h-[50vh] overflow-y-auto no-scrollbar space-y-3 pt-2">
+          <div className="bg-white px-3 pb-4 max-h-[85vh] overflow-y-auto no-scrollbar space-y-3 pt-2">
             {/* KPI + Risk */}
-            <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+            <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 active:scale-[0.98] transition-transform" onClick={() => setExpandedWidget("overview")}>
               <p className="text-sm font-semibold text-text mb-3">ภาพรวมสุขภาพ</p>
               <div className="grid grid-cols-4 gap-2 mb-3">
                 {[
@@ -1817,7 +1819,7 @@ export default function GISMap() {
             </div>
 
             {/* NCD */}
-            <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+            <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 active:scale-[0.98] transition-transform" onClick={() => setExpandedWidget("ncd")}>
               <p className="text-sm font-semibold text-text mb-3">โรคเรื้อรัง NCD</p>
               <div className="space-y-2">
                 {ncdStats.map((ncd) => {
@@ -1839,7 +1841,7 @@ export default function GISMap() {
 
             {/* Outbreak */}
             {outbreakCases.length > 0 && (
-              <div className="bg-white rounded-2xl p-4 shadow-sm border border-purple-100">
+              <div className="bg-white rounded-2xl p-4 shadow-sm border border-purple-100 active:scale-[0.98] transition-transform" onClick={() => setExpandedWidget("outbreak")}
                 <div className="flex items-center gap-2 mb-3">
                   <Bug size={16} className="text-purple-500" />
                   <p className="text-sm font-semibold text-text">โรคระบาด</p>
@@ -1875,7 +1877,7 @@ export default function GISMap() {
             )}
 
             {/* Vaccine */}
-            <div className="bg-white rounded-2xl p-4 shadow-sm border border-sky-100">
+            <div className="bg-white rounded-2xl p-4 shadow-sm border border-sky-100 active:scale-[0.98] transition-transform" onClick={() => setExpandedWidget("vaccine")}
               <div className="flex items-center gap-2 mb-3">
                 <Syringe size={16} className="text-sky-500" />
                 <p className="text-sm font-semibold text-text">วัคซีน</p>
