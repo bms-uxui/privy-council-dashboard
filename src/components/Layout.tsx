@@ -97,9 +97,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </main>
       )}
 
-      {/* ── Mobile Bottom Tab Bar (non-GIS pages) ── */}
-      {!isGis && (
-        <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 safe-area-bottom">
+      {/* ── Mobile Bottom Tab Bar (all pages) ── */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 safe-area-bottom">
           <div className="flex items-center justify-around h-14">
             {navItems.map((item) => {
               const isActive = location.pathname === item.path;
@@ -118,7 +117,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             })}
           </div>
         </nav>
-      )}
     </div>
   );
 }
