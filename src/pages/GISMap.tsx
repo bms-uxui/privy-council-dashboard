@@ -1611,26 +1611,26 @@ export default function GISMap() {
         </div>
       </div>
 
-      {/* ══════ VIEW MODE FILTERS — bottom center ══════ */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10">
-        <div className="flex gap-2">
+      {/* ══════ VIEW MODE FILTERS — top right, left of right panel ══════ */}
+      <div className="absolute top-[76px] right-[416px] z-10">
+        <div className="flex gap-1.5">
           {VIEW_FILTERS.map((f) => {
             const isActive = activeFilter === f.key;
             return (
               <button
                 key={f.key}
                 onClick={() => setActiveFilter(isActive ? "all" : f.key)}
-                className={`relative group flex items-center gap-2 rounded-full text-sm font-medium whitespace-nowrap transition-all shadow-md border min-h-[42px] ${
+                className={`relative group flex items-center gap-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all shadow-sm border h-10 ${
                   isActive
-                    ? "pl-3 pr-4 py-2 text-white border-transparent"
-                    : "px-3 py-2 bg-white text-text-muted border-white hover:shadow-lg"
+                    ? "pl-3 pr-3.5 text-white border-transparent"
+                    : "px-3 bg-white/95 backdrop-blur-sm text-text-muted border-gray-200/80 hover:shadow-md"
                 }`}
                 style={isActive ? { backgroundColor: f.color, borderColor: f.color } : {}}
               >
-                <f.Icon size={16} />
+                <f.Icon size={14} />
                 {isActive && <span>{f.label}</span>}
                 {!isActive && (
-                  <span className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded bg-gray-900 text-white text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity">{f.label}</span>
+                  <span className="absolute bottom-full mb-1.5 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded bg-gray-900 text-white text-[10px] whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity">{f.label}</span>
                 )}
               </button>
             );
