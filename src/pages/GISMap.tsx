@@ -970,7 +970,7 @@ export default function GISMap() {
       </div>
 
       {/* ══════ LEFT PANEL — Dashboard widgets ══════ */}
-      <div ref={leftScroll.ref} className={`absolute top-20 left-3 bottom-14 z-10 w-[380px] flex-col gap-3 overflow-y-auto no-scrollbar ${leftScroll.shadowClass} hidden lg:flex ${mobilePanel === "left" ? "!flex w-[calc(100%-24px)] sm:w-[380px]" : ""}`}>
+      <div ref={leftScroll.ref} className={`absolute top-20 left-3 bottom-14 z-10 w-[380px] flex-col gap-3 overflow-y-auto no-scrollbar ${leftScroll.shadowClass} hidden lg:flex`}>
         {/* Title + filters + KPIs */}
         <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg p-5 flex-shrink-0 cursor-pointer hover:shadow-xl hover:ring-1 hover:ring-royal-blue/20 active:scale-[0.98] transition-all" onClick={() => setExpandedWidget("overview")}>
           <div className="flex items-start justify-between mb-1">
@@ -1218,7 +1218,7 @@ export default function GISMap() {
 
       {/* ══════ RIGHT PANEL — Summary insight + list (hidden when house selected) ══════ */}
       {!selectedHouse && (
-      <div ref={rightScroll.ref} className={`absolute top-20 right-3 bottom-14 z-10 w-[400px] flex-col gap-3 overflow-y-auto no-scrollbar ${rightScroll.shadowClass} hidden lg:flex ${mobilePanel === "right" ? "!flex w-[calc(100%-24px)] sm:w-[400px]" : ""}`}>
+      <div ref={rightScroll.ref} className={`absolute top-20 right-3 bottom-14 z-10 w-[400px] flex-col gap-3 overflow-y-auto no-scrollbar ${rightScroll.shadowClass} hidden lg:flex`}>
 
         {/* ── Vaccine Mode: Right Panel ── */}
         {activeFilter === "vaccine" ? (
@@ -1763,7 +1763,7 @@ export default function GISMap() {
       </div>
 
       {/* Mobile bottom sheet */}
-      <div className={`absolute left-0 right-0 z-20 lg:hidden transition-all duration-300 ${mobilePanel ? "bottom-0" : "bottom-0"}`}>
+      <div className="absolute left-0 right-0 bottom-0 z-20 lg:hidden transition-all duration-300">
         {/* Handle + summary bar (always visible) */}
         <div
           className="bg-white rounded-t-2xl shadow-[0_-4px_20px_rgba(0,0,0,0.1)] px-4"
@@ -1855,14 +1855,10 @@ export default function GISMap() {
         )}
       </div>
 
-      {/* Mobile panel backdrop */}
-      {mobilePanel && (
-        <div className="absolute inset-0 z-[9] bg-black/10 lg:hidden" onClick={() => setMobilePanel(null)} />
-      )}
 
       {/* ══════ HOUSE DETAIL DRAWER (on click) ══════ */}
       {selectedHouse && (
-        <div className="absolute lg:top-20 lg:right-3 lg:bottom-16 lg:w-[400px] bottom-0 left-0 right-0 max-h-[70vh] lg:max-h-none bg-white rounded-t-2xl lg:rounded-2xl shadow-2xl z-20 overflow-y-auto flex flex-col animate-slide-up">
+        <div className="absolute lg:top-20 lg:right-3 lg:bottom-16 lg:w-[400px] bottom-0 left-0 right-0 max-h-[80vh] lg:max-h-none bg-white rounded-t-2xl lg:rounded-2xl shadow-2xl z-30 overflow-y-auto flex flex-col animate-slide-up">
           {/* Header */}
           <div className="bg-gradient-to-r from-[#156A8A] to-[#1C85AD] text-white p-4 rounded-t-2xl flex-shrink-0">
             <div className="flex items-center justify-between mb-2">
