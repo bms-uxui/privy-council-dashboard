@@ -12,7 +12,7 @@ import {
   Bug,
   ShieldAlert,
   Syringe,
-  Map,
+  Map as MapIcon,
 } from "lucide-react";
 import {
   BarChart,
@@ -174,7 +174,7 @@ export default function Dashboard() {
               </span>
             </div>
             <a href="#/gis" className="flex items-center gap-1 text-xs text-royal-blue hover:underline font-medium">
-              <Map size={12} /> ดูแผนที่
+              <MapIcon size={12} /> ดูแผนที่
             </a>
           </div>
           <div className="mt-2 w-full h-2 bg-gray-100 rounded-full overflow-hidden">
@@ -203,7 +203,7 @@ export default function Dashboard() {
               </span>
             </div>
             <a href="#/gis" className="flex items-center gap-1 text-xs text-royal-blue hover:underline font-medium">
-              <Map size={12} /> ดูแผนที่
+              <MapIcon size={12} /> ดูแผนที่
             </a>
           </div>
           <div className="mt-2 w-full h-2 bg-gray-100 rounded-full overflow-hidden">
@@ -454,7 +454,7 @@ export default function Dashboard() {
                   <tr key={v.id} className="border-t border-gray-50 hover:bg-gray-50/50 cursor-pointer" onClick={() => { window.location.hash = `/gis`; }}>
                     <td className="px-5 py-3 text-sm font-medium text-text flex items-center gap-2">
                       ม.{v.moo} {v.name}
-                      <Map size={12} className="text-royal-blue opacity-0 group-hover:opacity-100" />
+                      <MapIcon size={12} className="text-royal-blue opacity-0 group-hover:opacity-100" />
                     </td>
                     <td className="px-4 py-3 text-center text-sm text-text">
                       {v.totalHouses} / {v.totalHouses}{" "}
@@ -665,7 +665,7 @@ export default function Dashboard() {
                 กลุ่มสุขภาพ
               </h3>
               <a href="#/gis" className="flex items-center gap-1 text-xs text-royal-blue hover:underline font-medium">
-                <Map size={12} /> ดูแผนที่
+                <MapIcon size={12} /> ดูแผนที่
               </a>
             </div>
             {/* Legend */}

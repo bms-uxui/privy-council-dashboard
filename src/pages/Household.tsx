@@ -19,7 +19,7 @@ import {
   Bug,
   ShieldAlert,
   CheckCircle2,
-  Map,
+  Map as MapIcon,
 } from "lucide-react";
 import { houses, persons, outbreakCases, outbreakHouseIds } from "../data/mockData";
 import type { Person } from "../types";
@@ -111,7 +111,7 @@ export default function Household() {
             href={`#/gis`}
             className="flex items-center gap-1.5 text-sm text-royal-blue hover:text-royal-blue-light font-medium transition-colors min-h-[44px]"
           >
-            <Map size={16} />
+            <MapIcon size={16} />
             ดูบนแผนที่
           </a>
         </div>
@@ -657,7 +657,7 @@ export default function Household() {
                           <span className="text-xs text-text-light">—</span>
                         )}
                         <a href="#/gis" className="flex items-center gap-1 text-xs text-text-muted hover:text-royal-blue transition-colors">
-                          <Map size={12} />
+                          <MapIcon size={12} />
                         </a>
                       </div>
                     </td>
