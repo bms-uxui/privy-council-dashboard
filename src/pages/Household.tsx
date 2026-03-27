@@ -523,8 +523,8 @@ export default function Household() {
             className="w-full pl-11 pr-4 py-3 rounded-xl bg-white border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-royal-blue/20 focus:border-royal-blue min-h-[48px]"
           />
         </div>
-        <div className="flex gap-2">
-          <div className="flex gap-1 bg-white rounded-xl p-1 border border-gray-200">
+        <div className="flex gap-2 overflow-x-auto no-scrollbar">
+          <div className="flex gap-1 bg-white rounded-xl p-1 border border-gray-200 flex-shrink-0">
             <Filter size={14} className="text-text-muted self-center ml-2" />
             {(["all", "11", "12"] as const).map((m) => (
               <button
@@ -540,7 +540,7 @@ export default function Household() {
               </button>
             ))}
           </div>
-          <div className="flex gap-1 bg-white rounded-xl p-1 border border-gray-200">
+          <div className="flex gap-1 bg-white rounded-xl p-1 border border-gray-200 flex-shrink-0">
             {(["all", "high", "medium", "low"] as const).map((r) => (
               <button
                 key={r}
