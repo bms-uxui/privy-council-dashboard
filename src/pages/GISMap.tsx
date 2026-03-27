@@ -203,6 +203,7 @@ export default function GISMap() {
   const [vaccineGroup, setVaccineGroup] = useState<VaccineGroup | "all">("all");
   const [vaccineView, setVaccineView] = useState<"mini" | "full">("mini");
   const [villageTab, setVillageTab] = useState<number>(11);
+  const [mobilePanel, setMobilePanel] = useState<"left" | "right" | null>(null);
   const leftScroll = useScrollShadow();
   const rightScroll = useScrollShadow();
 
@@ -685,7 +686,7 @@ export default function GISMap() {
           const feat = e.features?.[0];
           if (!feat) return;
           const house = houses.find((h) => h.id === feat.properties?.id);
-          if (house) setSelectedHouse(house);
+          if (house) { setSelectedHouse(house); setMobilePanel(null); }
         });
 
         // Hover popup
@@ -741,7 +742,7 @@ export default function GISMap() {
         if (!feat) return;
         const houseId = feat.properties?.id;
         const house = filteredHouses.find((h) => h.id === houseId);
-        if (house) setSelectedHouse(house);
+        if (house) { setSelectedHouse(house); setMobilePanel(null); }
       });
 
       // Hover individual point → popup (remove old one first)
@@ -885,8 +886,8 @@ export default function GISMap() {
           )}
         </div>
 
-        {/* Indicator — center */}
-        <div className="pointer-events-auto bg-white/95 backdrop-blur-sm rounded-full shadow-md px-4 h-10 flex items-center gap-2 text-sm">
+        {/* Indicator — center (hidden on small mobile) */}
+        <div className="pointer-events-auto bg-white/95 backdrop-blur-sm rounded-full shadow-md px-4 h-10 hidden sm:flex items-center gap-2 text-sm">
           <button
             onClick={() => { mapRef.current?.easeTo({ center: [101.220, 19.533], zoom: 13.5, duration: 600 }); }}
             className="text-royal-blue font-medium hover:underline"
@@ -969,7 +970,7 @@ export default function GISMap() {
       </div>
 
       {/* ══════ LEFT PANEL — Dashboard widgets ══════ */}
-      <div ref={leftScroll.ref} className={`absolute top-20 left-3 bottom-14 z-10 w-[380px] flex flex-col gap-3 overflow-y-auto no-scrollbar ${leftScroll.shadowClass}`}>
+      <div ref={leftScroll.ref} className={`absolute top-20 left-3 bottom-14 z-10 w-[380px] flex-col gap-3 overflow-y-auto no-scrollbar ${leftScroll.shadowClass} hidden lg:flex ${mobilePanel === "left" ? "!flex w-[calc(100%-24px)] sm:w-[380px]" : ""}`}>
         {/* Title + filters + KPIs */}
         <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg p-5 flex-shrink-0 cursor-pointer hover:shadow-xl hover:ring-1 hover:ring-royal-blue/20 active:scale-[0.98] transition-all" onClick={() => setExpandedWidget("overview")}>
           <div className="flex items-start justify-between mb-1">
@@ -1217,7 +1218,7 @@ export default function GISMap() {
 
       {/* ══════ RIGHT PANEL — Summary insight + list (hidden when house selected) ══════ */}
       {!selectedHouse && (
-      <div ref={rightScroll.ref} className={`absolute top-20 right-3 bottom-14 z-10 w-[400px] flex flex-col gap-3 overflow-y-auto no-scrollbar ${rightScroll.shadowClass}`}>
+      <div ref={rightScroll.ref} className={`absolute top-20 right-3 bottom-14 z-10 w-[400px] flex-col gap-3 overflow-y-auto no-scrollbar ${rightScroll.shadowClass} hidden lg:flex ${mobilePanel === "right" ? "!flex w-[calc(100%-24px)] sm:w-[400px]" : ""}`}>
 
         {/* ── Vaccine Mode: Right Panel ── */}
         {activeFilter === "vaccine" ? (
@@ -1464,7 +1465,7 @@ export default function GISMap() {
                       key={i}
                       className="p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer"
                       style={{ borderLeft: `3px solid ${dotColor}` }}
-                      onClick={() => { if (house) setSelectedHouse(house); }}
+                      onClick={() => { if (house) { setSelectedHouse(house); setMobilePanel(null); } }}
                     >
                       <div className="flex items-center justify-between mb-1.5">
                         <span className="text-xs text-text-muted">{c.reportDate}</span>
@@ -1631,8 +1632,8 @@ export default function GISMap() {
       </div>
       )}
 
-      {/* ══════ HEALTH FILTERS — top, right of left panel ══════ */}
-      <div className="absolute top-[76px] left-[400px] z-10">
+      {/* ══════ HEALTH FILTERS — top, right of left panel (desktop only) ══════ */}
+      <div className="absolute top-[76px] left-[400px] z-10 hidden lg:block">
         <div className="flex gap-1.5">
           {HEALTH_FILTERS.map((f) => {
             const isActive = activeFilter === f.key;
@@ -1659,8 +1660,8 @@ export default function GISMap() {
         </div>
       </div>
 
-      {/* ══════ VIEW MODE FILTERS — top right, left of right panel ══════ */}
-      <div className="absolute top-[76px] right-[420px] z-10">
+      {/* ══════ VIEW MODE FILTERS — top right (desktop only) ══════ */}
+      <div className="absolute top-[76px] right-[420px] z-10 hidden lg:block">
         <div className="flex gap-1.5">
           {VIEW_FILTERS.map((f) => {
             const isActive = activeFilter === f.key;
@@ -1686,9 +1687,58 @@ export default function GISMap() {
         </div>
       </div>
 
+      {/* ══════ MOBILE BOTTOM BAR ══════ */}
+      <div className="absolute bottom-3 left-3 right-3 z-20 lg:hidden">
+        <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg p-2 flex items-center gap-2">
+          {/* Panel toggles */}
+          <button
+            onClick={() => setMobilePanel(mobilePanel === "left" ? null : "left")}
+            className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium transition-all ${mobilePanel === "left" ? "bg-royal-blue text-white" : "bg-gray-100 text-text-muted"}`}
+          >
+            <Layers size={14} />
+            สถิติ
+          </button>
+          <button
+            onClick={() => setMobilePanel(mobilePanel === "right" ? null : "right")}
+            className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium transition-all ${mobilePanel === "right" ? "bg-royal-blue text-white" : "bg-gray-100 text-text-muted"}`}
+          >
+            <Activity size={14} />
+            ข้อมูล
+          </button>
+
+          {/* Divider */}
+          <div className="w-px h-6 bg-gray-200" />
+
+          {/* Filter pills (scrollable) */}
+          <div className="flex-1 flex gap-1 overflow-x-auto no-scrollbar">
+            {FILTERS.map((f) => {
+              const isActive = activeFilter === f.key;
+              return (
+                <button
+                  key={f.key}
+                  onClick={() => { setActiveFilter(isActive ? "all" : f.key); setMobilePanel(null); }}
+                  className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${
+                    isActive ? "text-white" : "bg-gray-100 text-text-muted"
+                  }`}
+                  style={isActive ? { backgroundColor: f.color } : {}}
+                >
+                  <f.Icon size={12} />
+                  {f.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile panel backdrop */}
+      {mobilePanel && (
+        <div className="absolute inset-0 z-[9] bg-black/10 lg:hidden" onClick={() => setMobilePanel(null)} />
+      )}
+
       {/* ══════ HOUSE DETAIL DRAWER (on click) ══════ */}
       {selectedHouse && (
-        <div className="absolute top-20 right-3 bottom-16 w-[400px] bg-white rounded-2xl shadow-2xl z-20 overflow-y-auto flex flex-col animate-slide-up">
+        <div className="absolute top-20 right-3 bottom-16 w-[calc(100%-24px)] sm:w-[400px] bg-white rounded-2xl shadow-2xl z-20 overflow-y-auto flex flex-col animate-slide-up">
           {/* Header */}
           <div className="bg-gradient-to-r from-[#156A8A] to-[#1C85AD] text-white p-4 rounded-t-2xl flex-shrink-0">
             <div className="flex items-center justify-between mb-2">
