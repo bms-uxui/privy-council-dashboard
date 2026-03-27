@@ -1740,10 +1740,10 @@ export default function GISMap() {
         )}
       </div>
 
-      {/* Mobile filter pills — horizontal scroll below search */}
+      {/* Mobile filter pills — health filters only (no outbreak/vaccine) */}
       <div className="absolute top-[72px] left-0 right-0 z-10 lg:hidden">
         <div className="flex gap-2 px-3 overflow-x-auto no-scrollbar pb-1">
-          {FILTERS.map((f) => {
+          {HEALTH_FILTERS.map((f) => {
             const isActive = activeFilter === f.key;
             return (
               <button
@@ -1760,6 +1760,26 @@ export default function GISMap() {
             );
           })}
         </div>
+      </div>
+
+      {/* Mobile FAB buttons — outbreak & vaccine */}
+      <div className="absolute right-3 top-[120px] z-10 lg:hidden flex flex-col gap-2">
+        <button
+          onClick={() => setActiveFilter(activeFilter === "outbreak" ? "all" : "outbreak")}
+          className={`w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition-all ${
+            activeFilter === "outbreak" ? "bg-purple-600 text-white scale-110" : "bg-white text-purple-500 border border-gray-200"
+          }`}
+        >
+          <Bug size={20} />
+        </button>
+        <button
+          onClick={() => setActiveFilter(activeFilter === "vaccine" ? "all" : "vaccine")}
+          className={`w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition-all ${
+            activeFilter === "vaccine" ? "bg-sky-500 text-white scale-110" : "bg-white text-sky-500 border border-gray-200"
+          }`}
+        >
+          <Syringe size={20} />
+        </button>
       </div>
 
       {/* Mobile bottom sheet */}
