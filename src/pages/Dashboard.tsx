@@ -208,7 +208,7 @@ export default function Dashboard() {
                   <p className="text-xs text-text-muted">รายงาน 14 วันล่าสุด</p>
                 </div>
               </div>
-              <a href="#/gis" onClick={() => { /* will navigate via hash */ }} className="text-xs text-purple-600 hover:underline font-medium">
+              <a href="#/gis?filter=outbreak" className="text-xs text-purple-600 hover:underline font-medium">
                 ดูแผนที่ →
               </a>
             </div>
@@ -271,7 +271,7 @@ export default function Dashboard() {
                   <p className="text-xs text-text-muted">5 กลุ่มวัคซีน · {VACCINE_DEFS.length} ชนิด</p>
                 </div>
               </div>
-              <a href="#/gis" className="text-xs text-sky-600 hover:underline font-medium">
+              <a href="#/gis?filter=vaccine" className="text-xs text-sky-600 hover:underline font-medium">
                 ดูแผนที่ →
               </a>
             </div>
@@ -571,7 +571,7 @@ export default function Dashboard() {
                 <HeartPulse size={16} className="text-red-500" />
                 กลุ่มสุขภาพ
               </h3>
-              <a href="#/gis" className="flex items-center gap-1 text-xs text-royal-blue hover:underline font-medium">
+              <a href="#/gis?filter=ncd" className="flex items-center gap-1 text-xs text-royal-blue hover:underline font-medium">
                 <MapIcon size={12} /> ดูแผนที่
               </a>
             </div>

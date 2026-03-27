@@ -209,6 +209,14 @@ export default function GISMap() {
   const leftScroll = useScrollShadow();
   const rightScroll = useScrollShadow();
 
+  // Auto-set filter mode from query param (e.g. from Dashboard)
+  useEffect(() => {
+    const filter = searchParams.get("filter");
+    if (filter && ["outbreak", "vaccine", "ncd", "high", "medium", "low", "elderly"].includes(filter)) {
+      setActiveFilter(filter);
+    }
+  }, [searchParams]);
+
   // Auto-zoom to house from query param (e.g. from Household page)
   useEffect(() => {
     const houseId = searchParams.get("house");
