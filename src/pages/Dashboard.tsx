@@ -211,7 +211,7 @@ export default function Dashboard() {
               </div>
               <div className="bg-red-50 rounded-xl p-3 text-center">
                 <p className="text-xl font-bold text-red-600">{confirmed}</p>
-                <p className="text-xs text-red-400">ยืนยัน</p>
+                <p className="text-xs text-red-400">ยืนยันแล้ว</p>
               </div>
               <div className="bg-amber-50 rounded-xl p-3 text-center">
                 <p className="text-xl font-bold text-amber-600">{suspected}</p>

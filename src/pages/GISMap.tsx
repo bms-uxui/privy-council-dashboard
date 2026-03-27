@@ -1401,7 +1401,7 @@ export default function GISMap() {
               <div className="h-full bg-green-500" style={{ width: `${(recovered / totalCases) * 100}%` }} />
             </div>
             <div className="flex justify-between text-xs mb-4">
-              <span className="text-red-500 font-medium">ยืนยัน {confirmed}</span>
+              <span className="text-red-500 font-medium">ยืนยันแล้ว {confirmed}</span>
               <span className="text-amber-500 font-medium">สงสัย {suspected}</span>
               <span className="text-green-500 font-medium">หายแล้ว {recovered}</span>
             </div>
@@ -1433,7 +1433,7 @@ export default function GISMap() {
                   const person = persons.find((p) => p.id === c.personId);
                   const house = houses.find((h) => h.id === c.houseId);
                   const statusColor = c.status === "confirmed" ? "bg-red-50 text-red-600" : c.status === "suspected" ? "bg-amber-50 text-amber-600" : "bg-green-50 text-green-600";
-                  const statusLabel = c.status === "confirmed" ? "ยืนยัน" : c.status === "suspected" ? "สงสัย" : "หายแล้ว";
+                  const statusLabel = c.status === "confirmed" ? "ยืนยันแล้ว" : c.status === "suspected" ? "สงสัย" : "หายแล้ว";
                   const diseaseColorMap: Record<string, string> = {
                     "ไข้หวัดใหญ่ (Influenza)": "#3B82F6",
                     "อุจจาระร่วง/อาหารเป็นพิษ (Diarrhea)": "#F59E0B",
@@ -1734,7 +1734,7 @@ export default function GISMap() {
                 <div className="space-y-1.5">
                   {houseCases.map((c, i) => {
                     const p = persons.find((p) => p.id === c.personId);
-                    const stLabel = c.status === "confirmed" ? "ยืนยัน" : c.status === "suspected" ? "สงสัย" : "หายแล้ว";
+                    const stLabel = c.status === "confirmed" ? "ยืนยันแล้ว" : c.status === "suspected" ? "สงสัย" : "หายแล้ว";
                     const stColor = c.status === "confirmed" ? "text-red-600 bg-red-50" : c.status === "suspected" ? "text-amber-600 bg-amber-50" : "text-green-600 bg-green-50";
                     return (
                       <a key={i} href={p ? `#/household?person=${p.id}` : undefined} className="flex items-center gap-2 bg-white rounded-lg p-2 hover:bg-purple-50 transition-colors">
@@ -2198,7 +2198,7 @@ export default function GISMap() {
                         const p = persons.find((p) => p.id === c.personId);
                         const color = OB_COLORS[c.disease]?.dot || "#6B7280";
                         const stColor = c.status === "confirmed" ? "bg-red-50 text-red-600" : c.status === "suspected" ? "bg-amber-50 text-amber-600" : "bg-green-50 text-green-600";
-                        const stLabel = c.status === "confirmed" ? "ยืนยัน" : c.status === "suspected" ? "สงสัย" : "หายแล้ว";
+                        const stLabel = c.status === "confirmed" ? "ยืนยันแล้ว" : c.status === "suspected" ? "สงสัย" : "หายแล้ว";
                         return (
                           <tr key={i} className="border-t border-gray-50">
                             <td className="px-4 py-2.5">

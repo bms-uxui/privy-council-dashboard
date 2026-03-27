@@ -469,7 +469,7 @@ export default function Household() {
                   <div className="ml-6 space-y-1">
                     {outbreakForHouse.map((c, i) => (
                       <p key={i} className="text-xs text-purple-600">
-                        {c.disease} — รายงานวันที่ {c.reportDate} ({c.status === "confirmed" ? "ยืนยัน" : c.status === "suspected" ? "สงสัย" : "หายแล้ว"})
+                        {c.disease} — รายงานวันที่ {c.reportDate} ({c.status === "confirmed" ? "ยืนยันแล้ว" : c.status === "suspected" ? "สงสัย" : "หายแล้ว"})
                       </p>
                     ))}
                   </div>
