@@ -1762,48 +1762,77 @@ export default function GISMap() {
         </div>
       </div>
 
-      {/* Mobile FAB — view modes (outbreak/vaccine) */}
+      {/* Mobile FAB — view modes */}
       {(() => {
-        const [fabOpen, setFabOpen] = [mobilePanel === "fab", (v: boolean) => setMobilePanel(v ? "fab" as any : null)];
-        const isViewMode = activeFilter === "outbreak" || activeFilter === "vaccine";
-        const fabColor = activeFilter === "outbreak" ? "bg-purple-600" : activeFilter === "vaccine" ? "bg-sky-500" : "bg-royal-blue";
-        const FabMainIcon = activeFilter === "outbreak" ? Bug : activeFilter === "vaccine" ? Syringe : Layers;
+        const fabOpen = mobilePanel === "fab";
+        const isViewMode = activeFilter === "outbreak" || activeFilter === "vaccine" || activeFilter === "ncd";
+        const fabColor = activeFilter === "outbreak" ? "bg-purple-600" : activeFilter === "vaccine" ? "bg-sky-500" : activeFilter === "ncd" ? "bg-red-500" : "bg-royal-blue";
+        const FabMainIcon = activeFilter === "outbreak" ? Bug : activeFilter === "vaccine" ? Syringe : activeFilter === "ncd" ? Stethoscope : Layers;
 
         return (
-          <div className="absolute right-3 top-[120px] z-10 lg:hidden flex flex-col items-end gap-2">
-            {/* Expanded options */}
-            {fabOpen && (
-              <div className="flex flex-col gap-2 mb-1">
-                <button
-                  onClick={() => { setActiveFilter(activeFilter === "outbreak" ? "all" : "outbreak"); setMobilePanel(null); }}
-                  className={`flex items-center gap-2 pl-3 pr-4 h-10 rounded-full shadow-lg text-xs font-medium transition-all ${
-                    activeFilter === "outbreak" ? "bg-purple-600 text-white" : "bg-white text-text border border-gray-200"
-                  }`}
-                >
-                  <Bug size={16} />
-                  โรคระบาด
-                </button>
-                <button
-                  onClick={() => { setActiveFilter(activeFilter === "vaccine" ? "all" : "vaccine"); setMobilePanel(null); }}
-                  className={`flex items-center gap-2 pl-3 pr-4 h-10 rounded-full shadow-lg text-xs font-medium transition-all ${
-                    activeFilter === "vaccine" ? "bg-sky-500 text-white" : "bg-white text-text border border-gray-200"
-                  }`}
-                >
-                  <Syringe size={16} />
-                  วัคซีน
-                </button>
-              </div>
-            )}
-            {/* Main FAB */}
+          <>
+            {/* FAB button — bottom right above navbar + bottom sheet */}
             <button
-              onClick={() => setFabOpen(!fabOpen)}
-              className={`w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition-all ${
-                isViewMode ? `${fabColor} text-white` : fabOpen ? "bg-gray-200 text-text" : "bg-white text-royal-blue border border-gray-200"
+              onClick={() => setMobilePanel(fabOpen ? null : "fab" as any)}
+              className={`absolute right-4 z-30 lg:hidden w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-all ${
+                isViewMode ? `${fabColor} text-white` : "bg-royal-blue text-white"
               }`}
+              style={{ bottom: mobilePanel && mobilePanel !== "fab" ? "calc(50vh + 4.5rem)" : "5rem" }}
             >
-              {fabOpen ? <X size={20} /> : <FabMainIcon size={20} />}
+              <FabMainIcon size={22} />
             </button>
-          </div>
+
+            {/* FAB bottom sheet */}
+            {fabOpen && (
+              <>
+                <div className="absolute inset-0 z-20 bg-black/20 lg:hidden" onClick={() => setMobilePanel(null)} />
+                <div className="absolute left-0 right-0 bottom-14 z-30 lg:hidden">
+                  <div className="bg-white rounded-t-2xl shadow-[0_-4px_20px_rgba(0,0,0,0.12)] px-4 pb-6 pt-3">
+                    <div className="flex justify-center mb-3">
+                      <div className="w-10 h-1 rounded-full bg-gray-300" />
+                    </div>
+                    <p className="text-sm font-bold text-text mb-4">เลือกโหมดดูข้อมูล</p>
+                    <div className="space-y-2">
+                      {[
+                        { key: "ncd", label: "ผู้ป่วย NCD", desc: "แสดงครัวเรือนที่มีผู้ป่วยโรคเรื้อรัง", Icon: Stethoscope, color: "#DC2626", bg: "bg-red-50" },
+                        { key: "outbreak", label: "โรคระบาด", desc: "แสดงครัวเรือนที่มีรายงานโรคระบาดใน 14 วัน", Icon: Bug, color: "#9333EA", bg: "bg-purple-50" },
+                        { key: "vaccine", label: "วัคซีน", desc: "แสดงครัวเรือนตามความครอบคลุมวัคซีน", Icon: Syringe, color: "#0EA5E9", bg: "bg-sky-50" },
+                      ].map((mode) => {
+                        const isActive = activeFilter === mode.key;
+                        return (
+                          <button
+                            key={mode.key}
+                            onClick={() => { setActiveFilter(isActive ? "all" : mode.key); setMobilePanel(null); }}
+                            className={`w-full flex items-center gap-3 p-4 rounded-xl transition-all text-left ${
+                              isActive ? "ring-2 ring-offset-1" : "hover:bg-gray-50"
+                            } ${mode.bg}`}
+                            style={isActive ? { ringColor: mode.color } : {}}
+                          >
+                            <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: isActive ? mode.color : `${mode.color}20` }}>
+                              <mode.Icon size={20} style={{ color: isActive ? "white" : mode.color }} />
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-sm font-semibold text-text">{mode.label}</p>
+                              <p className="text-xs text-text-muted">{mode.desc}</p>
+                            </div>
+                            {isActive && (
+                              <span className="text-xs font-medium px-2 py-1 rounded-full text-white" style={{ backgroundColor: mode.color }}>เปิดอยู่</span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <button
+                      onClick={() => { setActiveFilter("all"); setMobilePanel(null); }}
+                      className="w-full mt-3 py-3 rounded-xl bg-gray-100 text-sm font-medium text-text-muted text-center"
+                    >
+                      รีเซ็ตเป็นโหมดปกติ
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
+          </>
         );
       })()}
 
