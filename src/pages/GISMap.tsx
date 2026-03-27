@@ -2130,7 +2130,7 @@ export default function GISMap() {
             {expandedWidget === "overview" && (
               <div>
                 <p className="text-sm text-text-muted uppercase tracking-wider mb-1">ข้อมูลภาพรวม</p>
-                <h2 className="text-2xl font-bold text-text mb-5">สุขภาพระดับหมู่บ้าน — ต.ขุนน่าน อ.เฉลิมพระเกียรติ จ.น่าน</h2>
+                <h2 className="text-xl sm:text-2xl font-bold text-text mb-4 sm:mb-5">สุขภาพระดับหมู่บ้าน — ต.ขุนน่าน อ.เฉลิมพระเกียรติ จ.น่าน</h2>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
                   {[
@@ -2150,8 +2150,8 @@ export default function GISMap() {
 
                 {/* Moo comparison */}
                 <h3 className="text-sm font-semibold text-text mb-3">เปรียบเทียบรายหมู่</h3>
-                <div className="overflow-hidden rounded-xl border border-gray-100">
-                  <table className="w-full text-sm">
+                <div className="overflow-x-auto rounded-xl border border-gray-100">
+                  <table className="w-full text-sm min-w-[400px]">
                     <thead><tr className="bg-gray-50">
                       <th className="text-left px-4 py-2.5 text-sm font-semibold text-text-muted">รายการ</th>
                       <th className="text-center px-4 py-2.5 text-sm font-semibold text-royal-blue">หมู่ 11 น้ำช้าง</th>
@@ -2190,7 +2190,7 @@ export default function GISMap() {
             {expandedWidget === "ncd" && (
               <div>
                 <p className="text-sm text-text-muted uppercase tracking-wider mb-1">รายละเอียด</p>
-                <h2 className="text-2xl font-bold text-text mb-5">โรคไม่ติดต่อเรื้อรัง (NCD)</h2>
+                <h2 className="text-xl sm:text-2xl font-bold text-text mb-4 sm:mb-5">โรคไม่ติดต่อเรื้อรัง (NCD)</h2>
 
                 <div className="overflow-hidden rounded-xl border border-gray-100 mb-5">
                   <table className="w-full text-sm">
@@ -2246,18 +2246,18 @@ export default function GISMap() {
               return (
                 <div>
                   <p className="text-sm text-text-muted uppercase tracking-wider mb-1">รายละเอียด</p>
-                  <h2 className="text-2xl font-bold text-text mb-5">ข้อมูลประชากรและความเสี่ยง</h2>
+                  <h2 className="text-xl sm:text-2xl font-bold text-text mb-4 sm:mb-5">ข้อมูลประชากรและความเสี่ยง</h2>
 
                   {/* Risk breakdown */}
                   <h3 className="text-sm font-semibold text-text mb-3">ระดับความเสี่ยงครัวเรือน</h3>
-                  <div className="grid grid-cols-3 gap-3 mb-6">
+                  <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-6">
                     {[
                       { label: "เสี่ยงสูง", desc: "ผู้สูงอายุ >= 2 หรือ NCD >= 2", count: riskCounts.high, color: "#DC2626", bg: "#FEE2E2" },
                       { label: "เสี่ยงปานกลาง", desc: "ผู้สูงอายุ = 1 หรือ NCD = 1", count: riskCounts.medium, color: "#D97706", bg: "#FEF3C7" },
                       { label: "เสี่ยงต่ำ", desc: "ไม่มีปัจจัยเสี่ยง", count: riskCounts.low, color: "#16A34A", bg: "#DCFCE7" },
                     ].map((r) => (
                       <div key={r.label} className="rounded-xl p-4 text-center" style={{ backgroundColor: r.bg }}>
-                        <p className="text-3xl font-bold" style={{ color: r.color }}>{r.count}</p>
+                        <p className="text-2xl sm:text-3xl font-bold" style={{ color: r.color }}>{r.count}</p>
                         <p className="text-sm font-semibold mt-1" style={{ color: r.color }}>{r.label}</p>
                         <p className="text-sm mt-1" style={{ color: r.color, opacity: 0.7 }}>{r.desc}</p>
                       </div>
@@ -2268,12 +2268,12 @@ export default function GISMap() {
                   <h3 className="text-sm font-semibold text-text mb-3">เพศ</h3>
                   <div className="grid grid-cols-2 gap-3 mb-6">
                     <div className="bg-blue-50 rounded-xl p-4 text-center">
-                      <p className="text-3xl font-bold text-blue-600"><AnimatedNumber value={male} /></p>
+                      <p className="text-2xl sm:text-3xl font-bold text-blue-600"><AnimatedNumber value={male} /></p>
                       <p className="text-sm font-semibold text-blue-600 mt-1">ชาย</p>
                       <p className="text-sm text-blue-400">{malePctVal}% ของประชากร</p>
                     </div>
                     <div className="bg-pink-50 rounded-xl p-4 text-center">
-                      <p className="text-3xl font-bold text-pink-600"><AnimatedNumber value={female} /></p>
+                      <p className="text-2xl sm:text-3xl font-bold text-pink-600"><AnimatedNumber value={female} /></p>
                       <p className="text-sm font-semibold text-pink-600 mt-1">หญิง</p>
                       <p className="text-sm text-pink-400">{femalePctVal}% ของประชากร</p>
                     </div>
@@ -2315,7 +2315,7 @@ export default function GISMap() {
               return (
                 <div>
                   <p className="text-sm text-text-muted uppercase tracking-wider mb-1">รายละเอียด</p>
-                  <h2 className="text-2xl font-bold text-text mb-5">สรุปสถานะแบ่งตามหมู่</h2>
+                  <h2 className="text-xl sm:text-2xl font-bold text-text mb-4 sm:mb-5">สรุปสถานะแบ่งตามหมู่</h2>
 
                   {/* Tabs */}
                   <div className="flex gap-1 bg-gray-100 rounded-xl p-1 mb-5">
@@ -2340,7 +2340,7 @@ export default function GISMap() {
                   </div>
 
                   {/* Risk cards */}
-                  <div className="grid grid-cols-3 gap-3 mb-3">
+                  <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-3">
                     <div className="bg-red-50 rounded-xl p-4 text-center">
                       <p className="text-2xl font-bold text-red-600">{high.length}</p>
                       <p className="text-sm text-red-500">เสี่ยงสูง</p>
@@ -2361,8 +2361,8 @@ export default function GISMap() {
 
                   {/* Household table */}
                   <h3 className="text-sm font-semibold text-text mb-3">ครัวเรือนทั้งหมด ({vHouses.length} หลัง)</h3>
-                  <div className="overflow-hidden rounded-xl border border-gray-100">
-                    <table className="w-full text-sm">
+                  <div className="overflow-x-auto rounded-xl border border-gray-100">
+                    <table className="w-full text-sm min-w-[400px]">
                       <thead>
                         <tr className="bg-gray-50">
                           <th className="text-left px-4 py-2.5 text-sm font-semibold text-text-muted">บ้านเลขที่</th>
@@ -2430,7 +2430,7 @@ export default function GISMap() {
               return (
                 <div>
                   <p className="text-sm text-text-muted uppercase tracking-wider mb-1">รายละเอียด</p>
-                  <h2 className="text-2xl font-bold text-text mb-5 flex items-center gap-2">
+                  <h2 className="text-xl sm:text-2xl font-bold text-text mb-4 sm:mb-5 flex items-center gap-2">
                     <Bug size={24} className="text-purple-500" />
                     เฝ้าระวังโรคระบาด
                   </h2>
@@ -2438,19 +2438,19 @@ export default function GISMap() {
                   {/* KPI */}
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
                     <div className="bg-gray-50 rounded-xl p-4 text-center">
-                      <p className="text-3xl font-bold text-text">{obTotal}</p>
+                      <p className="text-2xl sm:text-3xl font-bold text-text">{obTotal}</p>
                       <p className="text-sm text-text-muted">ผู้ป่วยทั้งหมด</p>
                     </div>
                     <div className="bg-red-50 rounded-xl p-4 text-center">
-                      <p className="text-3xl font-bold text-red-600">{obConfirmed}</p>
+                      <p className="text-2xl sm:text-3xl font-bold text-red-600">{obConfirmed}</p>
                       <p className="text-sm text-red-400">ยืนยัน</p>
                     </div>
                     <div className="bg-amber-50 rounded-xl p-4 text-center">
-                      <p className="text-3xl font-bold text-amber-600">{obSuspected}</p>
+                      <p className="text-2xl sm:text-3xl font-bold text-amber-600">{obSuspected}</p>
                       <p className="text-sm text-amber-400">สงสัย</p>
                     </div>
                     <div className="bg-green-50 rounded-xl p-4 text-center">
-                      <p className="text-3xl font-bold text-green-600">{obRecovered}</p>
+                      <p className="text-2xl sm:text-3xl font-bold text-green-600">{obRecovered}</p>
                       <p className="text-sm text-green-400">หายแล้ว</p>
                     </div>
                   </div>
@@ -2568,7 +2568,7 @@ export default function GISMap() {
               return (
                 <div>
                   <p className="text-sm text-text-muted uppercase tracking-wider mb-1">รายละเอียด</p>
-                  <h2 className="text-2xl font-bold text-text mb-5 flex items-center gap-2">
+                  <h2 className="text-xl sm:text-2xl font-bold text-text mb-4 sm:mb-5 flex items-center gap-2">
                     <Syringe size={24} className="text-sky-500" />
                     ความครอบคลุมวัคซีน
                   </h2>
@@ -2612,8 +2612,8 @@ export default function GISMap() {
 
                   {/* Per-vaccine table */}
                   <h3 className="text-sm font-semibold text-text mb-3">รายวัคซีน</h3>
-                  <div className="overflow-hidden rounded-xl border border-gray-100">
-                    <table className="w-full text-sm">
+                  <div className="overflow-x-auto rounded-xl border border-gray-100">
+                    <table className="w-full text-sm min-w-[400px]">
                       <thead>
                         <tr className="bg-gray-50">
                           <th className="text-left px-4 py-2.5 text-sm font-semibold text-text-muted">วัคซีน</th>
@@ -2662,7 +2662,7 @@ export default function GISMap() {
             {expandedWidget === "coverage" && (
               <div>
                 <p className="text-sm text-text-muted uppercase tracking-wider mb-1">รายละเอียด</p>
-                <h2 className="text-2xl font-bold text-text mb-5">สิทธิการรักษาพยาบาล</h2>
+                <h2 className="text-xl sm:text-2xl font-bold text-text mb-4 sm:mb-5">สิทธิการรักษาพยาบาล</h2>
 
                 <div className="space-y-4">
                   {healthCoverageData.map((item, i) => (
