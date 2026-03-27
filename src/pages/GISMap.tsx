@@ -2006,12 +2006,6 @@ export default function GISMap() {
                   </div>
                 </div>
 
-                {/* Risk bar */}
-                <div className="w-full h-3 rounded-full overflow-hidden flex mb-5">
-                  <div className="h-full bg-red-500" style={{ width: `${(high.length / riskTotal) * 100}%` }} />
-                  <div className="h-full bg-amber-400" style={{ width: `${(medium.length / riskTotal) * 100}%` }} />
-                  <div className="h-full bg-green-500" style={{ width: `${(low.length / riskTotal) * 100}%` }} />
-                </div>
 
                 {/* Household table */}
                 <h3 className="text-sm font-semibold text-text mb-3">ครัวเรือนทั้งหมด ({vHouses.length} หลัง)</h3>
