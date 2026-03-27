@@ -157,16 +157,24 @@ const MOO_12_AREA: [number, number][] = [
 // ============================================
 // Filters
 // ============================================
-const FILTERS = [
+// Health risk filters — top left (next to left panel)
+const HEALTH_FILTERS = [
   { key: "all", label: "ทั้งหมด", Icon: Layers, color: "#1C85AD" },
   { key: "high", label: "เสี่ยงสูง", Icon: ShieldAlert, color: "#DC2626" },
   { key: "medium", label: "ปานกลาง", Icon: AlertTriangle, color: "#F59E0B" },
   { key: "low", label: "เสี่ยงต่ำ", Icon: Home, color: "#16A34A" },
   { key: "elderly", label: "ผู้สูงอายุ", Icon: UserRound, color: "#6EC3C3" },
   { key: "ncd", label: "ผู้ป่วย NCD", Icon: Stethoscope, color: "#DC2626" },
+];
+
+// View mode filters — bottom center
+const VIEW_FILTERS = [
   { key: "outbreak", label: "โรคระบาด", Icon: Bug, color: "#9333EA" },
   { key: "vaccine", label: "วัคซีน", Icon: Syringe, color: "#0EA5E9" },
 ];
+
+// Combined for lookup
+const FILTERS = [...HEALTH_FILTERS, ...VIEW_FILTERS];
 
 const RISK_COLORS: Record<string, string> = { high: "#DC2626", medium: "#F59E0B", low: "#16A34A" };
 const RISK_LABELS: Record<string, string> = { high: "สูง", medium: "ปานกลาง", low: "ต่ำ" };
@@ -1575,10 +1583,38 @@ export default function GISMap() {
       </div>
       )}
 
-      {/* ══════ BOTTOM FILTER PILLS ══════ */}
+      {/* ══════ HEALTH FILTERS — top, right of left panel ══════ */}
+      <div className="absolute top-[76px] left-[396px] z-10">
+        <div className="flex gap-1.5">
+          {HEALTH_FILTERS.map((f) => {
+            const isActive = activeFilter === f.key;
+            const isViewMode = activeFilter === "outbreak" || activeFilter === "vaccine";
+            return (
+              <button
+                key={f.key}
+                onClick={() => setActiveFilter(isActive ? "all" : f.key)}
+                className={`relative group flex items-center gap-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all shadow-sm border min-h-[36px] ${
+                  isActive && !isViewMode
+                    ? "pl-2.5 pr-3 py-1.5 text-white border-transparent"
+                    : "px-2.5 py-1.5 bg-white/95 backdrop-blur-sm text-text-muted border-gray-200/80 hover:shadow-md"
+                }`}
+                style={isActive && !isViewMode ? { backgroundColor: f.color, borderColor: f.color } : {}}
+              >
+                <f.Icon size={14} />
+                {isActive && !isViewMode && <span>{f.label}</span>}
+                {(!isActive || isViewMode) && (
+                  <span className="absolute bottom-full mb-1.5 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded bg-gray-900 text-white text-[10px] whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity">{f.label}</span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ══════ VIEW MODE FILTERS — bottom center ══════ */}
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10">
-        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
-          {FILTERS.map((f) => {
+        <div className="flex gap-2">
+          {VIEW_FILTERS.map((f) => {
             const isActive = activeFilter === f.key;
             return (
               <button
