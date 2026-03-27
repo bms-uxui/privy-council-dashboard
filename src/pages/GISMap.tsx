@@ -1217,9 +1217,8 @@ export default function GISMap() {
         </div>
       </div>
 
-      {/* ══════ RIGHT PANEL — Summary insight + list (hidden when house selected) ══════ */}
-      {!selectedHouse && (
-        <div ref={rightScroll.ref} className={`absolute top-20 right-3 bottom-14 z-10 w-[400px] flex-col gap-3 overflow-y-auto no-scrollbar ${rightScroll.shadowClass} hidden lg:flex`}>
+      {/* ══════ RIGHT PANEL — Summary insight + list ══════ */}
+      <div ref={rightScroll.ref} className={`absolute top-20 right-3 bottom-14 z-10 w-[400px] flex-col gap-3 overflow-y-auto no-scrollbar ${rightScroll.shadowClass} hidden lg:flex ${selectedHouse ? "pointer-events-none opacity-40" : ""}`}>
 
           {/* ── Vaccine Mode: Right Panel ── */}
           {activeFilter === "vaccine" ? (
@@ -1630,8 +1629,7 @@ export default function GISMap() {
               </div>
             </>
           )}
-        </div>
-      )}
+      </div>
 
       {/* ══════ HEALTH FILTERS — top, right of left panel (desktop only) ══════ */}
       <div className="absolute top-[76px] left-[400px] z-10 hidden lg:block">
