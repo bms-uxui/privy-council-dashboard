@@ -1584,7 +1584,7 @@ export default function GISMap() {
       )}
 
       {/* ══════ HEALTH FILTERS — top, right of left panel ══════ */}
-      <div className="absolute top-[76px] left-[396px] z-10">
+      <div className="absolute top-[76px] left-[400px] z-10">
         <div className="flex gap-1.5">
           {HEALTH_FILTERS.map((f) => {
             const isActive = activeFilter === f.key;
@@ -1612,7 +1612,7 @@ export default function GISMap() {
       </div>
 
       {/* ══════ VIEW MODE FILTERS — top right, left of right panel ══════ */}
-      <div className="absolute top-[76px] right-[416px] z-10">
+      <div className="absolute top-[76px] right-[420px] z-10">
         <div className="flex gap-1.5">
           {VIEW_FILTERS.map((f) => {
             const isActive = activeFilter === f.key;
