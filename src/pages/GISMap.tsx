@@ -1741,7 +1741,7 @@ export default function GISMap() {
       </div>
 
       {/* Mobile filter pills — horizontal scroll below search */}
-      <div className="absolute top-[60px] left-0 right-0 z-10 lg:hidden">
+      <div className="absolute top-[72px] left-0 right-0 z-10 lg:hidden">
         <div className="flex gap-2 px-3 overflow-x-auto no-scrollbar pb-1">
           {FILTERS.map((f) => {
             const isActive = activeFilter === f.key;
