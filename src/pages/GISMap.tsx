@@ -2514,8 +2514,8 @@ export default function GISMap() {
 
                   {/* Patient list */}
                   <h3 className="text-sm font-semibold text-text mb-3">รายชื่อผู้ป่วย ({obTotal} ราย)</h3>
-                  <div className="overflow-hidden rounded-xl border border-gray-100">
-                    <table className="w-full text-sm">
+                  <div className="overflow-x-auto rounded-xl border border-gray-100">
+                    <table className="w-full text-sm min-w-[550px]">
                       <thead>
                         <tr className="bg-gray-50">
                           <th className="text-left px-4 py-2.5 text-sm font-semibold text-text-muted">ชื่อ</th>
@@ -2613,7 +2613,7 @@ export default function GISMap() {
                   {/* Per-vaccine table */}
                   <h3 className="text-sm font-semibold text-text mb-3">รายวัคซีน</h3>
                   <div className="overflow-x-auto rounded-xl border border-gray-100">
-                    <table className="w-full text-sm min-w-[400px]">
+                    <table className="w-full text-sm min-w-[550px]">
                       <thead>
                         <tr className="bg-gray-50">
                           <th className="text-left px-4 py-2.5 text-sm font-semibold text-text-muted">วัคซีน</th>
