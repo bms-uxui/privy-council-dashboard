@@ -1309,18 +1309,31 @@ export default function GISMap() {
               })}
             </div>
 
-            {/* Group legend — always visible */}
-            <div className="flex flex-wrap gap-1.5">
-              {(Object.entries(VACCINE_GROUP_LABELS) as [VaccineGroup, { name: string; color: string }][]).map(([key, { name, color }]) => {
-                const count = persons.filter((p) => p.vaccinations.some((v) => v.group === key)).length;
-                return (
-                  <span key={key} className="flex items-center gap-1 text-xs text-text-muted">
-                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
-                    {name} {count}
-                  </span>
-                );
-              })}
-            </div>
+            {/* Group segment bar + legend — always visible */}
+            {(() => {
+              const groupCounts = (Object.entries(VACCINE_GROUP_LABELS) as [VaccineGroup, { name: string; color: string }][]).map(([key, { name, color }]) => ({
+                key, name, color,
+                count: persons.filter((p) => p.vaccinations.some((v) => v.group === key)).length,
+              }));
+              const totalVax = groupCounts.reduce((s, g) => s + g.count, 0) || 1;
+              return (
+                <>
+                  <div className="flex h-3 rounded-full overflow-hidden mb-2">
+                    {groupCounts.map((g) => (
+                      <div key={g.key} className="h-full" style={{ width: `${(g.count / totalVax) * 100}%`, backgroundColor: g.color }} />
+                    ))}
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {groupCounts.map((g) => (
+                      <span key={g.key} className="flex items-center gap-1 text-xs text-text-muted">
+                        <span className="w-2 h-2 rounded-full" style={{ backgroundColor: g.color }} />
+                        {g.name} {g.count}
+                      </span>
+                    ))}
+                  </div>
+                </>
+              );
+            })()}
           </div>
             );
           })()}
