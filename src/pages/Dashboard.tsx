@@ -12,6 +12,7 @@ import {
   Bug,
   ShieldAlert,
   Syringe,
+  Map,
 } from "lucide-react";
 import {
   BarChart,
@@ -165,14 +166,16 @@ export default function Dashboard() {
               </p>
             </div>
           </div>
-          <div className="mt-3 flex items-center gap-2">
-            <MapPin size={14} className="text-teal-500" />
-            <span className="text-xs text-teal-600 font-medium">
-              ปักหมุดแล้วทั้งหมด : {fHouses.toLocaleString()}
-            </span>
-            <span className="ml-auto px-2 py-0.5 rounded-full bg-teal-500 text-white text-xs font-bold">
-              100%
-            </span>
+          <div className="mt-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <MapPin size={14} className="text-teal-500" />
+              <span className="text-xs text-teal-600 font-medium">
+                ปักหมุดแล้วทั้งหมด : {fHouses.toLocaleString()}
+              </span>
+            </div>
+            <a href="#/gis" className="flex items-center gap-1 text-xs text-royal-blue hover:underline font-medium">
+              <Map size={12} /> ดูแผนที่
+            </a>
           </div>
           <div className="mt-2 w-full h-2 bg-gray-100 rounded-full overflow-hidden">
             <div className="h-full bg-teal-500 rounded-full" style={{ width: "100%" }} />
@@ -192,14 +195,16 @@ export default function Dashboard() {
               </p>
             </div>
           </div>
-          <div className="mt-3 flex items-center gap-2">
-            <MapPin size={14} className="text-teal-500" />
-            <span className="text-xs text-teal-600 font-medium">
-              ปักหมุดแล้วทั้งหมด : {fPop.toLocaleString()}
-            </span>
-            <span className="ml-auto px-2 py-0.5 rounded-full bg-teal-500 text-white text-xs font-bold">
-              100%
-            </span>
+          <div className="mt-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <MapPin size={14} className="text-teal-500" />
+              <span className="text-xs text-teal-600 font-medium">
+                ปักหมุดแล้วทั้งหมด : {fPop.toLocaleString()}
+              </span>
+            </div>
+            <a href="#/gis" className="flex items-center gap-1 text-xs text-royal-blue hover:underline font-medium">
+              <Map size={12} /> ดูแผนที่
+            </a>
           </div>
           <div className="mt-2 w-full h-2 bg-gray-100 rounded-full overflow-hidden">
             <div className="h-full bg-teal-500 rounded-full" style={{ width: "100%" }} />
@@ -446,9 +451,10 @@ export default function Dashboard() {
               </thead>
               <tbody>
                 {filteredVillages.map((v) => (
-                  <tr key={v.id} className="border-t border-gray-50">
-                    <td className="px-5 py-3 text-sm font-medium text-text">
+                  <tr key={v.id} className="border-t border-gray-50 hover:bg-gray-50/50 cursor-pointer" onClick={() => { window.location.hash = `/gis`; }}>
+                    <td className="px-5 py-3 text-sm font-medium text-text flex items-center gap-2">
                       ม.{v.moo} {v.name}
+                      <Map size={12} className="text-royal-blue opacity-0 group-hover:opacity-100" />
                     </td>
                     <td className="px-4 py-3 text-center text-sm text-text">
                       {v.totalHouses} / {v.totalHouses}{" "}
@@ -658,7 +664,9 @@ export default function Dashboard() {
                 <HeartPulse size={16} className="text-red-500" />
                 กลุ่มสุขภาพ
               </h3>
-              <span className="text-xs text-text-muted">จำนวนผู้ป่วย (ราย)</span>
+              <a href="#/gis" className="flex items-center gap-1 text-xs text-royal-blue hover:underline font-medium">
+                <Map size={12} /> ดูแผนที่
+              </a>
             </div>
             {/* Legend */}
             <div className="flex items-center gap-4 mb-3">

@@ -1716,14 +1716,14 @@ export default function GISMap() {
                     const stLabel = c.status === "confirmed" ? "ยืนยัน" : c.status === "suspected" ? "สงสัย" : "หายแล้ว";
                     const stColor = c.status === "confirmed" ? "text-red-600 bg-red-50" : c.status === "suspected" ? "text-amber-600 bg-amber-50" : "text-green-600 bg-green-50";
                     return (
-                      <div key={i} className="flex items-center gap-2 bg-white rounded-lg p-2">
+                      <a key={i} href={p ? `#/household?person=${p.id}` : undefined} className="flex items-center gap-2 bg-white rounded-lg p-2 hover:bg-purple-50 transition-colors">
                         <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: OB_DOT[c.disease] || "#9333EA" }} />
                         <div className="flex-1 min-w-0">
                           <p className="text-xs font-medium text-text truncate">{p ? `${p.prefix}${p.firstName}` : "—"}</p>
                           <p className="text-[10px] text-purple-500">{c.disease.split("(")[0].trim()}</p>
                         </div>
                         <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${stColor}`}>{stLabel}</span>
-                      </div>
+                      </a>
                     );
                   })}
                 </div>

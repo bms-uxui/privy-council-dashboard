@@ -19,6 +19,7 @@ import {
   Bug,
   ShieldAlert,
   CheckCircle2,
+  Map,
 } from "lucide-react";
 import { houses, persons, outbreakCases, outbreakHouseIds } from "../data/mockData";
 import type { Person } from "../types";
@@ -95,16 +96,25 @@ export default function Household() {
     return (
       <div className="space-y-6">
         {/* Back Button */}
-        <button
-          onClick={() => {
-            setSelectedPerson(null);
-            setShowCID(false);
-          }}
-          className="flex items-center gap-2 text-sm text-text-muted hover:text-royal-blue transition-colors min-h-[44px]"
-        >
-          <ArrowLeft size={16} />
-          กลับไปรายการครัวเรือน
-        </button>
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => {
+              setSelectedPerson(null);
+              setShowCID(false);
+            }}
+            className="flex items-center gap-2 text-sm text-text-muted hover:text-royal-blue transition-colors min-h-[44px]"
+          >
+            <ArrowLeft size={16} />
+            กลับไปรายการครัวเรือน
+          </button>
+          <a
+            href={`#/gis`}
+            className="flex items-center gap-1.5 text-sm text-royal-blue hover:text-royal-blue-light font-medium transition-colors min-h-[44px]"
+          >
+            <Map size={16} />
+            ดูบนแผนที่
+          </a>
+        </div>
 
         {/* Demographic Header */}
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
@@ -634,17 +644,22 @@ export default function Household() {
                       </span>
                     </td>
                     <td className="px-5 py-4">
-                      {housePersons.length > 0 ? (
-                        <button
-                          onClick={() => setSelectedPerson(housePersons[0])}
-                          className="flex items-center gap-1 text-xs text-royal-blue hover:text-royal-blue-light font-medium transition-colors min-h-[44px]"
-                        >
-                          ดูสมาชิก
-                          <ChevronRight size={14} />
-                        </button>
-                      ) : (
-                        <span className="text-xs text-text-light">—</span>
-                      )}
+                      <div className="flex items-center gap-3">
+                        {housePersons.length > 0 ? (
+                          <button
+                            onClick={() => setSelectedPerson(housePersons[0])}
+                            className="flex items-center gap-1 text-xs text-royal-blue hover:text-royal-blue-light font-medium transition-colors min-h-[44px]"
+                          >
+                            ดูสมาชิก
+                            <ChevronRight size={14} />
+                          </button>
+                        ) : (
+                          <span className="text-xs text-text-light">—</span>
+                        )}
+                        <a href="#/gis" className="flex items-center gap-1 text-xs text-text-muted hover:text-royal-blue transition-colors">
+                          <Map size={12} />
+                        </a>
+                      </div>
                     </td>
                   </tr>
                 );
