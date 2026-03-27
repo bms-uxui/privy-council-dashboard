@@ -1795,10 +1795,10 @@ export default function GISMap() {
 
         {/* Expanded content */}
         {mobilePanel && (
-          <div className="bg-white px-4 pb-6 max-h-[50vh] overflow-y-auto no-scrollbar">
+          <div className="bg-white px-4 pb-6 max-h-[55vh] overflow-y-auto no-scrollbar">
             {mobilePanel === "left" && (
-              <div className="space-y-3">
-                {/* Quick KPIs */}
+              <div className="space-y-4">
+                {/* KPIs */}
                 <div className="grid grid-cols-4 gap-2">
                   {[
                     { label: "ครัวเรือน", value: filteredHouses.length, color: "#1C85AD" },
@@ -1812,6 +1812,7 @@ export default function GISMap() {
                     </div>
                   ))}
                 </div>
+
                 {/* Risk breakdown */}
                 <div className="flex gap-2">
                   {[
@@ -1825,30 +1826,124 @@ export default function GISMap() {
                     </div>
                   ))}
                 </div>
+
+                {/* NCD bars */}
+                <div>
+                  <p className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-2">โรคเรื้อรัง NCD</p>
+                  <div className="space-y-2">
+                    {ncdStats.map((ncd) => {
+                      const maxVal = Math.max(...ncdStats.map((n) => n.total));
+                      return (
+                        <div key={ncd.diseaseEn}>
+                          <div className="flex justify-between mb-0.5">
+                            <span className="text-xs text-text">{ncd.disease}</span>
+                            <span className="text-xs font-bold text-text">{ncd.total}</span>
+                          </div>
+                          <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                            <div className="h-full rounded-full bg-royal-blue" style={{ width: `${(ncd.total / maxVal) * 100}%` }} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Gender */}
+                <div>
+                  <p className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-2">เพศ</p>
+                  <div className="flex gap-2">
+                    <div className="flex-1 bg-blue-50 rounded-xl p-3 text-center">
+                      <p className="text-lg font-bold text-blue-600">{persons.filter((p) => p.gender === "male").length}</p>
+                      <p className="text-xs text-blue-500">ชาย</p>
+                    </div>
+                    <div className="flex-1 bg-pink-50 rounded-xl p-3 text-center">
+                      <p className="text-lg font-bold text-pink-600">{persons.filter((p) => p.gender === "female").length}</p>
+                      <p className="text-xs text-pink-500">หญิง</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
+
             {mobilePanel === "right" && (
-              <div className="space-y-3">
-                {/* NCD summary */}
-                <p className="text-xs font-semibold text-text-muted uppercase tracking-wider">โรคเรื้อรัง NCD</p>
-                <div className="space-y-2">
-                  {ncdStats.map((ncd) => (
-                    <div key={ncd.diseaseEn} className="flex items-center justify-between">
-                      <span className="text-xs text-text">{ncd.disease}</span>
-                      <span className="text-xs font-bold text-text">{ncd.total}</span>
-                    </div>
-                  ))}
-                </div>
-                {/* Outbreak quick stat */}
+              <div className="space-y-4">
+                {/* Outbreak */}
                 {outbreakCases.length > 0 && (
-                  <>
-                    <p className="text-xs font-semibold text-text-muted uppercase tracking-wider pt-2">โรคระบาด</p>
-                    <div className="flex items-center gap-2">
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
                       <Bug size={14} className="text-purple-500" />
-                      <span className="text-xs text-text">{outbreakCases.length} ราย · {outbreakHouseIds.size} ครัวเรือน</span>
+                      <p className="text-xs font-semibold text-text-muted uppercase tracking-wider">โรคระบาด</p>
                     </div>
-                  </>
+                    <div className="grid grid-cols-3 gap-2 mb-2">
+                      <div className="bg-gray-50 rounded-xl p-2.5 text-center">
+                        <p className="text-base font-bold text-text">{outbreakCases.length}</p>
+                        <p className="text-[10px] text-text-muted">ผู้ป่วย</p>
+                      </div>
+                      <div className="bg-red-50 rounded-xl p-2.5 text-center">
+                        <p className="text-base font-bold text-red-600">{outbreakCases.filter((c) => c.status === "confirmed").length}</p>
+                        <p className="text-[10px] text-red-400">ยืนยันแล้ว</p>
+                      </div>
+                      <div className="bg-gray-50 rounded-xl p-2.5 text-center">
+                        <p className="text-base font-bold text-text">{outbreakHouseIds.size}</p>
+                        <p className="text-[10px] text-text-muted">ครัวเรือน</p>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {(() => {
+                        const dm = new Map<string, number>();
+                        outbreakCases.forEach((c) => dm.set(c.disease, (dm.get(c.disease) || 0) + 1));
+                        const OB_DOT: Record<string, string> = {
+                          "ไข้หวัดใหญ่ (Influenza)": "#3B82F6", "อุจจาระร่วง/อาหารเป็นพิษ (Diarrhea)": "#F59E0B",
+                          "ไข้เลือดออก (Dengue)": "#DC2626", "ปอดอักเสบ (Pneumonia)": "#10B981", "สครับไทฟัส (Scrub Typhus)": "#EC4899",
+                        };
+                        return Array.from(dm.entries()).sort((a, b) => b[1] - a[1]).map(([d, c]) => (
+                          <span key={d} className="flex items-center gap-1 text-[10px] text-text-muted">
+                            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: OB_DOT[d] || "#9333EA" }} />
+                            {d.split("(")[0].trim()} {c}
+                          </span>
+                        ));
+                      })()}
+                    </div>
+                  </div>
                 )}
+
+                {/* Vaccine coverage */}
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Syringe size={14} className="text-sky-500" />
+                    <p className="text-xs font-semibold text-text-muted uppercase tracking-wider">วัคซีน</p>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 mb-2">
+                    <div className="bg-sky-50 rounded-xl p-2.5 text-center">
+                      <p className="text-base font-bold text-sky-600">{persons.filter((p) => p.vaccinations.length > 0).length}</p>
+                      <p className="text-[10px] text-sky-400">ได้รับ</p>
+                    </div>
+                    <div className="bg-gray-50 rounded-xl p-2.5 text-center">
+                      <p className="text-base font-bold text-text">{persons.length}</p>
+                      <p className="text-[10px] text-text-muted">ประชากร</p>
+                    </div>
+                    <div className="bg-green-50 rounded-xl p-2.5 text-center">
+                      <p className="text-base font-bold text-green-600">{persons.length > 0 ? ((persons.filter((p) => p.vaccinations.length > 0).length / persons.length) * 100).toFixed(0) : 0}%</p>
+                      <p className="text-[10px] text-green-400">ครอบคลุม</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Health coverage */}
+                <div>
+                  <p className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-2">สิทธิการรักษา</p>
+                  <div className="space-y-1.5">
+                    {healthCoverageData.map((item, i) => (
+                      <div key={item.name} className="flex items-center justify-between">
+                        <span className="text-xs text-text flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full" style={{ backgroundColor: ["#1C85AD", "#6EC3C3", "#F59E0B", "#94A3B8"][i] }} />
+                          {item.name}
+                        </span>
+                        <span className="text-xs font-bold text-text">{item.percentage}%</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             )}
           </div>
