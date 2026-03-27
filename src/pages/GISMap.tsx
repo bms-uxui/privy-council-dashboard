@@ -2001,7 +2001,7 @@ export default function GISMap() {
 
       {/* ══════ HOUSE DETAIL DRAWER (on click) ══════ */}
       {selectedHouse && (
-        <div className="fixed lg:absolute lg:top-20 lg:right-3 lg:bottom-16 lg:w-[400px] bottom-14 left-0 right-0 max-h-[80vh] lg:max-h-none bg-white rounded-t-2xl lg:rounded-2xl shadow-2xl z-30 overflow-y-auto flex flex-col animate-slide-up">
+        <div className="fixed lg:absolute lg:top-20 lg:right-3 lg:bottom-16 lg:w-[400px] lg:left-auto bottom-14 left-0 right-0 max-h-[80vh] lg:max-h-none bg-white rounded-t-2xl lg:rounded-2xl shadow-2xl z-30 overflow-y-auto flex flex-col animate-slide-up">
           {/* Header */}
           <div className="bg-gradient-to-r from-[#156A8A] to-[#1C85AD] text-white p-4 rounded-t-2xl flex-shrink-0">
             <div className="flex items-center justify-between mb-2">
