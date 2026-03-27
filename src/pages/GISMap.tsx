@@ -200,6 +200,7 @@ export default function GISMap() {
   const [outbreakView, setOutbreakView] = useState<"mini" | "full">("mini");
   const [vaccineGroup, setVaccineGroup] = useState<VaccineGroup | "all">("all");
   const [vaccineView, setVaccineView] = useState<"mini" | "full">("mini");
+  const [villageTab, setVillageTab] = useState<number>(11);
   const leftScroll = useScrollShadow();
   const rightScroll = useScrollShadow();
 
@@ -1948,116 +1949,108 @@ export default function GISMap() {
             })()}
 
             {/* VILLAGE STATUS */}
-            {expandedWidget === "village-status" && (
+            {expandedWidget === "village-status" && (() => {
+              const v = villages.find((v) => v.moo === villageTab) || villages[0];
+              const vHouses = houses.filter((h) => h.moo === v.moo);
+              const vPersons = persons.filter((p) => p.moo === v.moo);
+              const avg = vHouses.length > 0 ? (vPersons.length / vHouses.length).toFixed(1) : "0";
+              const high = vHouses.filter((h) => h.riskLevel === "high");
+              const medium = vHouses.filter((h) => h.riskLevel === "medium");
+              const low = vHouses.filter((h) => h.riskLevel === "low");
+              const riskTotal = vHouses.length;
+
+              return (
               <div>
                 <p className="text-sm text-text-muted uppercase tracking-wider mb-1">รายละเอียด</p>
                 <h2 className="text-2xl font-bold text-text mb-5">สรุปสถานะแบ่งตามหมู่</h2>
 
-                {villages.map((v) => {
-                  const vHouses = houses.filter((h) => h.moo === v.moo);
-                  const vPersons = persons.filter((p) => p.moo === v.moo);
-                  const avg = vHouses.length > 0 ? (vPersons.length / vHouses.length).toFixed(1) : "0";
-                  const high = vHouses.filter((h) => h.riskLevel === "high");
-                  const medium = vHouses.filter((h) => h.riskLevel === "medium");
-                  const low = vHouses.filter((h) => h.riskLevel === "low");
-                  const riskTotal = vHouses.length;
-                  return (
-                    <div key={v.id} className="mb-6 last:mb-0">
-                      <div className="flex items-center justify-between mb-3">
-                        <h3 className="text-lg font-bold text-text">ม.{v.moo} {v.name}</h3>
-                        <span className="text-sm text-text-muted">{vHouses.length} หลัง / {vPersons.length.toLocaleString()} คน / เฉลี่ย {avg} คน/หลัง</span>
-                      </div>
+                {/* Tabs */}
+                <div className="flex gap-1 bg-gray-100 rounded-xl p-1 mb-5">
+                  {villages.map((tab) => (
+                    <button
+                      key={tab.moo}
+                      onClick={() => setVillageTab(tab.moo)}
+                      className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                        villageTab === tab.moo
+                          ? "bg-white text-royal-blue shadow-sm"
+                          : "text-text-muted hover:text-text"
+                      }`}
+                    >
+                      หมู่ {tab.moo} {tab.name}
+                    </button>
+                  ))}
+                </div>
 
-                      {/* Risk cards */}
-                      <div className="grid grid-cols-3 gap-3 mb-3">
-                        <div className="bg-red-50 rounded-xl p-4 text-center">
-                          <p className="text-2xl font-bold text-red-600">{high.length}</p>
-                          <p className="text-sm text-red-500">เสี่ยงสูง</p>
-                          <p className="text-xs text-red-400 mt-1">{riskTotal > 0 ? ((high.length / riskTotal) * 100).toFixed(0) : 0}%</p>
-                        </div>
-                        <div className="bg-amber-50 rounded-xl p-4 text-center">
-                          <p className="text-2xl font-bold text-amber-600">{medium.length}</p>
-                          <p className="text-sm text-amber-500">ปานกลาง</p>
-                          <p className="text-xs text-amber-400 mt-1">{riskTotal > 0 ? ((medium.length / riskTotal) * 100).toFixed(0) : 0}%</p>
-                        </div>
-                        <div className="bg-green-50 rounded-xl p-4 text-center">
-                          <p className="text-2xl font-bold text-green-600">{low.length}</p>
-                          <p className="text-sm text-green-500">ต่ำ</p>
-                          <p className="text-xs text-green-400 mt-1">{riskTotal > 0 ? ((low.length / riskTotal) * 100).toFixed(0) : 0}%</p>
-                        </div>
-                      </div>
+                {/* Summary */}
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-bold text-text">ม.{v.moo} {v.name}</h3>
+                  <span className="text-sm text-text-muted">{vHouses.length} หลัง / {vPersons.length.toLocaleString()} คน / เฉลี่ย {avg} คน/หลัง</span>
+                </div>
 
-                      {/* Risk bar */}
-                      <div className="w-full h-3 rounded-full overflow-hidden flex">
-                        <div className="h-full bg-red-500" style={{ width: `${(high.length / riskTotal) * 100}%` }} />
-                        <div className="h-full bg-amber-400" style={{ width: `${(medium.length / riskTotal) * 100}%` }} />
-                        <div className="h-full bg-green-500" style={{ width: `${(low.length / riskTotal) * 100}%` }} />
-                      </div>
-
-                      {/* High-risk households list */}
-                      {high.length > 0 && (
-                        <div className="mt-3">
-                          <p className="text-sm font-semibold text-red-600 mb-2">ครัวเรือนเสี่ยงสูง ({high.length} หลัง)</p>
-                          <div className="space-y-1.5 max-h-[160px] overflow-y-auto no-scrollbar">
-                            {high.slice(0, 15).map((h) => {
-                              const hPersons = persons.filter((p) => p.houseId === h.id);
-                              return (
-                                <div key={h.id} className="flex items-center gap-3 p-2.5 rounded-lg bg-red-50/50 text-sm">
-                                  <div className="w-7 h-7 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
-                                    <ShieldAlert size={13} className="text-red-500" />
-                                  </div>
-                                  <div className="flex-1 min-w-0">
-                                    <p className="font-medium text-text truncate">บ้านเลขที่ {h.houseCode}</p>
-                                    <p className="text-text-muted">{h.memberCount} คน · ผู้สูงอายุ {h.elderlyCount} · NCD {h.ncdCount}</p>
-                                  </div>
-                                  <div className="flex -space-x-1.5 flex-shrink-0">
-                                    {hPersons.slice(0, 3).map((p) => (
-                                      <div key={p.id} className="w-6 h-6 rounded-full bg-royal-blue/10 border-2 border-white flex items-center justify-center text-[10px] font-bold text-royal-blue">
-                                        {p.firstName[0]}
-                                      </div>
-                                    ))}
-                                    {hPersons.length > 3 && (
-                                      <div className="w-6 h-6 rounded-full bg-gray-100 border-2 border-white flex items-center justify-center text-[10px] text-text-muted">
-                                        +{hPersons.length - 3}
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                              );
-                            })}
-                            {high.length > 15 && (
-                              <p className="text-sm text-text-muted text-center py-1">และอีก {high.length - 15} หลัง...</p>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-
-                {/* Grand total */}
-                <div className="border-t border-gray-200 pt-4 mt-2">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-lg font-bold text-text">รวมทั้งหมด</h3>
-                    <span className="text-sm text-text-muted">{houses.length} หลัง / {persons.length.toLocaleString()} ราย</span>
+                {/* Risk cards */}
+                <div className="grid grid-cols-3 gap-3 mb-3">
+                  <div className="bg-red-50 rounded-xl p-4 text-center">
+                    <p className="text-2xl font-bold text-red-600">{high.length}</p>
+                    <p className="text-sm text-red-500">เสี่ยงสูง</p>
+                    <p className="text-xs text-red-400 mt-1">{riskTotal > 0 ? ((high.length / riskTotal) * 100).toFixed(0) : 0}%</p>
                   </div>
-                  <div className="grid grid-cols-3 gap-3">
-                    <div className="bg-red-50 rounded-xl p-4 text-center">
-                      <p className="text-2xl font-bold text-red-600">{houses.filter((h) => h.riskLevel === "high").length}</p>
-                      <p className="text-sm text-red-500">เสี่ยงสูง</p>
-                    </div>
-                    <div className="bg-amber-50 rounded-xl p-4 text-center">
-                      <p className="text-2xl font-bold text-amber-600">{houses.filter((h) => h.riskLevel === "medium").length}</p>
-                      <p className="text-sm text-amber-500">ปานกลาง</p>
-                    </div>
-                    <div className="bg-green-50 rounded-xl p-4 text-center">
-                      <p className="text-2xl font-bold text-green-600">{houses.filter((h) => h.riskLevel === "low").length}</p>
-                      <p className="text-sm text-green-500">ต่ำ</p>
-                    </div>
+                  <div className="bg-amber-50 rounded-xl p-4 text-center">
+                    <p className="text-2xl font-bold text-amber-600">{medium.length}</p>
+                    <p className="text-sm text-amber-500">ปานกลาง</p>
+                    <p className="text-xs text-amber-400 mt-1">{riskTotal > 0 ? ((medium.length / riskTotal) * 100).toFixed(0) : 0}%</p>
+                  </div>
+                  <div className="bg-green-50 rounded-xl p-4 text-center">
+                    <p className="text-2xl font-bold text-green-600">{low.length}</p>
+                    <p className="text-sm text-green-500">ต่ำ</p>
+                    <p className="text-xs text-green-400 mt-1">{riskTotal > 0 ? ((low.length / riskTotal) * 100).toFixed(0) : 0}%</p>
                   </div>
                 </div>
+
+                {/* Risk bar */}
+                <div className="w-full h-3 rounded-full overflow-hidden flex mb-5">
+                  <div className="h-full bg-red-500" style={{ width: `${(high.length / riskTotal) * 100}%` }} />
+                  <div className="h-full bg-amber-400" style={{ width: `${(medium.length / riskTotal) * 100}%` }} />
+                  <div className="h-full bg-green-500" style={{ width: `${(low.length / riskTotal) * 100}%` }} />
+                </div>
+
+                {/* Household table */}
+                <h3 className="text-sm font-semibold text-text mb-3">ครัวเรือนทั้งหมด ({vHouses.length} หลัง)</h3>
+                <div className="overflow-hidden rounded-xl border border-gray-100">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="bg-gray-50">
+                        <th className="text-left px-4 py-2.5 text-sm font-semibold text-text-muted">บ้านเลขที่</th>
+                        <th className="text-center px-3 py-2.5 text-sm font-semibold text-text-muted">สมาชิก</th>
+                        <th className="text-center px-3 py-2.5 text-sm font-semibold text-text-muted">ผู้สูงอายุ</th>
+                        <th className="text-center px-3 py-2.5 text-sm font-semibold text-text-muted">NCD</th>
+                        <th className="text-center px-3 py-2.5 text-sm font-semibold text-text-muted">ความเสี่ยง</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {vHouses.sort((a, b) => {
+                        const order = { high: 0, medium: 1, low: 2 };
+                        return order[a.riskLevel] - order[b.riskLevel];
+                      }).map((h) => {
+                        const riskBg = h.riskLevel === "high" ? "bg-red-50 text-red-600" : h.riskLevel === "medium" ? "bg-amber-50 text-amber-600" : "bg-green-50 text-green-600";
+                        const riskLabel = h.riskLevel === "high" ? "สูง" : h.riskLevel === "medium" ? "กลาง" : "ต่ำ";
+                        return (
+                          <tr key={h.id} className="border-t border-gray-50 hover:bg-gray-50/50">
+                            <td className="px-4 py-2.5 font-medium text-text">{h.houseCode}</td>
+                            <td className="px-3 py-2.5 text-center text-text">{h.memberCount}</td>
+                            <td className="px-3 py-2.5 text-center text-text">{h.elderlyCount}</td>
+                            <td className="px-3 py-2.5 text-center text-text">{h.ncdCount}</td>
+                            <td className="px-3 py-2.5 text-center">
+                              <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${riskBg}`}>{riskLabel}</span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
               </div>
-            )}
+              );
+            })()}
 
             {/* COVERAGE */}
             {/* OUTBREAK */}
