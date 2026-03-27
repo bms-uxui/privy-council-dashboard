@@ -1593,10 +1593,10 @@ export default function GISMap() {
               <button
                 key={f.key}
                 onClick={() => setActiveFilter(isActive ? "all" : f.key)}
-                className={`relative group flex items-center gap-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all shadow-sm border min-h-[36px] ${
+                className={`relative group flex items-center gap-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all shadow-sm border h-10 ${
                   isActive && !isViewMode
-                    ? "pl-2.5 pr-3 py-1.5 text-white border-transparent"
-                    : "px-2.5 py-1.5 bg-white/95 backdrop-blur-sm text-text-muted border-gray-200/80 hover:shadow-md"
+                    ? "pl-3 pr-3.5 text-white border-transparent"
+                    : "px-3 bg-white/95 backdrop-blur-sm text-text-muted border-gray-200/80 hover:shadow-md"
                 }`}
                 style={isActive && !isViewMode ? { backgroundColor: f.color, borderColor: f.color } : {}}
               >
