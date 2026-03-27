@@ -818,8 +818,8 @@ export default function GISMap() {
       {/* Map canvas */}
       <div ref={mapContainer} className="w-full h-full" />
 
-      {/* ══════ TOP BAR: Search + Indicator + Map Style ══════ */}
-      <div className="absolute top-[76px] left-1/2 -translate-x-1/2 z-20 flex items-start gap-2 pointer-events-none">
+      {/* ══════ TOP BAR: Search + Indicator + Map Style (desktop only) ══════ */}
+      <div className="absolute top-[76px] left-1/2 -translate-x-1/2 z-20 hidden lg:flex items-start gap-2 pointer-events-none">
         {/* Search — left */}
         <div className="pointer-events-auto relative">
           <button
@@ -1687,48 +1687,172 @@ export default function GISMap() {
         </div>
       </div>
 
-      {/* ══════ MOBILE BOTTOM BAR ══════ */}
-      <div className="absolute bottom-3 left-3 right-3 z-20 lg:hidden">
-        <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg p-2 flex items-center gap-2">
-          {/* Panel toggles */}
-          <button
-            onClick={() => setMobilePanel(mobilePanel === "left" ? null : "left")}
-            className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium transition-all ${mobilePanel === "left" ? "bg-royal-blue text-white" : "bg-gray-100 text-text-muted"}`}
-          >
-            <Layers size={14} />
-            สถิติ
-          </button>
-          <button
-            onClick={() => setMobilePanel(mobilePanel === "right" ? null : "right")}
-            className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium transition-all ${mobilePanel === "right" ? "bg-royal-blue text-white" : "bg-gray-100 text-text-muted"}`}
-          >
-            <Activity size={14} />
-            ข้อมูล
-          </button>
+      {/* ══════ MOBILE: Google Maps–style layout ══════ */}
 
-          {/* Divider */}
-          <div className="w-px h-6 bg-gray-200" />
+      {/* Mobile search bar — full width at top */}
+      <div className="absolute top-3 left-3 right-3 z-20 lg:hidden">
+        <div className="bg-white rounded-2xl shadow-lg px-4 py-2.5 flex items-center gap-3">
+          <Search size={18} className="text-text-muted flex-shrink-0" />
+          <input
+            type="text"
+            placeholder="ค้นหาชื่อ, บ้านเลขที่, HN..."
+            value={searchQuery}
+            onChange={(e) => handleSearch(e.target.value)}
+            className="flex-1 text-sm bg-transparent outline-none text-text placeholder:text-text-light"
+          />
+          {searchQuery && (
+            <button onClick={() => { setSearchQuery(""); setSearchResults([]); }} className="text-text-light">
+              <X size={16} />
+            </button>
+          )}
+          <button onClick={() => { mapRef.current?.easeTo({ center: [101.220, 19.533], zoom: 13.5, duration: 600 }); }} className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-text-muted">
+            <ZoomOut size={16} />
+          </button>
+        </div>
+        {/* Mobile search results */}
+        {searchResults.length > 0 && (
+          <div className="mt-2 bg-white rounded-xl shadow-lg border border-gray-100 max-h-[300px] overflow-y-auto">
+            {searchResults.map((r, i) => (
+              <button
+                key={`m-${r.house.id}-${i}`}
+                onClick={() => { zoomToHouse(r.house); setSearchQuery(""); setSearchResults([]); }}
+                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors text-left border-b border-gray-50 last:border-0"
+              >
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: r.type === "person" ? "#E0F2FE" : "#F0FDF4" }}>
+                  {r.type === "person" ? <UserRound size={14} className="text-royal-blue" /> : <Home size={14} className="text-green-600" />}
+                </div>
+                <div className="flex-1 min-w-0">
+                  {r.type === "person" ? (
+                    <>
+                      <p className="text-sm font-medium text-text truncate">{r.personName}</p>
+                      <p className="text-xs text-text-muted">บ้านเลขที่ {r.house.houseCode} หมู่ {r.house.moo}</p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-sm font-medium text-text">บ้านเลขที่ {r.house.houseCode}</p>
+                      <p className="text-xs text-text-muted">{r.house.address}</p>
+                    </>
+                  )}
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
 
-          {/* Filter pills (scrollable) */}
-          <div className="flex-1 flex gap-1 overflow-x-auto no-scrollbar">
-            {FILTERS.map((f) => {
-              const isActive = activeFilter === f.key;
-              return (
-                <button
-                  key={f.key}
-                  onClick={() => { setActiveFilter(isActive ? "all" : f.key); setMobilePanel(null); }}
-                  className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${
-                    isActive ? "text-white" : "bg-gray-100 text-text-muted"
-                  }`}
-                  style={isActive ? { backgroundColor: f.color } : {}}
-                >
-                  <f.Icon size={12} />
-                  {f.label}
-                </button>
-              );
-            })}
+      {/* Mobile filter pills — horizontal scroll below search */}
+      <div className="absolute top-16 left-0 right-0 z-10 lg:hidden">
+        <div className="flex gap-2 px-3 overflow-x-auto no-scrollbar pb-1">
+          {FILTERS.map((f) => {
+            const isActive = activeFilter === f.key;
+            return (
+              <button
+                key={f.key}
+                onClick={() => { setActiveFilter(isActive ? "all" : f.key); setMobilePanel(null); }}
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium whitespace-nowrap shadow-sm border transition-all ${
+                  isActive ? "text-white border-transparent shadow-md" : "bg-white text-text-muted border-gray-200"
+                }`}
+                style={isActive ? { backgroundColor: f.color } : {}}
+              >
+                <f.Icon size={13} />
+                {f.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Mobile bottom sheet */}
+      <div className={`absolute left-0 right-0 z-20 lg:hidden transition-all duration-300 ${mobilePanel ? "bottom-0" : "bottom-0"}`}>
+        {/* Handle + summary bar (always visible) */}
+        <div
+          className="bg-white rounded-t-2xl shadow-[0_-4px_20px_rgba(0,0,0,0.1)] px-4"
+          onClick={() => setMobilePanel(mobilePanel ? null : "left")}
+        >
+          {/* Drag handle */}
+          <div className="flex justify-center pt-2 pb-3">
+            <div className="w-10 h-1 rounded-full bg-gray-300" />
+          </div>
+
+          {/* Summary row */}
+          <div className="flex items-center gap-3 pb-3">
+            <div className="flex-1">
+              <p className="text-sm font-bold text-text">ต.ขุนน่าน</p>
+              <p className="text-xs text-text-muted">{filteredHouses.length} ครัวเรือน · {persons.length.toLocaleString()} คน</p>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={(e) => { e.stopPropagation(); setMobilePanel(mobilePanel === "left" ? null : "left"); }}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${mobilePanel === "left" ? "bg-royal-blue text-white" : "bg-gray-100 text-text-muted"}`}
+              >สถิติ</button>
+              <button
+                onClick={(e) => { e.stopPropagation(); setMobilePanel(mobilePanel === "right" ? null : "right"); }}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${mobilePanel === "right" ? "bg-royal-blue text-white" : "bg-gray-100 text-text-muted"}`}
+              >ข้อมูล</button>
+            </div>
           </div>
         </div>
+
+        {/* Expanded content */}
+        {mobilePanel && (
+          <div className="bg-white px-4 pb-6 max-h-[50vh] overflow-y-auto no-scrollbar">
+            {mobilePanel === "left" && (
+              <div className="space-y-3">
+                {/* Quick KPIs */}
+                <div className="grid grid-cols-4 gap-2">
+                  {[
+                    { label: "ครัวเรือน", value: filteredHouses.length, color: "#1C85AD" },
+                    { label: "ประชากร", value: persons.length, color: "#0D9488" },
+                    { label: "ผู้สูงอายุ", value: persons.filter((p) => p.isElderly).length, color: "#F59E0B" },
+                    { label: "NCD", value: persons.filter((p) => p.chronicDiseases.length > 0).length, color: "#DC2626" },
+                  ].map((k) => (
+                    <div key={k.label} className="bg-gray-50 rounded-xl p-3 text-center">
+                      <p className="text-lg font-bold" style={{ color: k.color }}>{k.value.toLocaleString()}</p>
+                      <p className="text-[10px] text-text-muted">{k.label}</p>
+                    </div>
+                  ))}
+                </div>
+                {/* Risk breakdown */}
+                <div className="flex gap-2">
+                  {[
+                    { label: "เสี่ยงสูง", count: filteredHouses.filter((h) => h.riskLevel === "high").length, color: "#DC2626", bg: "#FEE2E2" },
+                    { label: "ปานกลาง", count: filteredHouses.filter((h) => h.riskLevel === "medium").length, color: "#D97706", bg: "#FEF3C7" },
+                    { label: "ต่ำ", count: filteredHouses.filter((h) => h.riskLevel === "low").length, color: "#16A34A", bg: "#DCFCE7" },
+                  ].map((r) => (
+                    <div key={r.label} className="flex-1 rounded-xl p-3 text-center" style={{ backgroundColor: r.bg }}>
+                      <p className="text-lg font-bold" style={{ color: r.color }}>{r.count}</p>
+                      <p className="text-xs" style={{ color: r.color }}>{r.label}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            {mobilePanel === "right" && (
+              <div className="space-y-3">
+                {/* NCD summary */}
+                <p className="text-xs font-semibold text-text-muted uppercase tracking-wider">โรคเรื้อรัง NCD</p>
+                <div className="space-y-2">
+                  {ncdStats.map((ncd) => (
+                    <div key={ncd.diseaseEn} className="flex items-center justify-between">
+                      <span className="text-xs text-text">{ncd.disease}</span>
+                      <span className="text-xs font-bold text-text">{ncd.total}</span>
+                    </div>
+                  ))}
+                </div>
+                {/* Outbreak quick stat */}
+                {outbreakCases.length > 0 && (
+                  <>
+                    <p className="text-xs font-semibold text-text-muted uppercase tracking-wider pt-2">โรคระบาด</p>
+                    <div className="flex items-center gap-2">
+                      <Bug size={14} className="text-purple-500" />
+                      <span className="text-xs text-text">{outbreakCases.length} ราย · {outbreakHouseIds.size} ครัวเรือน</span>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Mobile panel backdrop */}
@@ -1738,7 +1862,7 @@ export default function GISMap() {
 
       {/* ══════ HOUSE DETAIL DRAWER (on click) ══════ */}
       {selectedHouse && (
-        <div className="absolute top-20 right-3 bottom-16 w-[calc(100%-24px)] sm:w-[400px] bg-white rounded-2xl shadow-2xl z-20 overflow-y-auto flex flex-col animate-slide-up">
+        <div className="absolute lg:top-20 lg:right-3 lg:bottom-16 lg:w-[400px] bottom-0 left-0 right-0 max-h-[70vh] lg:max-h-none bg-white rounded-t-2xl lg:rounded-2xl shadow-2xl z-20 overflow-y-auto flex flex-col animate-slide-up">
           {/* Header */}
           <div className="bg-gradient-to-r from-[#156A8A] to-[#1C85AD] text-white p-4 rounded-t-2xl flex-shrink-0">
             <div className="flex items-center justify-between mb-2">
