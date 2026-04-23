@@ -103,7 +103,7 @@ export default function Login() {
             type="button"
             onClick={handleLogin}
             disabled={loading}
-            className="btn-shimmer login-stagger-3 w-full flex items-center justify-center py-4 mb-6 rounded-full bg-gradient-to-b from-white to-gray-50 hover:from-gray-50 hover:to-gray-100 transition-all disabled:opacity-60 border border-gray-200"
+            className="btn-shimmer login-stagger-3 w-full flex items-center justify-center py-4 mb-6 rounded-full bg-gradient-to-b from-white to-gray-50 hover:from-gray-50 hover:to-gray-100 transition-all disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer border border-gray-200"
             style={{
               boxShadow:
                 "0 10px 20px -5px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 1), inset 0 -2px 0 rgba(0, 0, 0, 0.04)",
